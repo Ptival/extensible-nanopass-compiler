@@ -1,0 +1,24 @@
+-arg -impredicative-set
+
+-Q . ExtensibleCompiler
+
+Theory/Algebra.v
+Theory/Eval.v
+Theory/Functor.v
+Theory/IndexedAlgebra.v
+Theory/IndexedFunctor.v
+Theory/IndexedSubFunctor.v
+Theory/IndexedSum1.v
+Theory/ProgramAlgebra.v
+Theory/ProofAlgebra.v
+Theory/SubFunctor.v
+Theory/Sum1.v
+Theory/UniversalProperty.v
+
+Features/Bool.v
+Features/If1.v
+Features/If2.v
+Features/Stuck.v
+Features/Unit.v
+
+Testing.v
