@@ -3,4 +3,5 @@
 *.glob
 *.vo
 /.coqdeps.d
+/.envrc
 /Makefile.coq

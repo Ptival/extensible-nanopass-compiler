@@ -23,7 +23,7 @@ Definition
 
 Definition
   project
-  {F G} `{Functor F} `{Functor G} `{F <= G}
+  {F G} `{Functor F} `{Functor G} `{S : F <= G}
   (g : Fix G)
   : option (F (Fix G))
   := prj (unwrapFix g).

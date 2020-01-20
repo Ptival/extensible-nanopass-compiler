@@ -7,7 +7,7 @@ Class Functor (F : Set -> Set) : Set :=
     fmap : forall {A B : Set} (f : A -> B), F A -> F B;
   }.
 
-Class FunctorLaws {F} `{Functor F}
+Class FunctorLaws F `{Functor F}
   :=
     {
 

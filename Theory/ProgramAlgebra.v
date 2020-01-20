@@ -14,9 +14,11 @@ Because programs are computationally-revelant, we need [MixinAlgebra]s.
 
 *)
 
-Class ProgramAlgebra F `{Functor F} T A :=
+Class ProgramAlgebra (* cf. [FAlgebra] *)
+      F `{Functor F} T A :=
   {
-    programAlgebra : MixinAlgebra T F A;
+    programAlgebra (* cf. [f_algebra] *)
+    : MixinAlgebra T F A;
   }.
 
 Global Instance
@@ -33,6 +35,30 @@ Global Instance
           | inl1 f => programAlgebra rec f
           | inr1 g => programAlgebra rec g
           end
+      ;
+    |}.
+
+Global Instance
+       ProgramAlgebraLeft
+       {F} `{FunctorLaws F}
+       {G} `{FunctorLaws G}
+  : forall {T}, ProgramAlgebra F T (WellFormedValue (F + G))
+  := fun T =>
+    {|
+      programAlgebra :=
+        fun rec v => reverseFoldWrapFix (inl1 (fmap rec v))
+      ;
+    |}.
+
+Global Instance
+       ProgramAlgebraRight
+       {F} `{FunctorLaws F}
+       {G} `{FunctorLaws G}
+  : forall {T}, ProgramAlgebra G T (WellFormedValue (F + G))
+  := fun T =>
+    {|
+      programAlgebra :=
+        fun rec v => reverseFoldWrapFix (inr1 (fmap rec v))
       ;
     |}.
 

@@ -61,8 +61,12 @@ F (Σ (e : Fix G) . P e) ---------------> Σ (e : Fix G) . P e
 *)
 
 (* Corresponds to [WF__Ind] *)
+(** NOTE: it does not pay off trying to make this be about [WellFormedValue]
+    properties, because we will not be able to prove the property over the
+    dependent pair, only about its [proj1_sig].
+*)
 Class WellFormedProofAlgebra
-      {F G} `{Functor F} `{Functor G} `{FG : F <= G}
+      {F G} `{Functor F} `{FunctorLaws G} `{FG : F <= G}
       {P : Fix G -> Prop} (PA : ProofAlgebra F (sig P))
   :=
     {
@@ -98,7 +102,7 @@ Proof.
 Qed.
  *)
 
-Lemma Fusion
+Lemma Fusion'
       {F} `{Functor F}
       `{FunctorLaws F}
       e {RFUP : ReverseFoldUniversalProperty e}
@@ -118,6 +122,17 @@ Proof.
   { reflexivity. }
 Qed.
 
+Lemma Fusion
+      {F} `{Functor F}
+      `{FunctorLaws F}
+      (e : WellFormedValue F)
+      (A B : Set) (h : A -> B) (f : Algebra F A) (g : Algebra F B)
+      (HF : forall a, h (f a) = g (fmap h a))
+      : (fun e' => h (fold f e')) (proj1_sig e) = fold g (proj1_sig e).
+Proof.
+  destruct e; now apply Fusion'.
+Qed.
+
 Lemma Induction
       {F} `{Functor F} `{FunctorLaws F}
       {P : Fix F -> Prop}
@@ -128,17 +143,15 @@ Proof.
   intros f UP.
   cut (proj1_sig (fold (@proofAlgebra _ _ _ PA) f) = id f).
   {
-    unfold id.
     intro FEQ.
+    unfold id in FEQ.
     rewrite <- FEQ.
     eapply proj2_sig.
   }
   {
-    erewrite Fusion.
+    erewrite Fusion'.
     {
-      eapply foldWrapFixIdentity.
-      unfold id.
-      assumption.
+      now rewrite foldWrapFixIdentity.
     }
     {
       assumption.
@@ -150,4 +163,15 @@ Proof.
       reflexivity.
     }
   }
+Qed.
+
+Lemma Induction'
+      {F} `{Functor F} `{FunctorLaws F}
+      {P : Fix F -> Prop}
+      {PA : ProofAlgebra F (sig P)}
+      {WFPA : WellFormedProofAlgebra PA}
+  : forall (f : WellFormedValue F), P (proj1_sig f).
+Proof.
+  destruct f as [f UP].
+  now apply Induction.
 Qed.

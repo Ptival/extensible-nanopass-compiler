@@ -24,6 +24,38 @@ Global Instance Functor_Sum1
               end;
   |}.
 
+Global Instance FunctorLaws_Sum1 F G `{FunctorLaws F} `{FunctorLaws G}
+  : FunctorLaws (Sum1 F G).
+Proof.
+  constructor.
+  {
+    intros A [].
+    {
+      simpl.
+      rewrite fmapId.
+      reflexivity.
+    }
+    {
+      simpl.
+      rewrite fmapId.
+      reflexivity.
+    }
+  }
+  {
+    intros A B C f g [].
+    {
+      simpl.
+      rewrite fmapFusion.
+      reflexivity.
+    }
+    {
+      simpl.
+      rewrite fmapFusion.
+      reflexivity.
+    }
+  }
+Qed.
+
 Definition sum1Dispatch {A} {L R : Set -> Set} {O} (fl : L A -> O) (fr : R A -> O) v :=
   match v with
   | inl1 l => fl l

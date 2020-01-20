@@ -1,3 +1,4 @@
+From Coq Require Import ssreflect.
 From Coq Require Import String.
 
 From ExtensibleCompiler.Theory Require Import Functor.
@@ -6,31 +7,25 @@ From ExtensibleCompiler.Theory Require Import SubFunctor.
 
 Local Open Scope SubFunctor_scope.
 
-Inductive StuckF (A: Set) : Set :=
-| Stuck (reason : string)
+Inductive Stuck (A: Set) : Set :=
+| MkStuck (reason : string)
 .
-Arguments Stuck {A}.
+Arguments MkStuck {A}.
 
-Global Instance Functor_StuckF : Functor StuckF :=
+Global Instance Functor_Stuck : Functor Stuck :=
   {|
-    fmap := fun A B f '(Stuck reason) => Stuck reason;
+    fmap := fun A B f '(MkStuck reason) => MkStuck reason;
   |}.
 
-Global Instance FunctorLaws_StuckF : FunctorLaws (F := StuckF).
+Global Instance FunctorLaws_Stuck : FunctorLaws Stuck.
 Proof.
   constructor.
-  {
-    intros A [].
-    reflexivity.
-  }
-  {
-    intros A B C f g [].
-    reflexivity.
-  }
+  - move => ? [] //.
+  - move => ????? [] //.
 Qed.
 
 Definition stuck
-           {L} `{Functor L} `{FunctorLaws L} `{StuckF <= L}
+           {L} `{Functor L} `{FunctorLaws L} `{Stuck <= L}
            (reason : string)
   : WellFormedValue L
-  := injectUniversalProperty (Stuck reason).
+  := injectUniversalProperty (MkStuck reason).

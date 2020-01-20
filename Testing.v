@@ -3,6 +3,7 @@ From Coq Require Import String.
 From ExtensibleCompiler Require Import Algebra.
 From ExtensibleCompiler Require Import Eval.
 From ExtensibleCompiler Require Import Functor.
+From ExtensibleCompiler Require Import ProgramAlgebra.
 From ExtensibleCompiler Require Import SubFunctor.
 From ExtensibleCompiler Require Import Sum1.
 From ExtensibleCompiler Require Import UniversalProperty.
@@ -13,18 +14,136 @@ From ExtensibleCompiler.Features Require Import If2.
 From ExtensibleCompiler.Features Require Import Stuck.
 From ExtensibleCompiler.Features Require Import Unit.
 
+From ExtensibleCompiler.Passes Require Import RemoveUnaryIfs.
+
+From ExtensibleCompiler.Theory Require Import IndexedAlgebra.
+From ExtensibleCompiler.Theory Require Import IndexedSum1.
+From ExtensibleCompiler.Theory Require Import ProofAlgebra.
+
 Local Open Scope Sum1_scope.
 Local Open Scope SubFunctor_scope.
 
-(* NOTE: This is currently broken *)
-Definition e1
-  : WellFormedValue (BoolF + If1F + UnitF)
-  := if1 (boolean true) unit.
+Definition p
+  : MixinAlgebra (WellFormedValue (If2 + Unit)) If1 (WellFormedValue (If2 + Unit))
+  := programAlgebra.
 
-Definition check1 := evalAlgebra (F := UnitF) (R := UnitF).
-Definition check2 := evalAlgebra (F := BoolF) (R := UnitF + BoolF).
-Definition check3 := evalAlgebra (F := BoolF) (R := BoolF + UnitF).
-Definition check4 := evalAlgebra (F := UnitF + BoolF) (R := BoolF + UnitF).
+Definition q := p id.
+
+Definition e1
+  : WellFormedValue (Bool + If1 + Unit)
+  := if1 (boolean__WF true) unit__WF.
+
+Definition v1
+  : Fix (Bool + If1 + Unit)
+  := proj1_sig e1.
+
+(* Definition check1 := evalAlgebra (F := Unit) (R := Unit). *)
+(* Definition check2 := evalAlgebra (F := Bool) (R := Unit + Bool). *)
+(* Definition check3 := evalAlgebra (F := Bool) (R := Bool + Unit). *)
+(* Definition check4 := evalAlgebra (F := Unit + Bool) (R := Bool + Unit). *)
+
+Definition MixinAlgebra' I O := MixinAlgebra O I O.
+
+(* From now on, code writes itself, for instance: *)
+
+(* Global Instance removeUnaryIfsManual : *)
+(*   ProgramAlgebra *)
+(*     (Bool + If1) *)
+(*     (WellFormedValue (Bool + If2 + Unit)) *)
+(*     (WellFormedValue (Bool + If2 + Unit)) *)
+(*   := _. *)
+
+Definition V := WellFormedValue (Bool + If2 + Unit).
+
+(* Definition removeUnaryIfsMixin *)
+(*   : MixinAlgebra' (Bool + If1) V *)
+(*   := programAlgebra. *)
+
+Definition removeUnaryIfsFromFix
+  : Fix (Bool + If1) -> WellFormedValue (Bool + If2 + Unit)
+  := fold (programAlgebra id).
+
+Definition evalWellFormed I O `{Functor I} `{Functor O}
+           `{ProgramAlgebra I (WellFormedValue O) (WellFormedValue O)}
+  : WellFormedValue I -> WellFormedValue O
+  := fun v => fold (programAlgebra id) (proj1_sig v).
+
+Definition removeUnaryIfs
+  : WellFormedValue (Bool + If1) -> WellFormedValue (Bool + If2 + Unit)
+  := evalWellFormed _ _.
+
+Definition exprIf1
+  : WellFormedValue (Bool + If1)
+  := if1 (boolean__WF true) (boolean__WF false).
+
+Definition exprIf2
+  : WellFormedValue (Bool + If2 + Unit)
+  := if2__WF (boolean__WF true) (boolean__WF false) unit__WF.
+
+Theorem removeUnaryIfsExprIf1
+  : removeUnaryIfs exprIf1 = exprIf2.
+Proof.
+  reflexivity.
+Qed.
+
+Theorem removeUnaryIfsSyntacticCorrectness :
+  forall c t,
+    removeUnaryIfs (if1 c t) = if2__WF (removeUnaryIfs c) (removeUnaryIfs t) unit__WF.
+Proof.
+  reflexivity.
+Qed.
+
+Delimit Scope IndexedSum1_scope with IndexedSum1.
+
+Definition SourceExpr := Bool + If1.
+Definition TargetExpr := Bool + If2 + Unit.
+Definition Value := Bool + Stuck + Unit.
+
+Definition SourceEval
+  : (WellFormedValue SourceExpr * WellFormedValue Value) -> Prop
+  := IndexedFix
+    (
+      EvalBool SourceExpr Value
+      +
+      EvalIf1  SourceExpr Value
+      (* + *)
+      (* EvalUnit SourceExpr Value *)
+    )%IndexedSum1.
+
+Definition TargetEval
+  : (WellFormedValue TargetExpr * WellFormedValue Value) -> Prop
+  := IndexedFix
+    (
+      EvalBool TargetExpr Value
+      +
+      EvalIf2  TargetExpr Value
+      +
+      EvalUnit TargetExpr Value
+    )%IndexedSum1.
+
+Theorem removeUnaryIfsCorrectness
+  : forall e v,
+    SourceEval (e, v) ->
+    TargetEval (removeUnaryIfs e, v).
+Proof.
+  unfold SourceEval, TargetEval.
+  intros e v S.
+  apply iWrapFix.
+  eapply iUnwrapFix in S.
+  destruct S.
+  {
+
+  }
+  apply iWrapFix.
+  split.
+Qed.
+
+
+
+
+
+
+STOP HERE.
 
 Global
   Instance
@@ -52,8 +171,8 @@ Global
                      end;
   |}.
 
-Definition checkEvalAssoc := evalAlgebra (F := UnitF + (If1F + BoolF))
-                                         (R := (UnitF + If1F) + BoolF).
+Definition checkEvalAssoc := evalAlgebra (F := Unit + (If1 + Bool))
+                                         (R := (Unit + If1) + Bool).
 
 Global
   Instance
@@ -117,8 +236,8 @@ Global
 (* eapply evalAlgebra. *)
 (* eapply wrapFix. *)
 
-Notation "'Lang0'" := (UnitF + (If1F + BoolF)) (only parsing).
-Notation "'Lang1'" := (UnitF + (BoolF + If1F)) (only parsing).
+Notation "'Lang0'" := (Unit + (If1 + Bool)) (only parsing).
+Notation "'Lang1'" := (Unit + (Bool + If1)) (only parsing).
 
 (* Global *)
 (*   Instance *)
@@ -128,11 +247,11 @@ Notation "'Lang1'" := (UnitF + (BoolF + If1F)) (only parsing).
 (*   | 7. *)
 (* Admitted. *)
 
-(* Definition checkEvalSymAssoc := evalAlgebra (F := UnitF + (If1F + BoolF)) *)
-(*                                             (R := UnitF + (BoolF + If1F)). *)
+(* Definition checkEvalSymAssoc := evalAlgebra (F := Unit + (If1 + Bool)) *)
+(*                                             (R := Unit + (Bool + If1)). *)
 
-(* Definition foo : Eval (UnitF + (If1F + BoolF)) *)
-(*                       ((UnitF + If1F) + BoolF). *)
+(* Definition foo : Eval (Unit + (If1 + Bool)) *)
+(*                       ((Unit + If1) + Bool). *)
 (*   apply EvalAssocRL. *)
 (* Defined. *)
 
@@ -146,30 +265,31 @@ Global
     evalAlgebra := fun A rec v => inject (fmap rec v);
   |}.
 
-Definition bar : Eval ((UnitF + If1F) + BoolF)
-                      (BoolF + (UnitF + If1F)).
+Definition bar : Eval ((Unit + If1) + Bool)
+                      (Bool + (Unit + If1)).
   apply EvalSym.
 Defined.
 
-(* Definition checkEvalSymAssoc2 := evalAlgebra (F := UnitF + (If1F + BoolF)) *)
-(*                                             (R := BoolF + (If1F + UnitF)). *)
+(* Definition checkEvalSymAssoc2 := evalAlgebra (F := Unit + (If1 + Bool)) *)
+(*                                             (R := Bool + (If1 + Unit)). *)
 
-(* Definition checkEvalSymAssoc3 := evalAlgebra (F := UnitF + (If1F + BoolF)) *)
-(*                                             (R := BoolF + (UnitF + If1F)). *)
+(* Definition checkEvalSymAssoc3 := evalAlgebra (F := Unit + (If1 + Bool)) *)
+(*                                             (R := Bool + (Unit + If1)). *)
 
-(* Definition checkEvalSymAssoc4 := evalAlgebra (F := UnitF + (If1F + BoolF)) *)
-(*                                              (R := (BoolF + UnitF) + If1F). *)
+(* Definition checkEvalSymAssoc4 := evalAlgebra (F := Unit + (If1 + Bool)) *)
+(*                                              (R := (Bool + Unit) + If1). *)
 
-(* Definition checkEvalForE1_1 := evalAlgebra (F := If1F) *)
-(*                                            (R := BoolF + UnitF + If2F). *)
+(* Definition checkEvalForE1_1 := evalAlgebra (F := If1) *)
+(*                                            (R := Bool + Unit + If2). *)
 
-Definition e2 : Fix (BoolF + If2F + StuckF + UnitF)
-  := mendlerFold evalAlgebra e1.
+Definition e2
+  : WellFormedValue (Bool + If2 + Stuck + Unit)
+  := injectUniversalProperty e1.
 
-Definition checkEvalSym := evalAlgebra (F := UnitF + BoolF)
-                                       (R := BoolF + UnitF).
+Definition checkEvalSym := evalAlgebra (F := Unit + Bool)
+                                       (R := Bool + Unit).
 
-Definition e1WithoutIf1 : Fix (BoolF + If2F + StuckF + UnitF) := mendlerFold evalAlgebra e1.
+Definition e1WithoutIf1 : Fix (Bool + If2 + Stuck + Unit) := mendlerFold evalAlgebra e1.
 
 Inductive Expr : Set :=
 | EBool (boolean : bool)
@@ -178,10 +298,10 @@ Inductive Expr : Set :=
 | EStuck (reason : string)
 .
 
-Definition exprBool  {A}     '(Bool b : BoolF A)     := EBool b.
-Definition exprIf2   {A} rec '(If2 c t e : If2F A)   := EIf2 (rec c) (rec t) (rec e).
-Definition exprUnit  {A}     '(Unit      : UnitF A)  := EUnit.
-Definition exprStuck {A}     '(Stuck r   : StuckF A) := EStuck r.
+Definition exprBool  {A}     '(Bool b : Bool A)     := EBool b.
+Definition exprIf2   {A} rec '(If2 c t e : If2 A)   := EIf2 (rec c) (rec t) (rec e).
+Definition exprUnit  {A}     '(Unit      : Unit A)  := EUnit.
+Definition exprStuck {A}     '(Stuck r   : Stuck A) := EStuck r.
 
 Definition result1 :=
   e1WithoutIf1
@@ -190,12 +310,12 @@ Definition result1 :=
 
 Compute result1.
 
-Definition withoutIf2 : Fix (BoolF + StuckF + UnitF) :=
+Definition withoutIf2 : Fix (Bool + Stuck + Unit) :=
   mendlerFold evalAlgebra e1WithoutIf1.
 
-Definition withoutIf2' : Fix (BoolF + StuckF + UnitF) := mendlerFold evalAlgebra e1WithoutIf1.
+Definition withoutIf2' : Fix (Bool + Stuck + Unit) := mendlerFold evalAlgebra e1WithoutIf1.
 
-(* Definition e1 : Fix (UnitF + If1F) := if1 unit unit. *)
+(* Definition e1 : Fix (Unit + If1) := if1 unit unit. *)
 
 Definition result2 :=
   withoutIf2'
@@ -209,15 +329,15 @@ Compute result2.
 (*     wellFormedEvalAlgebra : forall R rec (e : F R), evalAlgebra rec (inj e : G R) = evalAlgebra rec e; *)
 (*   }. *)
 
-(* Definition ValueF := BoolF + StuckF + UnitF. *)
+(* Definition ValueF := Bool + Stuck + Unit. *)
 
-(* Definition ProgramF := ValueF + If1F + If2F. *)
+(* Definition ProgramF := ValueF + If1 + If2. *)
 
-Inductive EvalIf2F_1
+Inductive EvalIf2_1
           (E V : Set -> Set)
           `{Functor E} `{Functor V}
-          `{E supports If2F}
-          `{V supports BoolF}
+          `{E supports If2}
+          `{V supports Bool}
           (Eval : (WellFormedValue E * WellFormedValue V) -> Prop)
   : (WellFormedValue E * WellFormedValue V) -> Prop :=
 | MkEvalIF2F_1 e v condition thenBranch elseBranch
@@ -225,5 +345,5 @@ Inductive EvalIf2F_1
     proj1_sig e = if2 condition thenBranch elseBranch ->
     _ ->
     proj1_sig v = boolean true ->
-    EvalIf2F_1 E V (e, v)
+    EvalIf2_1 E V (e, v)
 .

@@ -5,7 +5,7 @@ From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
 
-(*
+(**
 
 The universal property of folds is as follows:
 
@@ -19,6 +19,11 @@ the direct direction follows from the overloaded definition of [fold] and
 
 *)
 
+(**
+[h = fold alg -> h . wrapFix = alg h]
+
+Holds by definition of [mendlerFold] and [wrapFix].
+ *)
 Lemma DirectMendlerFoldUniversalProperty
       F A
       (alg : MendlerAlgebra F A) (h : Fix F -> A)
@@ -31,6 +36,11 @@ Proof.
   reflexivity.
 Qed.
 
+(**
+[h . wrapFix = alg h -> h = fold alg]
+
+To be proven for each value of type [Fix F].
+ *)
 Class ReverseMendlerFoldUniversalProperty
       {F} `{Functor F} (e : Fix F)
   :=
@@ -41,6 +51,12 @@ Class ReverseMendlerFoldUniversalProperty
         h e = mendlerFold f e;
     }.
 
+
+(**
+[h = fold alg -> h . wrapFix = alg h]
+
+Holds by definition of [fold] and [wrapFix].
+ *)
 Lemma DirectFoldUniversalProperty
            F `{Functor F}
            A (alg : Algebra F A) (h : Fix F -> A)
@@ -52,11 +68,16 @@ Proof.
   reflexivity.
 Qed.
 
-Class ReverseFoldUniversalProperty
+(**
+[h . wrapFix = alg h -> h = fold alg]
+
+To be proven for each value of type [Fix F].
+ *)
+Class ReverseFoldUniversalProperty (* cf. [Universal_Property'_fold] *)
       {F} {FF : Functor F} (e : Fix F)
   :=
     {
-      elimFoldUniversalProperty
+      elimFoldUniversalProperty (* cf. [E_fUP'] *)
       : forall A (alg : Algebra F A) (h : Fix F -> A),
         (forall e, h (wrapFix e) = alg (fmap h e)) ->
         h e = fold alg e;
@@ -75,9 +96,15 @@ Proof.
   reflexivity.
 Qed.
 
+(**
+A [WellFormedValue] for a functor [V] is a value of type [Fix V] s.t. it has
+been properly constructed, and as such, satisfies
+[ReverseFoldUniversalProperty].
+ *)
 Definition WellFormedValue (V : Set -> Set) `{Functor V} :=
   { e | ReverseFoldUniversalProperty (F := V) e }.
 
+(* [in_t_UP'] *)
 Definition reverseFoldWrapFix
            {F} `{Functor F} `{FunctorLaws F}
            (v : F (WellFormedValue F))
@@ -97,10 +124,18 @@ Definition reverseFoldWrapFix
   simpl.
   apply elimFoldUniversalProperty.
   assumption.
-Qed.
+Defined.
+
+(* [out_t_UP'] *)
+Definition reverseFoldUnwrapFix
+           {F} `{Functor F} `{FunctorLaws F}
+           (v : Fix F)
+  : F (WellFormedValue F)
+  := fold (fmap reverseFoldWrapFix) v.
 
 Local Open Scope SubFunctor_scope.
 
+(* [inject'] *)
 Definition
   injectUniversalProperty
   {F G}
@@ -110,3 +145,30 @@ Definition
   (fexp : F (WellFormedValue G))
   : WellFormedValue G
   := reverseFoldWrapFix (inj fexp).
+
+Fixpoint boundedFixWellFormed
+         {A} {F} `{FunctorLaws F}
+         (n : nat)
+         (fM : MixinAlgebra (WellFormedValue F) F A)
+         (default : A)
+         (e : WellFormedValue F)
+  : A
+  :=
+  match n with
+  | 0   => default
+  | S n => fM (boundedFixWellFormed n fM default) (reverseFoldUnwrapFix (proj1_sig e))
+  end.
+
+Definition UniversalPropertyP (* cf. [UP'_P] *)
+           {F : Set -> Set}
+           {FF : Functor F}
+           (P : forall e : Fix F, ReverseFoldUniversalProperty e -> Prop) (e : Fix F)
+  : Prop
+  := sigT (P e).
+
+Definition UniversalPropertyF (* cf. [UP'_F] *)
+           (F : Set -> Set) {Fun_F : Functor F}
+  : Set
+  := sig (ReverseFoldUniversalProperty (F := F)).
+
+Definition Exp F `{Functor F} := UniversalPropertyF F.

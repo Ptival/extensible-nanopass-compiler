@@ -2,6 +2,15 @@
 
 -Q . ExtensibleCompiler
 
+Features/Bool.v
+Features/If1.v
+Features/If2.v
+Features/Stuck.v
+Features/Unit.v
+Features/Types.v
+
+Passes/RemoveUnaryIfs.v
+
 Theory/Algebra.v
 Theory/Eval.v
 Theory/Functor.v
@@ -15,10 +24,13 @@ Theory/SubFunctor.v
 Theory/Sum1.v
 Theory/UniversalProperty.v
 
-Features/Bool.v
-Features/If1.v
-Features/If2.v
-Features/Stuck.v
-Features/Unit.v
+Types/BoolType.v
+Types/UnitType.v
+
+Typing/Bool.v
+Typing/If1.v
+Typing/If2.v
+Typing/Testing.v
+Typing/Unit.v
 
 Testing.v
