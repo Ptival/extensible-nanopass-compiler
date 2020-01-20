@@ -1,12 +1,13 @@
+From Coq Require Import ssreflect.
+
 From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Eval.
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
 From ExtensibleCompiler.Theory Require Import Sum1.
+From ExtensibleCompiler.Theory Require Import Types.
 From ExtensibleCompiler.Theory Require Import UniversalProperty.
-
-From ExtensibleCompiler.Features Require Import Types.
 
 Local Open Scope SubFunctor_scope.
 
@@ -23,14 +24,8 @@ Global Instance Functor_Bool : Functor Bool :=
 Global Instance FunctorLaws_Bool : FunctorLaws Bool.
 Proof.
   constructor.
-  {
-    intros A [].
-    reflexivity.
-  }
-  {
-    intros A B C f g [].
-    reflexivity.
-  }
+  - move => ? [] //.
+  - move => ????? [] //.
 Qed.
 
 Definition boolean

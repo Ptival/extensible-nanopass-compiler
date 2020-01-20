@@ -6,9 +6,8 @@ From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
 From ExtensibleCompiler.Theory Require Import Sum1.
+From ExtensibleCompiler.Theory Require Import Types.
 From ExtensibleCompiler.Theory Require Import UniversalProperty.
-
-From ExtensibleCompiler.Features Require Import Types.
 
 Local Open Scope SubFunctor_scope.
 

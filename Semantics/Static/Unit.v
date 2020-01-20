@@ -1,12 +1,12 @@
-From ExtensibleCompiler.Features Require Import Unit.
-From ExtensibleCompiler.Features Require Import Types.
+From ExtensibleCompiler.Syntax.Terms Require Import Unit.
 
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
+From ExtensibleCompiler.Theory Require Import Types.
 From ExtensibleCompiler.Theory Require Import UniversalProperty.
 
-From ExtensibleCompiler.Types Require Import UnitType.
+From ExtensibleCompiler.Syntax.Types Require Import UnitType.
 
 Local Open Scope SubFunctor_scope.
 

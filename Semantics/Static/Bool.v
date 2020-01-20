@@ -1,11 +1,11 @@
-From ExtensibleCompiler.Features Require Import Bool.
-From ExtensibleCompiler.Features Require Import Types.
+From ExtensibleCompiler.Syntax.Terms Require Import Bool.
+
+From ExtensibleCompiler.Syntax.Types Require Import BoolType.
 
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
-
-From ExtensibleCompiler.Types Require Import BoolType.
+From ExtensibleCompiler.Theory Require Import Types.
 
 Local Open Scope SubFunctor_scope.
 

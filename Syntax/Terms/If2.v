@@ -1,9 +1,8 @@
 From Coq Require Import String.
 
-From ExtensibleCompiler.Features Require Import Bool.
-From ExtensibleCompiler.Features Require Import Types.
-From ExtensibleCompiler.Features Require Import Unit.
-From ExtensibleCompiler.Features Require Import Stuck.
+From ExtensibleCompiler.Syntax.Terms Require Import Bool.
+From ExtensibleCompiler.Syntax.Terms Require Import Unit.
+From ExtensibleCompiler.Syntax.Terms Require Import Stuck.
 
 From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Eval.
@@ -12,6 +11,7 @@ From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
 From ExtensibleCompiler.Theory Require Import ProofAlgebra.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
 From ExtensibleCompiler.Theory Require Import Sum1.
+From ExtensibleCompiler.Theory Require Import Types.
 From ExtensibleCompiler.Theory Require Import UniversalProperty.
 
 Local Open Scope SubFunctor_scope.

@@ -6,9 +6,8 @@ From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
 From ExtensibleCompiler.Theory Require Import Sum1.
+From ExtensibleCompiler.Theory Require Import Types.
 From ExtensibleCompiler.Theory Require Import UniversalProperty.
-
-From ExtensibleCompiler.Features Require Import Types.
 
 Local Open Scope SubFunctor_scope.
 Local Open Scope Sum1_scope.
@@ -26,14 +25,8 @@ Global Instance Functor_Unit : Functor Unit :=
 Global Instance FunctorLaws_Unit : FunctorLaws Unit.
 Proof.
   constructor.
-  {
-    intros A [].
-    reflexivity.
-  }
-  {
-    intros A B C f g [].
-    reflexivity.
-  }
+  - move => ? [] //.
+  - move => ????? [] //.
 Qed.
 
 Definition unit

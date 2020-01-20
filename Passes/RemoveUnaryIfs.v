@@ -1,19 +1,19 @@
 (* From Coq Require Import Logic.FunctionalExtensionality. *)
 
-From ExtensibleCompiler Require Import Algebra.
-From ExtensibleCompiler Require Import Eval.
-From ExtensibleCompiler Require Import Functor.
-From ExtensibleCompiler Require Import ProgramAlgebra.
-From ExtensibleCompiler Require Import ProofAlgebra.
-From ExtensibleCompiler Require Import SubFunctor.
-From ExtensibleCompiler Require Import Sum1.
-From ExtensibleCompiler Require Import UniversalProperty.
+From ExtensibleCompiler.Syntax.Terms Require Import Bool.
+From ExtensibleCompiler.Syntax.Terms Require Import If1.
+From ExtensibleCompiler.Syntax.Terms Require Import If2.
+From ExtensibleCompiler.Syntax.Terms Require Import Stuck.
+From ExtensibleCompiler.Syntax.Terms Require Import Unit.
 
-From ExtensibleCompiler.Features Require Import Bool.
-From ExtensibleCompiler.Features Require Import If1.
-From ExtensibleCompiler.Features Require Import If2.
-From ExtensibleCompiler.Features Require Import Stuck.
-From ExtensibleCompiler.Features Require Import Unit.
+From ExtensibleCompiler.Theory Require Import Algebra.
+From ExtensibleCompiler.Theory Require Import Eval.
+From ExtensibleCompiler.Theory Require Import Functor.
+From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
+From ExtensibleCompiler.Theory Require Import ProofAlgebra.
+From ExtensibleCompiler.Theory Require Import SubFunctor.
+From ExtensibleCompiler.Theory Require Import Sum1.
+From ExtensibleCompiler.Theory Require Import UniversalProperty.
 
 Local Open Scope Sum1_scope.
 Local Open Scope SubFunctor_scope.

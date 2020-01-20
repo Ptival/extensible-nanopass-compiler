@@ -1,13 +1,13 @@
-From ExtensibleCompiler.Features Require Import Bool.
-From ExtensibleCompiler.Features Require Import If1.
-From ExtensibleCompiler.Features Require Import Types.
+From ExtensibleCompiler.Syntax.Terms Require Import Bool.
+From ExtensibleCompiler.Syntax.Terms Require Import If1.
+
+From ExtensibleCompiler.Syntax.Types Require Import BoolType.
+From ExtensibleCompiler.Syntax.Types Require Import UnitType.
 
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
 From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-
-From ExtensibleCompiler.Types Require Import BoolType.
-From ExtensibleCompiler.Types Require Import UnitType.
+From ExtensibleCompiler.Theory Require Import Types.
 
 Local Open Scope SubFunctor_scope.
 
