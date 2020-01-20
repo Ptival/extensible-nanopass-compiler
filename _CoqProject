@@ -30,7 +30,7 @@ Syntax/Types/UnitType.v
 Semantics/Static/Bool.v
 Semantics/Static/If1.v
 Semantics/Static/If2.v
-Semantics/Static/Testing.v
 Semantics/Static/Unit.v
 
-Testing.v
+Test/Semantics/Dynamic.v
+Test/Semantics/Static.v

@@ -7,6 +7,9 @@ From ExtensibleCompiler.Syntax.Terms Require Import If1.
 From ExtensibleCompiler.Syntax.Terms Require Import If2.
 From ExtensibleCompiler.Syntax.Terms Require Import Unit.
 
+From ExtensibleCompiler.Syntax.Types Require Import BoolType.
+From ExtensibleCompiler.Syntax.Types Require Import UnitType.
+
 From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Eval.
 From ExtensibleCompiler.Theory Require Import Functor.
@@ -15,9 +18,6 @@ From ExtensibleCompiler.Theory Require Import SubFunctor.
 From ExtensibleCompiler.Theory Require Import Sum1.
 From ExtensibleCompiler.Theory Require Import Types.
 From ExtensibleCompiler.Theory Require Import UniversalProperty.
-
-From ExtensibleCompiler.Syntax.Types Require Import BoolType.
-From ExtensibleCompiler.Syntax.Types Require Import UnitType.
 
 Local Open Scope SubFunctor_scope.
 
