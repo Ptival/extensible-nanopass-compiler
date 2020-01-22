@@ -10,7 +10,7 @@ From ExtensibleCompiler.Theory Require Import Types.
 Local Open Scope SubFunctor_scope.
 
 Definition typeOf_Bool
-           {LT} `{FunctorLaws LT} `{BoolType <= LT}
+           {LT} `{FunctorLaws LT} `{SubFunctor BoolType LT}
            (R : Set) (rec : R -> TypeOfResult LT)
            (e : Bool R)
   : TypeOfResult LT
@@ -20,6 +20,6 @@ Definition typeOf_Bool
     end.
 
 Global Instance TypeOf_Bool
-       {LT} `{FunctorLaws LT} `{BoolType <= LT}
+       {LT} `{FunctorLaws LT} `{SubFunctor BoolType LT}
   : forall T, ProgramAlgebra Bool T (TypeOfResult LT)
   := fun T => {| programAlgebra := typeOf_Bool T |}.

@@ -28,47 +28,41 @@ Proof.
   - move => ????? [] //.
 Qed.
 
-Definition boolean
-           {L} `{Functor L} `{FunctorLaws L}
-           `{Bool <= L} b
-  : Fix L
-  := inject (MkBool b).
-
-Definition boolean__WF
-           {L} `{Functor L} `{FunctorLaws L}
-           `{Bool <= L} b
-  : WellFormedValue L
+Definition boolean'
+           {L} `{FunctorLaws L} `{SubFunctor Bool L}
+           (b : bool)
+  : UniversalPropertyF L
   := injectUniversalProperty (MkBool b).
 
-Global Instance EvalBoolWellFormedValue
-       {O} `{Functor O} `{FunctorLaws O}
-       `{O supports Bool}
-       T
-  : ProgramAlgebra Bool T (WellFormedValue O)
-  | 0 :=
-  {|
-    programAlgebra :=
-      fun rec '(MkBool b) => boolean__WF b
-    ;
-  |}.
+Definition boolean
+           {L} `{FunctorLaws L} `{SubFunctor Bool L}
+           (b : bool)
+  : Fix L
+  := proj1_sig (boolean' b).
 
-Global Instance EvalBoolix
-       {O} `{Functor O} `{FunctorLaws O}
-       `{O supports Bool}
-       T
-  : ProgramAlgebra Bool T (Fix O)
-  | 0 :=
-  {|
-    programAlgebra :=
-      fun rec '(MkBool b) => boolean b
-    ;
-  |}.
+Section One.
 
-Inductive EvalBool (E V : Set -> Set)
-          `{FunctorLaws E} `{FunctorLaws V}
-          `{E supports Bool} `{V supports Bool}
-          (Eval : (WellFormedValue E * WellFormedValue V) -> Prop)
-  : (WellFormedValue E * WellFormedValue V) -> Prop
-  :=
-  | BoolValue : forall b, EvalBool E V Eval (boolean__WF b, boolean__WF b)
-.
+  Context {L} `{FunctorLaws L} `{! SubFunctor Bool L}.
+
+  Definition InductionAlgebra_Bool
+             (P : forall (e : Fix L), ReverseFoldUniversalProperty e -> Prop)
+             (H_boolean : forall b, UniversalPropertyP P (boolean b))
+    : Algebra Bool (sig (UniversalPropertyP P))
+    := fun '(MkBool b) => exist _ _ (H_boolean b).
+
+End One.
+
+Section Two.
+
+  Context {L} `{FunctorLaws L} `{! SubFunctor Bool L}.
+  Context {M} `{FunctorLaws M} `{! SubFunctor Bool M}.
+
+  Definition Induction2Algebra_Bool
+             (P : forall (e : Fix L * Fix M),
+                 ReverseFoldUniversalProperty (fst e) /\ ReverseFoldUniversalProperty (snd e) -> Prop
+             )
+             (H_boolean : forall b, UniversalPropertyP2 P (boolean b, boolean b))
+    : Algebra Bool (sig (UniversalPropertyP2 P))
+    := fun '(MkBool b) => exist _ _ (H_boolean b).
+
+End Two.

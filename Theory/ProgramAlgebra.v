@@ -15,17 +15,26 @@ Because programs are computationally-revelant, we need [MixinAlgebra]s.
 *)
 
 Class ProgramAlgebra (* cf. [FAlgebra] *)
-      F `{Functor F} T A :=
+      F `{FunctorLaws F} T A :=
   {
     programAlgebra (* cf. [f_algebra] *)
     : MixinAlgebra T F A;
   }.
 
+(**
+Just like [programAlgebra], but when you want to provide the [ProgramAlgebra]
+explicitly.
+*)
+Definition programAlgebra'
+           {F T A}
+           `{FunctorLaws F}
+      (PA : ProgramAlgebra F T A)
+  := programAlgebra (ProgramAlgebra := PA).
+
 Global Instance
-       ProgramAlgebraSum1
-       {T A}
-       {F} `{Functor F} (FAlg : ProgramAlgebra F T A)
-       {G} `{Functor G} (GAlg : ProgramAlgebra G T A)
+       ProgramAlgebraSum1 F G {T A}
+       `{FAlg : ProgramAlgebra F T A}
+       `{GAlg : ProgramAlgebra G T A}
   : ProgramAlgebra (F + G) T A
   :=
     {|
@@ -39,9 +48,9 @@ Global Instance
     |}.
 
 Global Instance
-       ProgramAlgebraLeft
-       {F} `{FunctorLaws F}
-       {G} `{FunctorLaws G}
+       ProgramAlgebraLeft {F G}
+       `{FunctorLaws F}
+       `{FunctorLaws G}
   : forall {T}, ProgramAlgebra F T (WellFormedValue (F + G))
   := fun T =>
     {|
@@ -51,9 +60,9 @@ Global Instance
     |}.
 
 Global Instance
-       ProgramAlgebraRight
-       {F} `{FunctorLaws F}
-       {G} `{FunctorLaws G}
+       ProgramAlgebraRight {F G}
+       `{FunctorLaws F}
+       `{FunctorLaws G}
   : forall {T}, ProgramAlgebra G T (WellFormedValue (F + G))
   := fun T =>
     {|
@@ -78,23 +87,22 @@ to its sub-algebras.
 *)
 
 (* Corresponds to [WF__FAlgebra] *)
-Class WellFormedProgramAlgebra
-      {T A F G} `{Functor F} `{Functor G} `{FG : F <= G}
-      (FAlg : ProgramAlgebra F T A)
-      (GAlg : ProgramAlgebra G T A)
+Class WellFormedProgramAlgebra {F G T A}
+      `{S : SubFunctor F G}
+      `(FAlg : ProgramAlgebra F T A)
+      `(GAlg : ProgramAlgebra G T A)
   :=
     {
       wellFormedProgramAlgebra
       : forall rec (fa : F T),
-        @programAlgebra G _ _ _ _ rec (inj (SubFunctor := FG) fa)
+        @programAlgebra G _ _ _ _ _ rec (inj (SubFunctor := S) fa)
         =
-        @programAlgebra F _ _ _ _ rec fa;
+        @programAlgebra F _ _ _ _ _ rec fa;
     }.
 
 Global Instance
-       WellFormedProgramAlgebraRefl
-       {F} `{Functor F}
-       {T A} {FAlg : ProgramAlgebra F T A}
+       WellFormedProgramAlgebraRefl {F T A}
+       `{FAlg : ProgramAlgebra F T A}
   : WellFormedProgramAlgebra FAlg FAlg.
 Proof.
   constructor.
@@ -106,13 +114,13 @@ Qed.
 
 Global Instance
        WellFormedProgramAlgebraLeft
-       {T A}
-       {F} `{Functor F} {FAlg : ProgramAlgebra F T A}
-       {G} `{Functor G} {GAlg : ProgramAlgebra G T A}
-       {H} `{Functor H} {HAlg : ProgramAlgebra H T A}
-       {FG : F <= G}
+       {F G T A}
+       `{FAlg : ProgramAlgebra F T A}
+       `{GAlg : ProgramAlgebra G T A}
+       {S : SubFunctor F G}
+       {H} `{HAlg : ProgramAlgebra H T A}
        {WFFG : WellFormedProgramAlgebra FAlg GAlg}
-  : WellFormedProgramAlgebra FAlg (ProgramAlgebraSum1 GAlg HAlg).
+  : WellFormedProgramAlgebra FAlg (ProgramAlgebraSum1 G H).
 Proof.
   constructor.
   intros rec f.
@@ -125,13 +133,13 @@ Qed.
 
 Global Instance
        WellFormedProgramAlgebraRight
-       {T A}
-       {F} `{Functor F} {FAlg : ProgramAlgebra F T A}
-       {G} `{Functor G} {GAlg : ProgramAlgebra G T A}
-       {H} `{Functor H} {HAlg : ProgramAlgebra H T A}
-       {FH : F <= H}
+       {F G T A}
+       `{FAlg : ProgramAlgebra F T A}
+       `{GAlg : ProgramAlgebra G T A}
+       {H} `{HAlg : ProgramAlgebra H T A}
+       {FH : SubFunctor F H}
        {WFFH : WellFormedProgramAlgebra FAlg HAlg}
-  : WellFormedProgramAlgebra FAlg (ProgramAlgebraSum1 GAlg HAlg).
+  : WellFormedProgramAlgebra FAlg (ProgramAlgebraSum1 G H).
 Proof.
   constructor.
   intros rec f.
@@ -141,3 +149,15 @@ Proof.
   rewrite wellFormedProgramAlgebra.
   reflexivity.
 Qed.
+
+Class WellFormedMendlerAlgebra (* cf. [WF_Malgebra] *)
+      {F A}
+      `{FunctorLaws F}
+      (MAlg : forall T, ProgramAlgebra F T A)
+  :=
+    {
+      wellFormedMendlerAlgebra (* cf. [wf_malgebra] *)
+      : forall (T T' : Set) (f : T' -> T) (rec : T -> A) (ft : F T'),
+        programAlgebra (ProgramAlgebra := MAlg T) rec (fmap f ft) =
+        programAlgebra (ProgramAlgebra := MAlg T') (fun ft' => rec (f ft')) ft
+    }.

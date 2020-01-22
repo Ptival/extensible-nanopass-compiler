@@ -1,4 +1,5 @@
 From Coq Require Import FunctionalExtensionality.
+From Coq Require Import ssreflect.
 From Coq Require Import String.
 
 From ExtensibleCompiler.Theory Require Import Algebra.
@@ -101,12 +102,12 @@ A [WellFormedValue] for a functor [V] is a value of type [Fix V] s.t. it has
 been properly constructed, and as such, satisfies
 [ReverseFoldUniversalProperty].
  *)
-Definition WellFormedValue (V : Set -> Set) `{Functor V} :=
-  { e | ReverseFoldUniversalProperty (F := V) e }.
+Definition WellFormedValue
+           V `{FunctorLaws V}
+  := { e : Fix V | ReverseFoldUniversalProperty e }.
 
-(* [in_t_UP'] *)
-Definition reverseFoldWrapFix
-           {F} `{Functor F} `{FunctorLaws F}
+Definition reverseFoldWrapFix (* cf. [in_t_UP'] *)
+           {F} `{FunctorLaws F}
            (v : F (WellFormedValue F))
   : WellFormedValue F.
   apply (exist _ (wrapFix (fmap (F := F) (@proj1_sig _ _) v))).
@@ -126,23 +127,28 @@ Definition reverseFoldWrapFix
   assumption.
 Defined.
 
-(* [out_t_UP'] *)
-Definition reverseFoldUnwrapFix
-           {F} `{Functor F} `{FunctorLaws F}
+Definition reverseFoldUnwrapFix (* cf. [out_t_UP'] *)
+           {F} `{FunctorLaws F}
            (v : Fix F)
   : F (WellFormedValue F)
   := fold (fmap reverseFoldWrapFix) v.
 
+Theorem reverseFoldWrapUnwrapFix_inverse (* cf. [in_out_UP'_inverse] *)
+        H `{FunctorLaws H}
+  : forall (h : Fix H),
+    ReverseFoldUniversalProperty h ->
+    proj1_sig (reverseFoldWrapFix (reverseFoldUnwrapFix h)) = h.
+Proof.
+  move => h UP /=.
+  admit.
+Admitted.
+
 Local Open Scope SubFunctor_scope.
 
-(* [inject'] *)
-Definition
-  injectUniversalProperty
-  {F G}
-  `{Functor F}
-  `{Functor G} `{FunctorLaws G}
-  `{F <= G}
-  (fexp : F (WellFormedValue G))
+Definition injectUniversalProperty (* cf. [inject'] *)
+           {F G}
+           `{S : SubFunctor F G}
+           (fexp : F (WellFormedValue G))
   : WellFormedValue G
   := reverseFoldWrapFix (inj fexp).
 
@@ -160,15 +166,24 @@ Fixpoint boundedFixWellFormed
   end.
 
 Definition UniversalPropertyP (* cf. [UP'_P] *)
-           {F : Set -> Set}
-           {FF : Functor F}
-           (P : forall e : Fix F, ReverseFoldUniversalProperty e -> Prop) (e : Fix F)
+           {F} `{FunctorLaws F}
+           (P : forall e : Fix F, ReverseFoldUniversalProperty e -> Prop)
+           (e : Fix F)
   : Prop
-  := sigT (P e).
+  := sig (P e).
+
+Definition UniversalPropertyP2 (* cf. [UP'_P2] *)
+           {F G} `{FunctorLaws F} `{FunctorLaws G}
+           (P : forall e : Fix F * Fix G,
+               ReverseFoldUniversalProperty (fst e) /\
+               ReverseFoldUniversalProperty (snd e) ->
+               Prop
+           )
+           (e : Fix F * Fix G)
+  : Prop
+  := sig (P e).
 
 Definition UniversalPropertyF (* cf. [UP'_F] *)
-           (F : Set -> Set) {Fun_F : Functor F}
+           F `{FunctorLaws F}
   : Set
   := sig (ReverseFoldUniversalProperty (F := F)).
-
-Definition Exp F `{Functor F} := UniversalPropertyF F.

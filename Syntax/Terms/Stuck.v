@@ -25,7 +25,7 @@ Proof.
 Qed.
 
 Definition stuck
-           {L} `{Functor L} `{FunctorLaws L} `{Stuck <= L}
+           {L} `{Functor L} `{FunctorLaws L} `{SubFunctor Stuck L}
            (reason : string)
   : WellFormedValue L
   := injectUniversalProperty (MkStuck reason).

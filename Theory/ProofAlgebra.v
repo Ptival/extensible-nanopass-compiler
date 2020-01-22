@@ -1,3 +1,5 @@
+From Coq Require Import ssreflect.
+
 From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
@@ -18,9 +20,11 @@ about the term of interest.
 
 *)
 
-Class ProofAlgebra F `{Functor F} A :=
+Class ProofAlgebra (* cf. [PAlgebra] *)
+      F `{Functor F} A :=
   {
-    proofAlgebra : Algebra F A;
+    proofAlgebra (* cf. [p_algebra] *)
+    : Algebra F A;
   }.
 
 Global Instance
@@ -60,14 +64,14 @@ F (Σ (e : Fix G) . P e) ---------------> Σ (e : Fix G) . P e
 
 *)
 
-(* Corresponds to [WF__Ind] *)
 (** NOTE: it does not pay off trying to make this be about [WellFormedValue]
     properties, because we will not be able to prove the property over the
     dependent pair, only about its [proj1_sig].
 *)
-Class WellFormedProofAlgebra
-      {F G} `{Functor F} `{FunctorLaws G} `{FG : F <= G}
-      {P : Fix G -> Prop} (PA : ProofAlgebra F (sig P))
+Class WellFormedProofAlgebra (* cf. [WF_Ind] *)
+      {F G}
+      `{S : SubFunctor F G}
+      {P : Fix G -> Prop} `(PA : ! ProofAlgebra F (sig P))
   :=
     {
       projEq
@@ -76,7 +80,30 @@ Class WellFormedProofAlgebra
         proj1_sig (proofAlgebra (ProofAlgebra := PA) e)
         =
         (* observe all subterms via [fmap], and combine them *)
-        wrapFix (inj (SubFunctor := FG) (fmap (proj1_sig (P := P)) e));
+        wrapFix (inj (SubFunctor := S) (fmap (proj1_sig (P := P)) e));
+    }.
+
+(** TODO: document why we need this *)
+Class WellFormedProofAlgebra2 (* cf. [WF_Ind2] *)
+      {F G H}
+      `{SG : SubFunctor F G} `{SH : SubFunctor F H}
+      {P : (Fix G * Fix H) -> Prop} `(PA : ! ProofAlgebra F (sig P))
+  :=
+    {
+      proj1Eq
+      : forall e,
+        (* run [proofAlgebra], then observe the term *)
+        fst (proj1_sig (proofAlgebra (ProofAlgebra := PA) e))
+        =
+        (* observe all subterms via [fmap], and combine them *)
+        wrapFix (inj (SubFunctor := SG) (fmap (fun e => fst (proj1_sig (P := P) e)) e));
+      proj2Eq
+      : forall e,
+        (* run [proofAlgebra], then observe the term *)
+        snd (proj1_sig (proofAlgebra (ProofAlgebra := PA) e))
+        =
+        (* observe all subterms via [fmap], and combine them *)
+        wrapFix (inj (SubFunctor := SH) (fmap (fun e => snd (proj1_sig (P := P) e)) e));
     }.
 
 (* TODO *)
@@ -103,9 +130,8 @@ Qed.
  *)
 
 Lemma Fusion'
-      {F} `{Functor F}
-      `{FunctorLaws F}
-      e {RFUP : ReverseFoldUniversalProperty e}
+      {F} `{FunctorLaws F}
+      (e : Fix F) {UP : ReverseFoldUniversalProperty e}
       (A B : Set) (h : A -> B) (f : Algebra F A) (g : Algebra F B)
       (HF : forall a, h (f a) = g (fmap h a))
       : (fun e' => h (fold f e')) e = fold g e.
@@ -113,13 +139,13 @@ Proof.
   apply elimFoldUniversalProperty.
   intros e'.
   rewrite (DirectFoldUniversalProperty F _ f).
+  { reflexivity. }
   {
     rewrite HF.
     rewrite fmapFusion.
     unfold Extras.compose.
     reflexivity.
   }
-  { reflexivity. }
 Qed.
 
 Lemma Fusion
@@ -133,36 +159,78 @@ Proof.
   destruct e; now apply Fusion'.
 Qed.
 
-Lemma Induction
-      {F} `{Functor F} `{FunctorLaws F}
+Lemma proj1_fold_is_id
+      {F} `{FunctorLaws F}
       {P : Fix F -> Prop}
       {PA : ProofAlgebra F (sig P)}
       {WFPA : WellFormedProofAlgebra PA}
-  : forall (f : Fix F), ReverseFoldUniversalProperty f -> P f.
+  : forall (f : Fix F),
+    ReverseFoldUniversalProperty f ->
+    proj1_sig (fold (@proofAlgebra _ _ _ PA) f) = f.
 Proof.
-  intros f UP.
-  cut (proj1_sig (fold (@proofAlgebra _ _ _ PA) f) = id f).
+  move => f UP.
+  setoid_rewrite Fusion' with (g := wrapFix) => //.
   {
-    intro FEQ.
-    unfold id in FEQ.
-    rewrite <- FEQ.
-    eapply proj2_sig.
+    rewrite foldWrapFixIdentity //.
   }
   {
-    erewrite Fusion'.
-    {
-      now rewrite foldWrapFixIdentity.
-    }
-    {
-      assumption.
-    }
-    {
-      intros.
-      rewrite projEq.
-      simpl.
-      reflexivity.
-    }
+    move => a.
+    rewrite projEq //.
   }
+Qed.
+
+Lemma fst_proj1_fold_is_id
+      {F} `{FunctorLaws F}
+      {P : (Fix F * Fix F) -> Prop}
+      {PA : ProofAlgebra F (sig P)}
+      {WFPA : WellFormedProofAlgebra2 PA}
+  : forall (f : Fix F),
+    ReverseFoldUniversalProperty f ->
+    fst (proj1_sig (fold (@proofAlgebra _ _ _ PA) f)) = f.
+Proof.
+  move => f UP.
+  setoid_rewrite (Fusion' f _ _ (fun e => fst (proj1_sig e)) _ wrapFix).
+  {
+    rewrite foldWrapFixIdentity //.
+  }
+  {
+    move => a.
+    rewrite proj1Eq //.
+  }
+Qed.
+
+Lemma snd_proj1_fold_is_id
+      {F} `{FunctorLaws F}
+      {P : (Fix F * Fix F) -> Prop}
+      {PA : ProofAlgebra F (sig P)}
+      {WFPA : WellFormedProofAlgebra2 PA}
+  : forall (f : Fix F),
+    ReverseFoldUniversalProperty f ->
+    snd (proj1_sig (fold (@proofAlgebra _ _ _ PA) f)) = f.
+Proof.
+  move => f UP.
+  setoid_rewrite (Fusion' f _ _ (fun e => snd (proj1_sig e)) _ wrapFix).
+  {
+    rewrite foldWrapFixIdentity //.
+  }
+  {
+    move => a.
+    rewrite proj2Eq //.
+  }
+Qed.
+
+Lemma Induction (* cf. [Ind] *)
+      {F} `{FunctorLaws F}
+      {P : Fix F -> Prop}
+      {PA : ProofAlgebra F (sig P)}
+      {WFPA : WellFormedProofAlgebra PA}
+  : forall (f : Fix F),
+    ReverseFoldUniversalProperty f ->
+    P f.
+Proof.
+  move => f UP.
+  setoid_rewrite <- proj1_fold_is_id => //.
+  apply proj2_sig.
 Qed.
 
 Lemma Induction'
@@ -174,4 +242,20 @@ Lemma Induction'
 Proof.
   destruct f as [f UP].
   now apply Induction.
+Qed.
+
+Lemma Induction2 (* cf. [Ind2] *)
+      {F} `{FunctorLaws F}
+      {P : (Fix F * Fix F) -> Prop}
+      {PA : ProofAlgebra F (sig P)}
+      {WFPA : WellFormedProofAlgebra2 PA}
+  : forall (f : Fix F),
+    ReverseFoldUniversalProperty f ->
+    P (f, f).
+Proof.
+  move => f UP.
+  setoid_rewrite <- (fst_proj1_fold_is_id f UP) at 1.
+  setoid_rewrite <- (snd_proj1_fold_is_id f UP) at 2.
+  rewrite <- surjective_pairing.
+  apply proj2_sig.
 Qed.

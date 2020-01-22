@@ -10,7 +10,7 @@ From ExtensibleCompiler.Theory Require Import Types.
 Local Open Scope SubFunctor_scope.
 
 Definition typeOf_If2
-           {LT} `{FunctorLaws LT} `{BoolType <= LT}
+           {LT} `{FunctorLaws LT} `{SubFunctor BoolType LT}
            {typeEqualityForLT : forall T, ProgramAlgebra LT T (TypeEqualityResult LT)}
            (R : Set) (rec : R -> TypeOfResult LT)
            (exp : If2 R)
@@ -35,7 +35,7 @@ Definition typeOf_If2
     end.
 
 Global Instance TypeOf_If2
-       {LT} `{FunctorLaws LT} `{BoolType <= LT}
+       {LT} `{FunctorLaws LT} `{SubFunctor BoolType LT}
        {typeEqualityForLT : forall T, ProgramAlgebra LT T (TypeEqualityResult LT)}
   : forall T, ProgramAlgebra If2 T (TypeOfResult LT)
   := fun T => {| programAlgebra := typeOf_If2 T |}.

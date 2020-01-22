@@ -1,16 +1,31 @@
 From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Functor.
+From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
 From ExtensibleCompiler.Theory Require Import Sum1.
+From ExtensibleCompiler.Theory Require Import UniversalProperty.
 
 Local Open Scope SubFunctor_scope.
 Local Open Scope Sum1_scope.
 
-Notation "L 'supports' F" := (F <= L) (at level 50) : SubFunctor_scope.
+(** [ValueFix] is just an alias for [UniversalPropertyF], but it makes it so that
+    code that depends on wrapping values can use this, in case we ever need to
+    change what type of fixed point to use.  *)
+Definition ValueFix
+           V `{FunctorLaws V}
+  := UniversalPropertyF V.
 
-Generalizable All Variables.
+Definition EvalResult
+           V `{FunctorLaws V}
+  := ValueFix V.
 
-Class MendlerEval `(FF : Functor F) `(FR : Functor R) :=
+Definition eval
+           {L V}
+           `{FunctorLaws L} `{FunctorLaws V}
+           {evalL : forall T, ProgramAlgebra L T (EvalResult V)}
+  := mendlerFold (fun _ => @programAlgebra _ _ _ _ _ (evalL _)).
+
+Class MendlerEval F R `{FunctorLaws F} `{FunctorLaws R} :=
   {
     evalMendlerAlgebra : MendlerAlgebra F (Fix R)
   }.
@@ -18,9 +33,10 @@ Class MendlerEval `(FF : Functor F) `(FR : Functor R) :=
 Global
   Instance
   MendlerEvalSum1
-  `(FF : Functor F) `(FG : Functor G) `(FR : Functor R)
-  `(MFR : ! MendlerEval FF FR) `(MGR : ! MendlerEval FG FR)
-  : ! MendlerEval (F + G) R
+  F G R
+  `{Functor F} `{Functor G} `{Functor R}
+  `{MFR : MendlerEval F R} `{MGR : MendlerEval G R}
+  : MendlerEval (F + G) R
   | 2 :=
   {|
     evalMendlerAlgebra :=
@@ -34,8 +50,9 @@ Global
 Global
   Instance
   MendlerEvalSum1OutputL
-  `(FF : Functor F) `(FG : Functor G)
-  : ! MendlerEval F (F + G)
+  F G
+  `{FunctorLaws F} `{FunctorLaws G}
+  : MendlerEval F (F + G)
   | 3 :=
   {|
     evalMendlerAlgebra := fun A rec v => wrapFix (inl1 (fmap rec v));
@@ -44,14 +61,15 @@ Global
 Global
   Instance
   MendlerEvalSum1OutputR
-  `(FF : Functor F) `(FG : Functor G)
-  : ! MendlerEval G (F + G)
+  F G
+  `{FunctorLaws F} `{FunctorLaws G}
+  : MendlerEval G (F + G)
   | 4 :=
   {|
     evalMendlerAlgebra := fun A rec v => wrapFix (inr1 (fmap rec v));
   |}.
 
-Global Instance MendlerEvalRefl `(Functor F) : ! MendlerEval F F
+Global Instance MendlerEvalRefl F `{FunctorLaws F} : MendlerEval F F
   | 1 :=
   {|
     evalMendlerAlgebra := fun A rec v => wrapFix (fmap rec v);
@@ -62,18 +80,17 @@ Global Instance MendlerEvalRefl `(Functor F) : ! MendlerEval F F
 [F] stands for the input functor.
 [A] stands for the output functor.
  *)
-Class MixinEval T F A
-      (* `{Functor T} `{Functor F} `{Functor A} *) :=
-  {
-    evalMixinAlgebra : MixinAlgebra (Fix T) F (Fix A)
-  }.
+Class MixinEval
+      T F A
+      `{FunctorLaws T} `{FunctorLaws F} `{FunctorLaws A}
+  := { evalMixinAlgebra : MixinAlgebra (Fix T) F (Fix A) }.
 
 Global
   Instance
   MixinEvalSum1
-  `(FF : Functor F) `(FG : Functor G)
-  `(MFR : ! MixinEval T F R) `(MGR : ! MixinEval T G R)
-  : ! MixinEval T (F + G) R
+  T F G R
+  `(MFR : MixinEval T F R) `(MGR : MixinEval T G R)
+  : MixinEval T (F + G) R
   | 2 :=
   {|
     evalMixinAlgebra :=
@@ -87,7 +104,8 @@ Global
 Global
   Instance
   MixinEvalSum1OutputL
-  {T} `(FF : Functor F) `(FG : Functor G)
+  T F G
+  `{FunctorLaws T} `{FunctorLaws F} `{FunctorLaws G}
   : MixinEval T F (F + G)
   | 3 :=
   {|
@@ -97,7 +115,8 @@ Global
 Global
   Instance
   MixinEvalSum1OutputR
-  {T} `(FF : Functor F) `(FG : Functor G)
+  T F G
+  `{FunctorLaws T} `{FunctorLaws F} `{FunctorLaws G}
   : MixinEval T G (F + G)
   | 3 :=
   {|
@@ -118,9 +137,9 @@ Fixpoint boundedFix
   end.
 
 Class WellFormedMendlerEval
-      `{FF : Functor F} `{FG : Functor G} `{FA : Functor A}
-      `(MFA : ! MendlerEval FF FA) `(MGA : ! MendlerEval FG FA)
-      `(S : F <= G)
+      F G A
+      `{MFA : MendlerEval F A} `{MGA : MendlerEval G A}
+      `{S : SubFunctor F G}
   :=
     {
       wellFormedMendlerEval : forall (R : Set) (rec : R -> Fix A) (e : F R),
@@ -128,14 +147,15 @@ Class WellFormedMendlerEval
     }.
 
 Global Instance WellFormedMendlerEvalLeft
-       `{FF : Functor F} `{FG : Functor G} `{FA : Functor A}
-       `{MFA : ! MendlerEval FF FA}
-       `{MGA : ! MendlerEval FG FA}
-       `{S : F <= G}
-       `(WF : ! WellFormedMendlerEval MFA MGA S)
-       `{FH : Functor H}
-       `(HA : ! MendlerEval FH FA)
-  : ! WellFormedMendlerEval F (G + H) A.
+       F G A
+       `{FunctorLaws F} `{FunctorLaws G} `{FunctorLaws A}
+       `{MFA : ! MendlerEval F A}
+       `{MGA : ! MendlerEval G A}
+       `{S : ! SubFunctor F G}
+       `(WF : ! WellFormedMendlerEval F G A)
+       H `{FunctorLaws H}
+       `(HA : ! MendlerEval H A)
+  : WellFormedMendlerEval F (G + H) A.
 Proof.
   constructor.
   intros R rec e.
@@ -145,14 +165,15 @@ Proof.
 Defined.
 
 Global Instance WellFormedMendlerEvalRight
-       `{FF : Functor F} `{FH : Functor H} `{FA : Functor A}
-       `{MFA : ! MendlerEval FF FA}
-       `{MHA : ! MendlerEval FH FA}
-       `{S : F <= H}
-       `(WF : ! WellFormedMendlerEval MFA MHA S)
-       `{FG : Functor G}
-       `(GA : ! MendlerEval FG FA)
-  : ! WellFormedMendlerEval F (G + H) A.
+       F H A
+       `{FunctorLaws F} `{FunctorLaws H} `{FunctorLaws A}
+       `{MFA : ! MendlerEval F A}
+       `{MHA : ! MendlerEval H A}
+       `{S : ! SubFunctor F H}
+       `(WF : ! WellFormedMendlerEval F H A)
+       G `{FunctorLaws G}
+       `(GA : ! MendlerEval G A)
+  : WellFormedMendlerEval F (G + H) A.
 Proof.
   constructor.
   intros R rec e.
@@ -162,9 +183,10 @@ Proof.
 Defined.
 
 Class WellFormedMixinEval
-      `{FF : Functor F} `{FG : Functor G}
-      `(TFA : MixinEval T F A) `(TGA : MixinEval T G A)
-      `(S : F <= G)
+      T F G A
+      `{FunctorLaws T} `{FunctorLaws F} `{FunctorLaws G} `{FunctorLaws A}
+      `{TFA : ! MixinEval T F A} `{TGA : ! MixinEval T G A}
+      `{S : ! SubFunctor F G}
   :=
     {
       wellFormedMixinEval : forall (rec : Fix T -> Fix A) (e : F (Fix T)),
@@ -173,14 +195,14 @@ Class WellFormedMixinEval
     }.
 
 Global Instance WellFormedMixinEvalLeft
-       `{FF : Functor F} `{FG : Functor G}
+       T F G H A
+       `{FunctorLaws T} `{FunctorLaws F} `{FunctorLaws G} `{FunctorLaws H} `{FunctorLaws A}
        `{MFA : ! MixinEval T F A}
        `{MGA : ! MixinEval T G A}
-       `{S : F <= G}
-       `(WF : ! WellFormedMixinEval MFA MGA S)
-       `{FH : Functor H}
+       `{S : ! SubFunctor F G}
+       `(WF : WellFormedMixinEval T F G A)
        `(HA : ! MixinEval T H A)
-  : ! WellFormedMixinEval F (G + H) T A.
+  : WellFormedMixinEval T F (G + H) A.
 Proof.
   constructor.
   intros rec e.
@@ -190,14 +212,14 @@ Proof.
 Defined.
 
 Global Instance WellFormedMixinEvalRight
-       `{FF : Functor F} `{FH : Functor H}
+       T F G H A
+       `{FunctorLaws T} `{FunctorLaws F} `{FunctorLaws G} `{FunctorLaws H} `{FunctorLaws A}
        `{MFA : ! MixinEval T F A}
        `{MHA : ! MixinEval T H A}
-       `{S : F <= H}
-       `(WF : ! WellFormedMixinEval MFA MHA S)
-       `{FG : Functor G}
+       `{S : ! SubFunctor F H}
+       `(WF : WellFormedMixinEval T F H A)
        `(GA : ! MixinEval T G A)
-  : ! WellFormedMixinEval F (G + H) T A.
+  : WellFormedMixinEval T F (G + H) A.
 Proof.
   constructor.
   intros rec e.

@@ -27,6 +27,9 @@ Theory/UniversalProperty.v
 Syntax/Types/BoolType.v
 Syntax/Types/UnitType.v
 
+Semantics/Dynamic/Bool.v
+Semantics/Dynamic/If1.v
+
 Semantics/Static/Bool.v
 Semantics/Static/If1.v
 Semantics/Static/If2.v

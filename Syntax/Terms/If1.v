@@ -36,44 +36,8 @@ Qed.
 
 Definition if1
            {L} `{Functor L} `{FunctorLaws L}
-           `{If1 <= L} c t
+           `{SubFunctor If1 L} c t
   := injectUniversalProperty (MkIf1 c t).
-
-Global Instance EvalIf1
-       {O} `{Functor O} `{FunctorLaws O}
-       `{O supports Bool}
-       `{O supports Unit}
-       `{O supports Stuck}
-       T
-  : ProgramAlgebra If1 T (Fix O)
-  | 0 :=
-  {|
-    programAlgebra :=
-      fun rec '(MkIf1 condition thenBranch) =>
-        match project (rec condition) with
-        | Some (MkBool b) =>
-          if b
-          then rec thenBranch
-          else proj1_sig unit__WF
-        | None => proj1_sig (stuck "The condition of a unary branch did not evaluate to a boolean value")
-        end
-    ;
-  |}.
-
-Inductive EvalIf1__WF (E V : Set -> Set)
-          `{FunctorLaws E} `{FunctorLaws V}
-          `{E supports If1} `{V supports Bool} `{V supports Unit}
-          (Eval : (WellFormedValue E * WellFormedValue V) -> Prop)
-  : (WellFormedValue E * WellFormedValue V) -> Prop
-  :=
-  | If1True : forall c t t',
-      Eval (c, boolean__WF true) ->
-      Eval (t, t') ->
-      EvalIf1__WF E V Eval (if1 c t, t')
-  | If1alse : forall c t,
-      Eval (c, boolean__WF false) ->
-      EvalIf1__WF E V Eval (if1 c t, unit__WF)
-.
 
 (* Definition If1Induction *)
 (*            (P : forall e, Fix If1 -> Prop) *)

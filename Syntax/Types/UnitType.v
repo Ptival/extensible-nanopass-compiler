@@ -39,22 +39,22 @@ Proof.
 Qed.
 
 Definition unitType'
-           {LT} `{FunctorLaws LT} `{UnitType <= LT}
+           {LT} `{FunctorLaws LT} `{SubFunctor UnitType LT}
   : TypeFix LT
   := injectUniversalProperty MkUnitType.
 
 Definition unitType
-           {LT} `{FunctorLaws LT} `{UnitType <= LT}
+           {LT} `{FunctorLaws LT} `{SubFunctor UnitType LT}
   : Fix LT
   := proj1_sig unitType'.
 
 Global Instance ReverseFoldUniversalProperty_unitType
-           {LT} `{FunctorLaws LT} `{UnitType <= LT}
+           {LT} `{FunctorLaws LT} `{SubFunctor UnitType LT}
   : ReverseFoldUniversalProperty unitType
   := proj2_sig unitType'.
 
 Definition isUnitType
-           {LT} `{FunctorLaws LT} `{UnitType <= LT}
+           {LT} `{FunctorLaws LT} `{SubFunctor UnitType LT}
   : Fix LT -> bool
   := fun typ =>
        match project typ with
@@ -63,7 +63,7 @@ Definition isUnitType
        end.
 
 Definition typeEquality_UnitType
-           DT `{FunctorLaws DT} `{UnitType <= DT}
+           DT `{FunctorLaws DT} `{SubFunctor UnitType DT}
            (R : Set) (rec : R -> TypeEqualityResult DT) (e : UnitType R)
   : TypeEqualityResult DT
   :=
@@ -72,7 +72,7 @@ Definition typeEquality_UnitType
     end.
 
 Global Instance TypeEquality_UnitType
-       DT `{FunctorLaws DT} `{UnitType <= DT}
+       DT `{FunctorLaws DT} `{SubFunctor UnitType DT}
        T
   : ProgramAlgebra UnitType T (TypeEqualityResult DT)
   := {| programAlgebra := typeEquality_UnitType DT T|}.

@@ -11,7 +11,7 @@ From ExtensibleCompiler.Syntax.Types Require Import UnitType.
 Local Open Scope SubFunctor_scope.
 
 Definition typeOf_UnitType
-           LT `{FunctorLaws LT} `{UnitType <= LT}
+           LT `{FunctorLaws LT} `{SubFunctor UnitType LT}
            (R : Set) (rec : R -> TypeOfResult LT)
            (e : Unit R)
   : TypeOfResult LT
@@ -21,6 +21,6 @@ Definition typeOf_UnitType
     end.
 
 Global Instance TypeOf_Unit
-       LT `{FunctorLaws LT} `{UnitType <= LT}
+       LT `{FunctorLaws LT} `{SubFunctor UnitType LT}
   : forall T, ProgramAlgebra Unit T (TypeOfResult LT)
   := fun T => {| programAlgebra := typeOf_UnitType LT T |}.
