@@ -97,8 +97,8 @@ Definition Eval_Soundness_alg_F
            {L LT V}
            `{FunctorLaws L} `{FunctorLaws LT} `{FunctorLaws V}
            (WT : (WellTypedValue V LT -> Prop) -> WellTypedValue V LT -> Prop)
-           `{EvalL   : forall {T}, ProgramAlgebra L T (EvalResult V)}
-           `{TypeOfL : forall {T}, ProgramAlgebra L T (TypeOfResult LT)}
+           `{EvalL   : forall {T}, ProgramAlgebra Eval   L T (EvalResult V)}
+           `{TypeOfL : forall {T}, ProgramAlgebra TypeOf L T (TypeOfResult LT)}
   := forall recTypeOf recEval,
     ProofAlgebra
       L
@@ -115,8 +115,8 @@ Definition eval_Soundness_P
            {L LT V}
            `{FunctorLaws L} `{FunctorLaws LT} `{FunctorLaws V}
            (WT : (WellTypedValue V LT -> Prop) -> WellTypedValue V LT -> Prop)
-           `{EvalL   : forall {T}, ProgramAlgebra L T (EvalResult V)}
-           `{TypeOfL : forall {T}, ProgramAlgebra L T (TypeOfResult LT)}
+           `{EvalL   : forall {T}, ProgramAlgebra Eval   L T (EvalResult V)}
+           `{TypeOfL : forall {T}, ProgramAlgebra TypeOf L T (TypeOfResult LT)}
            (recEval : UniversalPropertyF L -> EvalResult V)
            (recTypeOf : UniversalPropertyF L -> TypeOfResult LT)
            (e : Fix L)
@@ -131,8 +131,8 @@ Lemma eval_Soundness
       {L LT V}
       `{FunctorLaws L} `{FunctorLaws LT} `{FunctorLaws V}
       (WT : (WellTypedValue V LT -> Prop) -> WellTypedValue V LT -> Prop)
-      `{EvalL   : forall {T}, ProgramAlgebra L T (EvalResult V)}
-      `{TypeOfL : forall {T}, ProgramAlgebra L T (TypeOfResult LT)}
+      `{EvalL   : forall {T}, ProgramAlgebra Eval   L T (EvalResult V)}
+      `{TypeOfL : forall {T}, ProgramAlgebra TypeOf L T (TypeOfResult LT)}
       `{WFEvalL : ! WellFormedMendlerAlgebra (@EvalL)}
       (eval_Soundness_alg_F : Eval_Soundness_alg_F WT)
       (WF_eval_Soundness_alg_F :

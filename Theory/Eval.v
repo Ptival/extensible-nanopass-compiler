@@ -19,11 +19,13 @@ Definition EvalResult
            V `{FunctorLaws V}
   := ValueFix V.
 
+Variant Eval := .
+
 Definition eval
            {L V}
            `{FunctorLaws L} `{FunctorLaws V}
-           {evalL : forall T, ProgramAlgebra L T (EvalResult V)}
-  := mendlerFold (fun _ => @programAlgebra _ _ _ _ _ (evalL _)).
+           {evalL : forall T, ProgramAlgebra Eval L T (EvalResult V)}
+  := mendlerFold (fun _ => @programAlgebra _ _ _ _ _ _ (evalL _)).
 
 Class MendlerEval F R `{FunctorLaws F} `{FunctorLaws R} :=
   {

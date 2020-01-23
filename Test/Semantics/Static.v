@@ -35,25 +35,27 @@ Inductive Result :=
 | IllTyped
 .
 
+
+Variant ComputeResult := .
+
 (* Algebra to turn the extensible results into concrete results *)
 Global Instance computeResult
-  : forall T, ProgramAlgebra LT T Result
-  := fun T =>
+  : forall T, ProgramAlgebra ComputeResult LT T Result
+  := fun _ =>
        {|
          programAlgebra :=
-           fun rec lt =>
-             match lt with
-             | inl1 MkBoolType => WellTypedBool
-             | inr1 MkUnitType => WellTypedUnit
-             end;
+           fun rec =>
+             (fun   'MkBoolType => WellTypedBool)
+             || (fun 'MkUnitType => WellTypedUnit)
+         ;
        |}.
 
 Definition typeCheck
-           (b : WellFormedValue L)
+           (e : WellFormedValue L)
   : Result
   :=
-    match typeOf (proj1_sig b) with
-    | Some e => foldProgramAlgebra (Alg := computeResult) (proj1_sig e)
+    match typeOf (L := L) (LT := LT) (proj1_sig e) with
+    | Some t => foldProgramAlgebra (Alg := computeResult) (proj1_sig t)
     | None   => IllTyped
     end.
 

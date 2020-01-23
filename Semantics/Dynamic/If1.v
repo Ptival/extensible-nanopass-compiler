@@ -34,7 +34,7 @@ Global Instance EvalAlgebra__If1
        `{! V supports Bool}
        `{! V supports Unit}
        `{! V supports Stuck}
-  : forall {T}, ProgramAlgebra If1 T (WellFormedValue V)
+  : forall {T}, ProgramAlgebra Eval If1 T (WellFormedValue V)
   := fun T => {| programAlgebra := eval__If1; |}.
 
 Inductive Eval__If1 {E V}

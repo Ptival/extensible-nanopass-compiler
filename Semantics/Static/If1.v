@@ -37,5 +37,5 @@ Global Instance TypeOf__If1
        {LT} `{FunctorLaws LT}
        `{LT supports BoolType}
        `{LT supports UnitType}
-  : forall {T}, ProgramAlgebra If1 T (TypeOfResult LT)
+  : forall {T}, ProgramAlgebra TypeOf If1 T (TypeOfResult LT)
   := fun _ => {| programAlgebra := typeOf__If1; |}.

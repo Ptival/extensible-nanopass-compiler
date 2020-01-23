@@ -25,7 +25,7 @@ Definition eval__Bool
 Global Instance EvalAlgebra__Bool
        {V} `{FunctorLaws V}
        `{! V supports Bool}
-  : forall {T}, ProgramAlgebra Bool T (WellFormedValue V)
+  : forall {T}, ProgramAlgebra Eval Bool T (WellFormedValue V)
   := fun _ => {| programAlgebra := eval__Bool; |}.
 
 Inductive Eval__Bool {L V}
@@ -43,8 +43,8 @@ Global Instance EvalSoundness__Bool
        `{FunctorLaws L} `{FunctorLaws LT} `{FunctorLaws V}
        `{! L supports Bool}
        (WT : (WellTypedValue V LT -> Prop) -> WellTypedValue V LT -> Prop)
-       `{Eval_L   : forall {T}, ProgramAlgebra L T (EvalResult   V)}
-       `{TypeOf_L : forall {T}, ProgramAlgebra L T (TypeOfResult LT)}
+       `{Eval_L   : forall {T}, ProgramAlgebra Eval   L T (EvalResult   V)}
+       `{TypeOf_L : forall {T}, ProgramAlgebra TypeOf L T (TypeOfResult LT)}
        (recEval   : UniversalPropertyF L -> EvalResult   V)
        (recTypeOf : UniversalPropertyF L -> TypeOfResult LT)
   : ProofAlgebra Bool

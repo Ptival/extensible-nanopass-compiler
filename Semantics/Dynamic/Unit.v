@@ -20,7 +20,7 @@ Definition eval__Unit
 Global Instance EvalAlgebra__Unit
        {V} `{FunctorLaws V}
        `{! V supports Unit}
-  : forall {T}, ProgramAlgebra Unit T (WellFormedValue V)
+  : forall {T}, ProgramAlgebra Eval Unit T (WellFormedValue V)
   := fun T => {| programAlgebra := eval__Unit; |}.
 
 Inductive Eval__Unit

@@ -12,7 +12,7 @@ Local Open Scope SubFunctor_scope.
 
 Definition typeOf__If2
            {LT} `{FunctorLaws LT} `{LT supports BoolType}
-           {typeEqualityForLT : forall T, ProgramAlgebra LT T (TypeEqualityResult LT)}
+           {typeEqualityForLT : forall T, ProgramAlgebra TypeEquality LT T (TypeEqualityResult LT)}
   : forall {T}, MixinAlgebra If2 T (TypeOfResult LT)
   := fun _ rec '(MkIf2 c t e) =>
        match rec c with
@@ -32,6 +32,6 @@ Definition typeOf__If2
 
 Global Instance TypeOf__If2
        {LT} `{FunctorLaws LT} `{LT supports BoolType}
-       {typeEqualityForLT : forall T, ProgramAlgebra LT T (TypeEqualityResult LT)}
-  : forall {T}, ProgramAlgebra If2 T (TypeOfResult LT)
+       {typeEqualityForLT : forall T, ProgramAlgebra TypeEquality LT T (TypeEqualityResult LT)}
+  : forall {T}, ProgramAlgebra TypeOf If2 T (TypeOfResult LT)
   := fun _ => {| programAlgebra := typeOf__If2; |}.

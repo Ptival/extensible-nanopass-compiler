@@ -11,17 +11,40 @@ From ExtensibleCompiler.Theory Require Import UniversalProperty.
 Local Open Scope SubFunctor_scope.
 
 Definition
-  removeUnaryIfs
-  {O} `{FunctorLaws O}
-  `{! O supports If2}
-  `{! O supports Unit}
-  : forall {T}, MixinAlgebra If1 T (WellFormedValue O)
+  removeUnaryIfs__If1
+  {V} `{FunctorLaws V}
+  `{! V supports If2}
+  `{! V supports Unit}
+  : forall {T}, MixinAlgebra If1 T (WellFormedValue V)
   := fun _ rec '(MkIf1 condition thenBranch) =>
        if2 (rec condition) (rec thenBranch) unit.
 
-Global Instance Algebra__RemoveUnaryIfs
-  {O} `{FunctorLaws O}
-  `{! O supports Unit}
-  `{! O supports If2}
-  : forall {T}, ProgramAlgebra If1 T (WellFormedValue O)
-  := fun T => {| programAlgebra := removeUnaryIfs; |}.
+Definition
+  removeUnaryIfs__Other
+  {L V} `{FunctorLaws L} `{FunctorLaws V}
+  `{! V supports L}
+  : forall {T}, MixinAlgebra L T (WellFormedValue V)
+  := fun _ rec v => injectUniversalProperty (fmap rec v).
+
+Variant RemoveUnaryIfs := .
+
+Global Instance Algebra__RemoveUnaryIfsIf1
+  {V} `{FunctorLaws V}
+  `{! V supports Unit}
+  `{! V supports If2}
+  : forall {T}, ProgramAlgebra RemoveUnaryIfs If1 T (WellFormedValue V)
+| 0
+  := fun T => {| programAlgebra := removeUnaryIfs__If1; |}.
+
+Global Instance Algebra__RemoveUnaryIfsOther
+  {L V} `{FunctorLaws L} `{FunctorLaws V}
+  `{! V supports L}
+  : forall {T}, ProgramAlgebra RemoveUnaryIfs L T (WellFormedValue V)
+| 1
+  := fun T => {| programAlgebra := removeUnaryIfs__Other; |}.
+
+Definition removeUnaryIfs
+           {L V}
+           `{FunctorLaws L} `{FunctorLaws V}
+           {removeUnaryIfs__L : forall T, ProgramAlgebra RemoveUnaryIfs L T (WellFormedValue V)}
+  := mendlerFold (fun _ => @programAlgebra _ _ _ _ _ _ (removeUnaryIfs__L _)).

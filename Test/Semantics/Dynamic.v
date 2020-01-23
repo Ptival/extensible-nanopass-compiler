@@ -29,76 +29,70 @@ From ExtensibleCompiler.Theory Require Import UniversalProperty.
 Local Open Scope Sum1_scope.
 Local Open Scope SubFunctor_scope.
 
-Definition p
-  : MixinAlgebra If1 (WellFormedValue (If2 + Unit)) (WellFormedValue (If2 + Unit))
-  := programAlgebra.
+(* Create a language [L] that supports [Bool], [If2], and [Unit] *)
+Definition L := (Bool + If2 + Unit).
 
-Definition q := p id.
+(* Creates a type language [LT] that supports [Bool] and [Unit] *)
+Definition V := (Bool + Stuck + Unit).
 
-Definition e1
-  : WellFormedValue (Bool + If1 + Unit)
-  := if1 (boolean true) unit.
+(* Create a concrete representation for the result of type-checking, so
+   that it is easy to inspect manually *)
+Inductive Result :=
+| BoolValue (b : bool)
+| UnitValue
+| EvalFailed
+.
 
-Definition v1
-  : Fix (Bool + If1 + Unit)
-  := proj1_sig e1.
+Variant ComputeResult := .
 
-(* Definition check1 := evalAlgebra (F := Unit) (R := Unit). *)
-(* Definition check2 := evalAlgebra (F := Bool) (R := Unit + Bool). *)
-(* Definition check3 := evalAlgebra (F := Bool) (R := Bool + Unit). *)
-(* Definition check4 := evalAlgebra (F := Unit + Bool) (R := Bool + Unit). *)
+(* Algebra to turn the extensible results into concrete results *)
+Global Instance computeResult
+  : forall T, ProgramAlgebra ComputeResult V T Result
+  := fun _ =>
+       {|
+         programAlgebra :=
+           fun rec =>
+             (fun   '(MkBool b) => BoolValue b)
+             || (fun 'Stuck      => EvalFailed)
+             || (fun 'Unit       => UnitValue)
+         ;
+       |}.
 
-Definition MixinAlgebra' I O := MixinAlgebra I O O.
+Definition eval
+           (b : WellFormedValue L)
+  : Result
+  := foldProgramAlgebra (Alg := computeResult) (proj1_sig (eval (proj1_sig b))).
 
-(* From now on, code writes itself, for instance: *)
+Theorem regression__unit : eval unit = UnitValue.
+Proof. reflexivity. Qed.
 
-Definition test1
-  : Fix Bool -> WellFormedValue (Bool + If2 + Unit)
-  := fold (programAlgebra id).
+Theorem regression__true : eval (boolean true) = BoolValue true.
+Proof. reflexivity. Qed.
 
-Definition V := WellFormedValue (Bool + If2 + Unit).
+Theorem regression__false : eval (boolean false) = BoolValue false.
+Proof. reflexivity. Qed.
 
-(* Definition removeUnaryIfsMixin *)
-(*   : MixinAlgebra' (Bool + If1) V *)
-(*   := programAlgebra. *)
+Theorem regression__if2True
+  : eval (if2 (boolean true) (boolean true) (boolean false)) = BoolValue true.
+Proof. reflexivity. Qed.
 
-Definition removeUnaryIfsFromFix
-  : Fix (Bool + If1) -> WellFormedValue (Bool + If2 + Unit)
-  := fold (programAlgebra id).
+Theorem regression__if2False
+  : eval (if2 (boolean false) (boolean true) (boolean false)) = BoolValue false.
+Proof. reflexivity. Qed.
 
-Definition evalWellFormed I O `{FunctorLaws I} `{FunctorLaws O}
-           `{ProgramAlgebra I (WellFormedValue O) (WellFormedValue O)}
-  : WellFormedValue I -> WellFormedValue O
-  := fun v => fold (programAlgebra id) (proj1_sig v).
+Theorem regression__if2IllTypedCondition
+  : eval (if2 unit (boolean true) (boolean false)) = EvalFailed.
+Proof. reflexivity. Qed.
 
-Definition removeUnaryIfs
-  : WellFormedValue (Bool + If1) -> WellFormedValue (Bool + If2 + Unit)
-  := evalWellFormed _ _.
+Theorem regression__if2IllTypedBranchStillWorksLeft
+  : eval (if2 (boolean true) (boolean true) unit) = BoolValue true.
+Proof. reflexivity. Qed.
 
-Definition exprIf1
-  : WellFormedValue (Bool + If1)
-  := if1 (boolean true) (boolean false).
+Theorem regression__if2IllTypedBranchStillWorksRight
+  : eval (if2 (boolean false) unit (boolean false)) = BoolValue false.
+Proof. reflexivity. Qed.
 
-Definition exprIf2
-  : WellFormedValue (Bool + If2 + Unit)
-  := if2 (boolean true) (boolean false) unit.
-
-Theorem removeUnaryIfsExprIf1
-  : removeUnaryIfs exprIf1 = exprIf2.
-Proof.
-  reflexivity.
-Qed.
-
-Theorem removeUnaryIfsSyntacticCorrectness :
-  forall c t,
-    removeUnaryIfs (if1 c t) = if2 (removeUnaryIfs c) (removeUnaryIfs t) unit.
-Proof.
-  reflexivity.
-Qed.
-
-Delimit Scope IndexedSum1_scope with IndexedSum1.
-
-Definition SourceExpr := Bool + If1.
+Definition SourceExpr := Bool + If1 + Unit.
 Definition TargetExpr := Bool + If2 + Unit.
 Definition Value := Bool + Stuck + Unit.
 
@@ -109,6 +103,15 @@ Definition Eval__Source
 Definition Eval__Target
   : (WellFormedValue TargetExpr * WellFormedValue Value)-indexedProp
   := (Eval__Bool + Eval__If2 + Eval__Unit)%IndexedSum1.
+
+Definition removeUnaryIfs
+           (e : WellFormedValue SourceExpr)
+  : WellFormedValue TargetExpr
+  := removeUnaryIfs (L := SourceExpr) (V := TargetExpr) (proj1_sig e).
+
+Theorem test
+  : removeUnaryIfs (if1 (boolean true) unit) = if2 (boolean true) unit unit.
+Proof. reflexivity. Qed.
 
 Theorem removeUnaryIfsCorrectness
   : forall e v,

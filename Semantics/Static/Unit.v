@@ -18,5 +18,5 @@ Definition typeOf__UnitType
 
 Global Instance TypeOf__Unit
        LT `{FunctorLaws LT} `{LT supports UnitType}
-  : forall {T}, ProgramAlgebra Unit T (TypeOfResult LT)
+  : forall {T}, ProgramAlgebra TypeOf Unit T (TypeOfResult LT)
   := fun _ => {| programAlgebra := typeOf__UnitType; |}.

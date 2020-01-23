@@ -13,19 +13,23 @@ Definition TypeOfResult
            LT `{FunctorLaws LT}
   := option (TypeFix LT).
 
+Variant TypeOf := .
+
 Definition typeOf
            {L LT}
            `{FunctorLaws L} `{FunctorLaws LT}
-           {TypeOfL : forall T, ProgramAlgebra L T (TypeOfResult LT)}
+           {TypeOfL : forall T, ProgramAlgebra TypeOf L T (TypeOfResult LT)}
   : Fix L -> TypeOfResult LT
-  := mendlerFold (fun _ => @programAlgebra _ _ _ _ _ (TypeOfL _)).
+  := mendlerFold (fun _ => @programAlgebra _ _ _ _ _ _ (TypeOfL _)).
 
 Definition TypeEqualityResult
            LT `{FunctorLaws LT}
   := TypeFix LT -> bool.
 
+Variant TypeEquality := .
+
 Definition typeEquality
            LT `{FunctorLaws LT}
-           {typeEqualityForLT : forall T, ProgramAlgebra LT T (TypeEqualityResult LT)}
+           {typeEqualityForLT : forall T, ProgramAlgebra TypeEquality LT T (TypeEqualityResult LT)}
   : Fix LT -> TypeEqualityResult LT
-  := mendlerFold (fun _ => @programAlgebra _ _ _ _ _ (typeEqualityForLT _)).
+  := mendlerFold (fun _ => @programAlgebra _ _ _ _ _ _ (typeEqualityForLT _)).

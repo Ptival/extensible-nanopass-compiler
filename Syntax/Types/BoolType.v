@@ -64,5 +64,5 @@ Definition typeEquality_BoolType
 Global Instance TypeEquality_BoolType
        LT `{FunctorLaws LT} `{LT supports BoolType}
        T
-  : ProgramAlgebra BoolType T (TypeEqualityResult LT)
+  : ProgramAlgebra TypeEquality BoolType T (TypeEqualityResult LT)
   := {| programAlgebra := typeEquality_BoolType LT T|}.

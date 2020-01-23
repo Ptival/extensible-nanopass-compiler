@@ -31,7 +31,7 @@ Global Instance EvalAlgebra__If2
        {V} `{FunctorLaws V}
        `{! V supports Bool}
        `{! V supports Stuck}
-  : forall {T}, ProgramAlgebra If2 T (WellFormedValue V)
+  : forall {T}, ProgramAlgebra Eval If2 T (WellFormedValue V)
   := fun _ => {| programAlgebra := eval__If2; |}.
 
 Inductive Eval__If2 {L V}

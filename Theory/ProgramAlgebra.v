@@ -8,11 +8,22 @@ Local Open Scope SubFunctor_scope.
 Local Open Scope Sum1_scope.
 
 (**
+
 [ProgramAlgebra] captures those algebras that we will use for programming.
 Because programs are computationally-revelant, we need [MixinAlgebra]s.
+
+In order to distinguish some [ProgramAlgebra]s that would otherwise have the
+same signature, each [ProgramAlgebra] is given a unique [Label].  This helps
+the typeclass mechanism find the appropriate instance among a bunch of program
+algebras with the same carrier types.
+
+You can just create a new label with:
+[Variant MyLabel := .]
+The type does not need any inhabitant, we only use its type identity.
+
  *)
 Class ProgramAlgebra (* cf. [FAlgebra] *)
-      F `{FunctorLaws F} T A :=
+      (Label : Set) F `{FunctorLaws F} T A :=
   {
     programAlgebra (* cf. [f_algebra] *)
     : MixinAlgebra F T A;
@@ -23,9 +34,9 @@ Just like [programAlgebra], but when you want to provide the [ProgramAlgebra]
 explicitly.
  *)
 Definition programAlgebra'
-           {F T A}
+           {Label F T A}
            `{FunctorLaws F}
-      (PA : ProgramAlgebra F T A)
+      (PA : ProgramAlgebra Label F T A)
   := programAlgebra (ProgramAlgebra := PA).
 
 (**
@@ -33,17 +44,17 @@ A version of [mendlerFold] specialized to handling [ProgramAlgebra]s.
 Convenient to use because you can explicitly pass the algebra.
  *)
 Definition foldProgramAlgebra
-           {F O} `{FunctorLaws F}
-           `{Alg : ! forall {T}, ProgramAlgebra F T O}
+           {Label F O} `{FunctorLaws F}
+           `{Alg : ! forall {T}, ProgramAlgebra Label F T O}
            (e : Fix F)
   : O
   := mendlerFold (fun _ => programAlgebra' Alg) e.
 
 Global Instance
-       ProgramAlgebraSum1 F G {T A}
-       `{FAlg : ProgramAlgebra F T A}
-       `{GAlg : ProgramAlgebra G T A}
-  : ProgramAlgebra (F + G) T A
+       ProgramAlgebraSum1 Label F G {T A}
+       `{FAlg : ProgramAlgebra Label F T A}
+       `{GAlg : ProgramAlgebra Label G T A}
+  : ProgramAlgebra Label (F + G) T A
   :=
     {|
       programAlgebra :=
@@ -56,10 +67,10 @@ Global Instance
     |}.
 
 Global Instance
-       ProgramAlgebraLeft {F G}
+       ProgramAlgebraLeft {Label F G}
        `{FunctorLaws F}
        `{FunctorLaws G}
-  : forall {T}, ProgramAlgebra F T (WellFormedValue (F + G))
+  : forall {T}, ProgramAlgebra Label F T (WellFormedValue (F + G))
   := fun T =>
     {|
       programAlgebra :=
@@ -68,10 +79,10 @@ Global Instance
     |}.
 
 Global Instance
-       ProgramAlgebraRight {F G}
+       ProgramAlgebraRight {Label F G}
        `{FunctorLaws F}
        `{FunctorLaws G}
-  : forall {T}, ProgramAlgebra G T (WellFormedValue (F + G))
+  : forall {T}, ProgramAlgebra Label G T (WellFormedValue (F + G))
   := fun T =>
     {|
       programAlgebra :=
@@ -95,22 +106,22 @@ to its sub-algebras.
 *)
 
 (* Corresponds to [WF__FAlgebra] *)
-Class WellFormedProgramAlgebra {F G T A}
+Class WellFormedProgramAlgebra {Label F G T A}
       `{S : SubFunctor F G}
-      `(FAlg : ProgramAlgebra F T A)
-      `(GAlg : ProgramAlgebra G T A)
+      `(FAlg : ProgramAlgebra Label F T A)
+      `(GAlg : ProgramAlgebra Label G T A)
   :=
     {
       wellFormedProgramAlgebra
       : forall rec (fa : F T),
-        @programAlgebra G _ _ _ _ _ rec (inj (SubFunctor := S) fa)
+        @programAlgebra Label G _ _ _ _ _ rec (inj (SubFunctor := S) fa)
         =
-        @programAlgebra F _ _ _ _ _ rec fa;
+        @programAlgebra Label F _ _ _ _ _ rec fa;
     }.
 
 Global Instance
-       WellFormedProgramAlgebraRefl {F T A}
-       `{FAlg : ProgramAlgebra F T A}
+       WellFormedProgramAlgebraRefl {Label F T A}
+       `{FAlg : ProgramAlgebra Label F T A}
   : WellFormedProgramAlgebra FAlg FAlg.
 Proof.
   constructor.
@@ -122,13 +133,13 @@ Qed.
 
 Global Instance
        WellFormedProgramAlgebraLeft
-       {F G T A}
-       `{FAlg : ProgramAlgebra F T A}
-       `{GAlg : ProgramAlgebra G T A}
+       {Label F G T A}
+       `{FAlg : ProgramAlgebra Label F T A}
+       `{GAlg : ProgramAlgebra Label G T A}
        {S : SubFunctor F G}
-       {H} `{HAlg : ProgramAlgebra H T A}
+       {H} `{HAlg : ProgramAlgebra Label H T A}
        {WFFG : WellFormedProgramAlgebra FAlg GAlg}
-  : WellFormedProgramAlgebra FAlg (ProgramAlgebraSum1 G H).
+  : WellFormedProgramAlgebra FAlg (ProgramAlgebraSum1 Label G H).
 Proof.
   constructor.
   intros rec f.
@@ -141,13 +152,13 @@ Qed.
 
 Global Instance
        WellFormedProgramAlgebraRight
-       {F G T A}
-       `{FAlg : ProgramAlgebra F T A}
-       `{GAlg : ProgramAlgebra G T A}
-       {H} `{HAlg : ProgramAlgebra H T A}
+       {Label F G T A}
+       `{FAlg : ProgramAlgebra Label F T A}
+       `{GAlg : ProgramAlgebra Label G T A}
+       {H} `{HAlg : ProgramAlgebra Label H T A}
        {FH : SubFunctor F H}
        {WFFH : WellFormedProgramAlgebra FAlg HAlg}
-  : WellFormedProgramAlgebra FAlg (ProgramAlgebraSum1 G H).
+  : WellFormedProgramAlgebra FAlg (ProgramAlgebraSum1 Label G H).
 Proof.
   constructor.
   intros rec f.
@@ -159,9 +170,9 @@ Proof.
 Qed.
 
 Class WellFormedMendlerAlgebra (* cf. [WF_Malgebra] *)
-      {F A}
+      {Label F A}
       `{FunctorLaws F}
-      (MAlg : forall T, ProgramAlgebra F T A)
+      (MAlg : forall T, ProgramAlgebra Label F T A)
   :=
     {
       wellFormedMendlerAlgebra (* cf. [wf_malgebra] *)

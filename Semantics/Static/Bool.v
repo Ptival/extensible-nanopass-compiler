@@ -17,5 +17,5 @@ Definition typeOf__Bool
 
 Global Instance TypeOf__Bool
        {LT} `{FunctorLaws LT} `{LT supports BoolType}
-  : forall {T}, ProgramAlgebra Bool T (TypeOfResult LT)
+  : forall {T}, ProgramAlgebra TypeOf Bool T (TypeOfResult LT)
   := fun _ => {| programAlgebra := typeOf__Bool; |}.
