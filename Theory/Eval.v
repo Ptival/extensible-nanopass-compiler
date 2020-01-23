@@ -83,7 +83,7 @@ Global Instance MendlerEvalRefl F `{FunctorLaws F} : MendlerEval F F
 Class MixinEval
       T F A
       `{FunctorLaws T} `{FunctorLaws F} `{FunctorLaws A}
-  := { evalMixinAlgebra : MixinAlgebra (Fix T) F (Fix A) }.
+  := { evalMixinAlgebra : MixinAlgebra F (Fix T) (Fix A) }.
 
 Global
   Instance
@@ -126,7 +126,7 @@ Global
 Fixpoint boundedFix
          {A} {F} `{Functor F}
          (n : nat)
-         (fM : MixinAlgebra (Fix F) F A)
+         (fM : MixinAlgebra F (Fix F) A)
          (default : A)
          (e : Fix F)
   : A

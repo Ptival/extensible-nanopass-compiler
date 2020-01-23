@@ -29,34 +29,39 @@ Proof.
   - move => ????? [] //.
 Qed.
 
-Definition unit'
+Definition unit
            {L} `{FunctorLaws L} `{SubFunctor Unit L}
   : UniversalPropertyF L
   := injectUniversalProperty MkUnit.
 
-Definition unit
+Definition unit__Fix
            {L} `{FunctorLaws L} `{SubFunctor Unit L}
   : Fix L
-  := proj1_sig unit'.
+  := proj1_sig unit.
 
-Global Instance EvalUnit
-       {O} `{FunctorLaws O}
-       `{S : ! SubFunctor Unit O}
-       T
-  : ProgramAlgebra Unit T (Fix O)
-  | 0 :=
-  {|
-    programAlgebra :=
-      fun rec 'MkUnit => unit
-    ;
-  |}.
+Section One.
 
-Inductive EvalUnit__WF
-          {E V}
-          `{FunctorLaws E} `{FunctorLaws V}
-          `{! SubFunctor Unit E} `{! SubFunctor Unit V}
-          (Eval : (WellFormedValue E * WellFormedValue V) -> Prop)
-  : (WellFormedValue E * WellFormedValue V) -> Prop
-  :=
-  | UnitValue : EvalUnit__WF Eval (unit', unit')
-.
+  Context {L} `{FunctorLaws L} `{! SubFunctor Unit L}.
+
+  Definition InductionAlgebra__Unit
+             (P : forall (e : Fix L), ReverseFoldUniversalProperty e -> Prop)
+             (H_unit : UniversalPropertyP P unit__Fix)
+    : Algebra Unit (sig (UniversalPropertyP P))
+    := fun '(MkUnit) => exist _ _ (H_unit).
+
+End One.
+
+Section Two.
+
+  Context {L} `{FunctorLaws L} `{! SubFunctor Unit L}.
+  Context {M} `{FunctorLaws M} `{! SubFunctor Unit M}.
+
+  Definition Induction2Algebra__Unit
+             (P : forall (e : Fix L * Fix M),
+                 ReverseFoldUniversalProperty (fst e) /\ ReverseFoldUniversalProperty (snd e) -> Prop
+             )
+             (H_unit : UniversalPropertyP2 P (unit__Fix, unit__Fix))
+    : Algebra Unit (sig (UniversalPropertyP2 P))
+    := fun '(MkUnit) => exist _ _ (H_unit).
+
+End Two.

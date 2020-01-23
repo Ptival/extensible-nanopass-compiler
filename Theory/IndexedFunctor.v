@@ -1,8 +1,8 @@
 From ExtLib Require Import Programming.Extras.
 
-Notation "I '-relation'" := ((I -> Prop) -> (I -> Prop)) (at level 50).
+Notation "I '-indexedProp'" := ((I -> Prop) -> (I -> Prop)) (at level 50).
 
-Class IndexedFunctor I (F : I-relation) : Prop :=
+Class IndexedFunctor I (F : I-indexedProp) : Prop :=
   {
     ifmap : forall {A B : I -> Prop} i, (forall i, A i -> B i) -> F A i -> F B i;
   }.

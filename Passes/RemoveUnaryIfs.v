@@ -61,28 +61,17 @@ Local Open Scope SubFunctor_scope.
 (*     |}. *)
 
 Definition
-  removeUnaryIfsAlgebra'
+  removeUnaryIfs
   {O} `{FunctorLaws O}
   `{! SubFunctor If2  O}
   `{! SubFunctor Unit O}
-  (T : Set)
-  (rec : T -> WellFormedValue O)
-  '(MkIf1 condition thenBranch)
-  : WellFormedValue O
-  :=
-    if2'
-      (rec condition)
-      (rec thenBranch)
-      unit'.
+  : forall {T}, MixinAlgebra If1 T (WellFormedValue O)
+  := fun _ rec '(MkIf1 condition thenBranch) =>
+       if2 (rec condition) (rec thenBranch) unit.
 
-Global
-  Instance
-  removeUnaryIfsAlgebra
+Global Instance Algebra__RemoveUnaryIfs
   {O} `{FunctorLaws O}
-  `{! SubFunctor Unit O}
-  `{! SubFunctor If2  O}
+  `{! O supports Unit}
+  `{! O supports If2}
   : forall {T}, ProgramAlgebra If1 T (WellFormedValue O)
-  := fun T =>
-    {|
-      programAlgebra := removeUnaryIfsAlgebra' T;
-    |}.
+  := fun T => {| programAlgebra := removeUnaryIfs; |}.

@@ -3,17 +3,16 @@ From ExtensibleCompiler.Theory Require Import Functor.
 Definition Algebra (F : Set -> Set) (A : Set)
   := F A -> A.
 
-Definition MixinAlgebra (T : Set) (F : Set -> Set) (A : Set) : Set
+Definition MixinAlgebra (F : Set -> Set) (T : Set) (A : Set) : Set
   := (T -> A) -> F T -> A.
 
 Definition MendlerAlgebra (F : Set -> Set) (A : Set) : Set
-  := forall (R : Set), MixinAlgebra R F A.
+  := forall (R : Set), MixinAlgebra F R A.
 
 Definition Fix (F : Set -> Set) : Set
   := forall (A : Set), MendlerAlgebra F A -> A.
 
-Definition
-  mendlerFold
+Definition mendlerFold
   {F : Set -> Set} {A : Set} (f : MendlerAlgebra F A)
   : Fix F -> A
   := fun e => e A f.

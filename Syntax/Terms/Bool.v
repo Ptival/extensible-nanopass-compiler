@@ -28,17 +28,17 @@ Proof.
   - move => ????? [] //.
 Qed.
 
-Definition boolean'
+Definition boolean
            {L} `{FunctorLaws L} `{SubFunctor Bool L}
            (b : bool)
   : UniversalPropertyF L
   := injectUniversalProperty (MkBool b).
 
-Definition boolean
+Definition boolean_Fix
            {L} `{FunctorLaws L} `{SubFunctor Bool L}
            (b : bool)
   : Fix L
-  := proj1_sig (boolean' b).
+  := proj1_sig (boolean b).
 
 Section One.
 
@@ -46,7 +46,7 @@ Section One.
 
   Definition InductionAlgebra_Bool
              (P : forall (e : Fix L), ReverseFoldUniversalProperty e -> Prop)
-             (H_boolean : forall b, UniversalPropertyP P (boolean b))
+             (H_boolean : forall b, UniversalPropertyP P (boolean_Fix b))
     : Algebra Bool (sig (UniversalPropertyP P))
     := fun '(MkBool b) => exist _ _ (H_boolean b).
 
@@ -61,7 +61,7 @@ Section Two.
              (P : forall (e : Fix L * Fix M),
                  ReverseFoldUniversalProperty (fst e) /\ ReverseFoldUniversalProperty (snd e) -> Prop
              )
-             (H_boolean : forall b, UniversalPropertyP2 P (boolean b, boolean b))
+             (H_boolean : forall b, UniversalPropertyP2 P (boolean_Fix b, boolean_Fix b))
     : Algebra Bool (sig (UniversalPropertyP2 P))
     := fun '(MkBool b) => exist _ _ (H_boolean b).
 

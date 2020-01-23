@@ -1,6 +1,7 @@
 From Coq Require Import ssreflect.
 From Coq Require Import String.
 
+From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import UniversalProperty.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
@@ -25,7 +26,13 @@ Proof.
 Qed.
 
 Definition stuck
-           {L} `{Functor L} `{FunctorLaws L} `{SubFunctor Stuck L}
+           {L} `{FunctorLaws L} `{SubFunctor Stuck L}
            (reason : string)
-  : WellFormedValue L
+  : UniversalPropertyF L
   := injectUniversalProperty (MkStuck reason).
+
+Definition stuck_Fix
+           {L} `{FunctorLaws L} `{SubFunctor Stuck L}
+           (reason : string)
+  : Fix L
+  := proj1_sig (stuck reason).

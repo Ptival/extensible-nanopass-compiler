@@ -106,6 +106,13 @@ Definition WellFormedValue
            V `{FunctorLaws V}
   := { e : Fix V | ReverseFoldUniversalProperty e }.
 
+Definition projectFix
+           {F G}
+           `{S : SubFunctor F G}
+           (g : WellFormedValue G)
+  : option (F (Fix G))
+  := project (proj1_sig g).
+
 Definition reverseFoldWrapFix (* cf. [in_t_UP'] *)
            {F} `{FunctorLaws F}
            (v : F (WellFormedValue F))
@@ -155,7 +162,7 @@ Definition injectUniversalProperty (* cf. [inject'] *)
 Fixpoint boundedFixWellFormed
          {A} {F} `{FunctorLaws F}
          (n : nat)
-         (fM : MixinAlgebra (WellFormedValue F) F A)
+         (fM : MixinAlgebra F (WellFormedValue F) A)
          (default : A)
          (e : WellFormedValue F)
   : A

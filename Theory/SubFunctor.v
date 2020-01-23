@@ -16,7 +16,7 @@ Class SubFunctor (F G : Set -> Set)
 
 Delimit Scope SubFunctor_scope with SubFunctor.
 
-(* Notation "F '<=' G" := (SubFunctor F G) : SubFunctor_scope. *)
+Notation "L 'supports' F" := (SubFunctor F L) (at level 50) : SubFunctor_scope.
 
 Local Open Scope SubFunctor_scope.
 

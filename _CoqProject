@@ -22,6 +22,7 @@ Theory/ProofAlgebra.v
 Theory/SubFunctor.v
 Theory/Sum1.v
 Theory/Types.v
+Theory/TypeSoundness.v
 Theory/UniversalProperty.v
 
 Syntax/Types/BoolType.v
@@ -29,6 +30,8 @@ Syntax/Types/UnitType.v
 
 Semantics/Dynamic/Bool.v
 Semantics/Dynamic/If1.v
+Semantics/Dynamic/If2.v
+Semantics/Dynamic/Unit.v
 
 Semantics/Static/Bool.v
 Semantics/Static/If1.v

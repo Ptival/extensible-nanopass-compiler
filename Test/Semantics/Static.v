@@ -22,10 +22,10 @@ From ExtensibleCompiler.Theory Require Import UniversalProperty.
 Local Open Scope SubFunctor_scope.
 
 (* Create a language [L] that supports [Bool], [If2], and [Unit] *)
-Notation "'L'" := (Bool + If2 + Unit).
+Definition L := (Bool + If2 + Unit).
 
 (* Creates a type language [LT] that supports [Bool] and [Unit] *)
-Notation "'LT'" := (BoolType + UnitType).
+Definition LT := (BoolType + UnitType).
 
 (* Create a concrete representation for the result of type-checking, so
    that it is easy to inspect manually *)
@@ -48,15 +48,36 @@ Global Instance computeResult
              end;
        |}.
 
-Definition typeCheck (b : Fix L)
+Definition typeCheck
+           (b : WellFormedValue L)
   : Result
   :=
-  match typeOf L LT b with
-  | Some e => mendlerFold (fun _ => programAlgebra) (proj1_sig e)
-  | None   => IllTyped
-  end.
+    match typeOf (proj1_sig b) with
+    | Some e => foldProgramAlgebra (Alg := computeResult) (proj1_sig e)
+    | None   => IllTyped
+    end.
 
-Compute typeCheck (if2 (boolean true) (boolean true) (boolean false)).
-Compute typeCheck (if2 unit (boolean true) (boolean false)).
-Compute typeCheck (if2 (boolean true) unit (boolean false)).
-Compute typeCheck (if2 (boolean true) unit unit).
+Theorem regression__unit : typeCheck unit = WellTypedUnit.
+Proof. reflexivity. Qed.
+
+Theorem regression__true : typeCheck (boolean true) = WellTypedBool.
+Proof. reflexivity. Qed.
+
+Theorem regression__false : typeCheck (boolean false) = WellTypedBool.
+Proof. reflexivity. Qed.
+
+Theorem regression__if2Unit
+  : typeCheck (if2 (boolean true) unit unit) = WellTypedUnit.
+Proof. reflexivity. Qed.
+
+Theorem regression__if2Bool
+  : typeCheck (if2 (boolean true) (boolean true) (boolean false)) = WellTypedBool.
+Proof. reflexivity. Qed.
+
+Theorem regression__if2IllTypedCondition
+  : typeCheck (if2 unit (boolean true) (boolean false)) = IllTyped.
+Proof. reflexivity. Qed.
+
+Theorem regression__if2IllTypedBranchMismatch
+  : typeCheck (if2 (boolean true) (boolean true) unit) = IllTyped.
+Proof. reflexivity. Qed.

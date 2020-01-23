@@ -1,9 +1,8 @@
 From Coq Require Import String.
 
 From ExtensibleCompiler.Syntax.Terms Require Import Bool.
-From ExtensibleCompiler.Syntax.Terms Require Import If1.
+From ExtensibleCompiler.Syntax.Terms Require Import If2.
 From ExtensibleCompiler.Syntax.Terms Require Import Stuck.
-From ExtensibleCompiler.Syntax.Terms Require Import Unit.
 
 From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Eval.
@@ -14,42 +13,40 @@ From ExtensibleCompiler.Theory Require Import UniversalProperty.
 
 Local Open Scope SubFunctor_scope.
 
-Definition eval__If1
+Definition eval__If2
            {V} `{FunctorLaws V}
            `{! V supports Bool}
-           `{! V supports Unit}
            `{! V supports Stuck}
-  : forall {T}, MixinAlgebra If1 T (WellFormedValue V)
-  := fun _ rec '(MkIf1 condition thenBranch) =>
+  : forall {T}, MixinAlgebra If2 T (WellFormedValue V)
+  := fun _ rec '(MkIf2 condition thenBranch elseBranch) =>
        match projectFix (rec condition) with
        | Some (MkBool b) =>
          if b
          then rec thenBranch
-         else unit
-       | None => stuck "The condition of a unary branch did not evaluate to a boolean value"
+         else rec elseBranch
+       | None => stuck "The condition of a binary branch was not a boolean"
        end.
 
-Global Instance EvalAlgebra__If1
+Global Instance EvalAlgebra__If2
        {V} `{FunctorLaws V}
        `{! V supports Bool}
-       `{! V supports Unit}
        `{! V supports Stuck}
-  : forall {T}, ProgramAlgebra If1 T (WellFormedValue V)
-  := fun T => {| programAlgebra := eval__If1; |}.
+  : forall {T}, ProgramAlgebra If2 T (WellFormedValue V)
+  := fun _ => {| programAlgebra := eval__If2; |}.
 
-Inductive Eval__If1 {E V}
+Inductive Eval__If2 {E V}
           `{FunctorLaws E} `{FunctorLaws V}
-          `{! SubFunctor If1  E}
+          `{! SubFunctor If2 E}
           `{! SubFunctor Bool V}
-          `{! SubFunctor Unit V}
           (Eval : (WellFormedValue E * WellFormedValue V) -> Prop)
   : (WellFormedValue E * WellFormedValue V) -> Prop
   :=
-  | If1True : forall c t t',
+  | If2True : forall c t e t',
       Eval (c, boolean true) ->
       Eval (t, t') ->
-      Eval__If1 Eval (if1 c t, t')
-  | If1alse : forall c t,
+      Eval__If2 Eval (if2 c t e, t')
+  | If2alse : forall c t e e',
       Eval (c, boolean false) ->
-      Eval__If1 Eval (if1 c t, unit)
+      Eval (e, e') ->
+      Eval__If2 Eval (if2 c t e, e')
 .

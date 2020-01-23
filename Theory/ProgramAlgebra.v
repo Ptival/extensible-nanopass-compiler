@@ -8,28 +8,36 @@ Local Open Scope SubFunctor_scope.
 Local Open Scope Sum1_scope.
 
 (**
-
 [ProgramAlgebra] captures those algebras that we will use for programming.
 Because programs are computationally-revelant, we need [MixinAlgebra]s.
-
-*)
-
+ *)
 Class ProgramAlgebra (* cf. [FAlgebra] *)
       F `{FunctorLaws F} T A :=
   {
     programAlgebra (* cf. [f_algebra] *)
-    : MixinAlgebra T F A;
+    : MixinAlgebra F T A;
   }.
 
 (**
 Just like [programAlgebra], but when you want to provide the [ProgramAlgebra]
 explicitly.
-*)
+ *)
 Definition programAlgebra'
            {F T A}
            `{FunctorLaws F}
       (PA : ProgramAlgebra F T A)
   := programAlgebra (ProgramAlgebra := PA).
+
+(**
+A version of [mendlerFold] specialized to handling [ProgramAlgebra]s.
+Convenient to use because you can explicitly pass the algebra.
+ *)
+Definition foldProgramAlgebra
+           {F O} `{FunctorLaws F}
+           `{Alg : ! forall {T}, ProgramAlgebra F T O}
+           (e : Fix F)
+  : O
+  := mendlerFold (fun _ => programAlgebra' Alg) e.
 
 Global Instance
        ProgramAlgebraSum1 F G {T A}

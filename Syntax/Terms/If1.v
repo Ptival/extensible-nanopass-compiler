@@ -8,9 +8,9 @@ From ExtensibleCompiler.Syntax.Terms Require Import Unit.
 From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Eval.
 From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
 From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
 From ExtensibleCompiler.Theory Require Import ProofAlgebra.
+From ExtensibleCompiler.Theory Require Import SubFunctor.
 From ExtensibleCompiler.Theory Require Import Types.
 From ExtensibleCompiler.Theory Require Import UniversalProperty.
 
@@ -35,9 +35,14 @@ Proof.
 Qed.
 
 Definition if1
-           {L} `{Functor L} `{FunctorLaws L}
-           `{SubFunctor If1 L} c t
+           {L} `{FunctorLaws L} `{SubFunctor If1 L} c t
+  : UniversalPropertyF L
   := injectUniversalProperty (MkIf1 c t).
+
+Definition if1_Fix
+           {L} `{FunctorLaws L} `{SubFunctor If1 L} c t
+  : Fix L
+  := proj1_sig (if1 c t).
 
 (* Definition If1Induction *)
 (*            (P : forall e, Fix If1 -> Prop) *)
