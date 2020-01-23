@@ -29,20 +29,20 @@ Proof.
 Qed.
 
 Definition boolean
-           {L} `{FunctorLaws L} `{SubFunctor Bool L}
+           {L} `{FunctorLaws L} `{L supports Bool}
            (b : bool)
   : UniversalPropertyF L
   := injectUniversalProperty (MkBool b).
 
 Definition boolean_Fix
-           {L} `{FunctorLaws L} `{SubFunctor Bool L}
+           {L} `{FunctorLaws L} `{L supports Bool}
            (b : bool)
   : Fix L
   := proj1_sig (boolean b).
 
 Section One.
 
-  Context {L} `{FunctorLaws L} `{! SubFunctor Bool L}.
+  Context {L} `{FunctorLaws L} `{! L supports Bool}.
 
   Definition InductionAlgebra_Bool
              (P : forall (e : Fix L), ReverseFoldUniversalProperty e -> Prop)
@@ -54,8 +54,8 @@ End One.
 
 Section Two.
 
-  Context {L} `{FunctorLaws L} `{! SubFunctor Bool L}.
-  Context {M} `{FunctorLaws M} `{! SubFunctor Bool M}.
+  Context {L} `{FunctorLaws L} `{! L supports Bool}.
+  Context {M} `{FunctorLaws M} `{! M supports Bool}.
 
   Definition Induction2Algebra_Bool
              (P : forall (e : Fix L * Fix M),

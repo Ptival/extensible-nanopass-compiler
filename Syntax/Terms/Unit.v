@@ -30,18 +30,18 @@ Proof.
 Qed.
 
 Definition unit
-           {L} `{FunctorLaws L} `{SubFunctor Unit L}
+           {L} `{FunctorLaws L} `{L supports Unit}
   : UniversalPropertyF L
   := injectUniversalProperty MkUnit.
 
 Definition unit__Fix
-           {L} `{FunctorLaws L} `{SubFunctor Unit L}
+           {L} `{FunctorLaws L} `{L supports Unit}
   : Fix L
   := proj1_sig unit.
 
 Section One.
 
-  Context {L} `{FunctorLaws L} `{! SubFunctor Unit L}.
+  Context {L} `{FunctorLaws L} `{! L supports Unit}.
 
   Definition InductionAlgebra__Unit
              (P : forall (e : Fix L), ReverseFoldUniversalProperty e -> Prop)
@@ -53,8 +53,8 @@ End One.
 
 Section Two.
 
-  Context {L} `{FunctorLaws L} `{! SubFunctor Unit L}.
-  Context {M} `{FunctorLaws M} `{! SubFunctor Unit M}.
+  Context {L} `{FunctorLaws L} `{! L supports Unit}.
+  Context {M} `{FunctorLaws M} `{! M supports Unit}.
 
   Definition Induction2Algebra__Unit
              (P : forall (e : Fix L * Fix M),

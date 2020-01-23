@@ -32,10 +32,10 @@ Definition
   {I} {F : I-indexedProp} `{IndexedFunctor I F} {A : I -> Prop}
   (f : IndexedAlgebra F A) i (e : IndexedFix F i)
   : A i
-  := iMendlerFold (fun i' r rec fa => f i' (ifmap i' rec fa)) i e.
+  := iMendlerFold (fun i' r rec fa => f i' (indexedFmap i' rec fa)) i e.
 
 Definition
   iUnwrapFix
   {I} {F : I-indexedProp} `{IndexedFunctor I F}
   : forall (i : I), IndexedFix F i -> F (IndexedFix F) i
-  := ifold (fun i => ifmap i iWrapFix).
+  := ifold (fun i => indexedFmap i iWrapFix).

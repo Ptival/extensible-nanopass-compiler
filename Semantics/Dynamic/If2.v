@@ -34,12 +34,12 @@ Global Instance EvalAlgebra__If2
   : forall {T}, ProgramAlgebra If2 T (WellFormedValue V)
   := fun _ => {| programAlgebra := eval__If2; |}.
 
-Inductive Eval__If2 {E V}
-          `{FunctorLaws E} `{FunctorLaws V}
-          `{! SubFunctor If2 E}
-          `{! SubFunctor Bool V}
-          (Eval : (WellFormedValue E * WellFormedValue V) -> Prop)
-  : (WellFormedValue E * WellFormedValue V) -> Prop
+Inductive Eval__If2 {L V}
+          `{FunctorLaws L} `{FunctorLaws V}
+          `{! L supports If2}
+          `{! V supports Bool}
+          (Eval : (WellFormedValue L * WellFormedValue V) -> Prop)
+  : (WellFormedValue L * WellFormedValue V) -> Prop
   :=
   | If2True : forall c t e t',
       Eval (c, boolean true) ->

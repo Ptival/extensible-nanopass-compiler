@@ -39,9 +39,9 @@ Global Instance EvalAlgebra__If1
 
 Inductive Eval__If1 {E V}
           `{FunctorLaws E} `{FunctorLaws V}
-          `{! SubFunctor If1  E}
-          `{! SubFunctor Bool V}
-          `{! SubFunctor Unit V}
+          `{! E supports If1}
+          `{! V supports Bool}
+          `{! V supports Unit}
           (Eval : (WellFormedValue E * WellFormedValue V) -> Prop)
   : (WellFormedValue E * WellFormedValue V) -> Prop
   :=

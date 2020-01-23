@@ -13,13 +13,13 @@ Local Open Scope SubFunctor_scope.
 
 Definition eval__Unit
            {V} `{FunctorLaws V}
-           `{S : ! SubFunctor Unit V}
+           `{! V supports Unit}
   : forall {T}, MixinAlgebra Unit T (WellFormedValue V)
   := fun T rec '(MkUnit) => unit.
 
 Global Instance EvalAlgebra__Unit
        {V} `{FunctorLaws V}
-       `{S : ! V supports Unit}
+       `{! V supports Unit}
   : forall {T}, ProgramAlgebra Unit T (WellFormedValue V)
   := fun T => {| programAlgebra := eval__Unit; |}.
 

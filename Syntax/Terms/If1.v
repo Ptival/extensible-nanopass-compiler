@@ -35,12 +35,12 @@ Proof.
 Qed.
 
 Definition if1
-           {L} `{FunctorLaws L} `{SubFunctor If1 L} c t
+           {L} `{FunctorLaws L} `{L supports If1} c t
   : UniversalPropertyF L
   := injectUniversalProperty (MkIf1 c t).
 
 Definition if1_Fix
-           {L} `{FunctorLaws L} `{SubFunctor If1 L} c t
+           {L} `{FunctorLaws L} `{L supports If1} c t
   : Fix L
   := proj1_sig (if1 c t).
 

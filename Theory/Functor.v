@@ -1,6 +1,9 @@
 From ExtLib Require Import Programming.Extras.
 
-(* Sadly, we cannot use ext-lib's FunctorLaws because we're at Set. *)
+(*
+Sadly, we cannot use ext-lib's FunctorLaws because we're in [Set].  We import it
+for using [id] and [compose].
+ *)
 
 Class Functor (F : Set -> Set) : Set :=
   {

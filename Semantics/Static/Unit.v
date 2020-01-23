@@ -1,26 +1,22 @@
 From ExtensibleCompiler.Syntax.Terms Require Import Unit.
 
+From ExtensibleCompiler.Syntax.Types Require Import UnitType.
+
+From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
 From ExtensibleCompiler.Theory Require Import Types.
 From ExtensibleCompiler.Theory Require Import UniversalProperty.
 
-From ExtensibleCompiler.Syntax.Types Require Import UnitType.
-
 Local Open Scope SubFunctor_scope.
 
-Definition typeOf_UnitType
-           LT `{FunctorLaws LT} `{SubFunctor UnitType LT}
-           (R : Set) (rec : R -> TypeOfResult LT)
-           (e : Unit R)
-  : TypeOfResult LT
-  :=
-    match e with
-    | Unit => Some (injectUniversalProperty MkUnitType)
-    end.
+Definition typeOf__UnitType
+           {LT} `{FunctorLaws LT} `{LT supports UnitType}
+  : forall {T}, MixinAlgebra Unit T (TypeOfResult LT)
+  := fun _ rec '(Unit) => Some unitType'.
 
-Global Instance TypeOf_Unit
-       LT `{FunctorLaws LT} `{SubFunctor UnitType LT}
-  : forall T, ProgramAlgebra Unit T (TypeOfResult LT)
-  := fun T => {| programAlgebra := typeOf_UnitType LT T |}.
+Global Instance TypeOf__Unit
+       LT `{FunctorLaws LT} `{LT supports UnitType}
+  : forall {T}, ProgramAlgebra Unit T (TypeOfResult LT)
+  := fun _ => {| programAlgebra := typeOf__UnitType; |}.

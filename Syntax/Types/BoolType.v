@@ -29,22 +29,22 @@ Proof.
 Qed.
 
 Definition boolType'
-           {LT} `{FunctorLaws LT} `{SubFunctor BoolType LT}
+           {LT} `{FunctorLaws LT} `{LT supports BoolType}
   : TypeFix LT
   := injectUniversalProperty MkBoolType.
 
 Definition boolType
-           {LT} `{FunctorLaws LT} `{SubFunctor BoolType LT}
+           {LT} `{FunctorLaws LT} `{LT supports BoolType}
   : Fix LT
   := proj1_sig boolType'.
 
 Global Instance ReverseFoldUniversalProperty_boolType
-           LT `{FunctorLaws LT} `{SubFunctor BoolType LT}
+           LT `{FunctorLaws LT} `{LT supports BoolType}
   : ReverseFoldUniversalProperty boolType
   := proj2_sig boolType'.
 
 Definition isBoolType
-           {LT} `{FunctorLaws LT} `{SubFunctor BoolType LT}
+           {LT} `{FunctorLaws LT} `{LT supports BoolType}
   : Fix LT -> bool
   := fun typ =>
        match project typ with
@@ -53,16 +53,16 @@ Definition isBoolType
        end.
 
 Definition typeEquality_BoolType
-           DT `{FunctorLaws DT} `{SubFunctor BoolType DT}
-           (R : Set) (rec : R -> TypeEqualityResult DT) (e : BoolType R)
-  : TypeEqualityResult DT
+           LT `{FunctorLaws LT} `{LT supports BoolType}
+           (R : Set) (rec : R -> TypeEqualityResult LT) (e : BoolType R)
+  : TypeEqualityResult LT
   :=
     match e with
     | MkBoolType => fun t => isBoolType (proj1_sig t)
     end.
 
 Global Instance TypeEquality_BoolType
-       DT `{FunctorLaws DT} `{SubFunctor BoolType DT}
+       LT `{FunctorLaws LT} `{LT supports BoolType}
        T
-  : ProgramAlgebra BoolType T (TypeEqualityResult DT)
-  := {| programAlgebra := typeEquality_BoolType DT T|}.
+  : ProgramAlgebra BoolType T (TypeEqualityResult LT)
+  := {| programAlgebra := typeEquality_BoolType LT T|}.

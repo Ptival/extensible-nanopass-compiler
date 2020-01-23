@@ -24,15 +24,16 @@ Definition eval__Bool
 
 Global Instance EvalAlgebra__Bool
        {V} `{FunctorLaws V}
-       `{! SubFunctor Bool V}
+       `{! V supports Bool}
   : forall {T}, ProgramAlgebra Bool T (WellFormedValue V)
   := fun _ => {| programAlgebra := eval__Bool; |}.
 
-Inductive Eval__Bool {E V}
-          `{FunctorLaws E} `{FunctorLaws V}
-          `{! SubFunctor Bool E} `{! SubFunctor Bool V}
-          (Eval_E : (WellFormedValue E * WellFormedValue V) -> Prop)
-  : (WellFormedValue E * WellFormedValue V) -> Prop
+Inductive Eval__Bool {L V}
+          `{FunctorLaws L} `{FunctorLaws V}
+          `{! L supports Bool}
+          `{! V supports Bool}
+          (Eval_E : (WellFormedValue L * WellFormedValue V) -> Prop)
+  : (WellFormedValue L * WellFormedValue V) -> Prop
   :=
   | BoolValue : forall b, Eval__Bool Eval_E (boolean b, boolean b)
 .
@@ -40,7 +41,7 @@ Inductive Eval__Bool {E V}
 Global Instance EvalSoundness__Bool
        {L LT V}
        `{FunctorLaws L} `{FunctorLaws LT} `{FunctorLaws V}
-       `{! SubFunctor Bool L}
+       `{! L supports Bool}
        (WT : (WellTypedValue V LT -> Prop) -> WellTypedValue V LT -> Prop)
        `{Eval_L   : forall {T}, ProgramAlgebra L T (EvalResult   V)}
        `{TypeOf_L : forall {T}, ProgramAlgebra L T (TypeOfResult LT)}
@@ -66,8 +67,8 @@ Proof.
               recEval
               recTypeOf
            )
-       ).
-  apply : H5.
+       ) as PP.
+  apply : PP.
   (* apply : Induction2Algebra_Bool => b. *)
   rewrite / eval_alg_Soundness_P / UniversalPropertyP2.
   constructor => /=.

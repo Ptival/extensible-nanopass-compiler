@@ -15,11 +15,11 @@ Global Instance IndexedFunctorSum1
   : IndexedFunctor I (F + G)
   | 0 :=
   {|
-    ifmap
+    indexedFmap
     := fun A B i f fg =>
          match fg with
-         | iinl1 fa => iinl1 (ifmap i f fa)
-         | iinr1 ga => iinr1 (ifmap i f ga)
+         | iinl1 fa => iinl1 (indexedFmap i f fa)
+         | iinr1 ga => iinr1 (indexedFmap i f ga)
          end;
   |}.
 
