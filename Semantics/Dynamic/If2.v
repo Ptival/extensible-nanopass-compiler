@@ -45,7 +45,7 @@ Inductive Eval__If2 {L V}
       Eval (c, boolean true) ->
       Eval (t, t') ->
       Eval__If2 Eval (if2 c t e, t')
-  | If2alse : forall c t e e',
+  | If2False : forall c t e e',
       Eval (c, boolean false) ->
       Eval (e, e') ->
       Eval__If2 Eval (if2 c t e, e')
