@@ -15,6 +15,7 @@ From ExtensibleCompiler.Syntax.Terms Require Import Stuck.
 From ExtensibleCompiler.Syntax.Terms Require Import Unit.
 
 From ExtensibleCompiler.Theory Require Import Algebra.
+From ExtensibleCompiler.Theory Require Import Environment.
 From ExtensibleCompiler.Theory Require Import Eval.
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import IndexedAlgebra.
@@ -61,7 +62,9 @@ Global Instance computeResult
 Definition eval
            (b : WellFormedValue L)
   : Result
-  := foldProgramAlgebra (Alg := computeResult) (proj1_sig (eval (proj1_sig b))).
+  := foldProgramAlgebra
+       (Alg := computeResult)
+       (proj1_sig (eval (L := L) (V := V) (proj1_sig b) (empty _))).
 
 Theorem regression__unit : eval unit = UnitValue.
 Proof. reflexivity. Qed.

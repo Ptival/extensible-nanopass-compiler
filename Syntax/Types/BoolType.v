@@ -52,17 +52,12 @@ Definition isBoolType
        | None            => false
        end.
 
-Definition typeEquality_BoolType
-           LT `{FunctorLaws LT} `{LT supports BoolType}
-           (R : Set) (rec : R -> TypeEqualityResult LT) (e : BoolType R)
-  : TypeEqualityResult LT
-  :=
-    match e with
-    | MkBoolType => fun t => isBoolType (proj1_sig t)
-    end.
+Definition typeEquality__BoolType
+           {LT} `{FunctorLaws LT} `{LT supports BoolType}
+  : forall {T}, MixinAlgebra BoolType T (TypeEqualityResult LT)
+  := fun _ rec '(MkBoolType) => fun t => isBoolType (proj1_sig t).
 
-Global Instance TypeEquality_BoolType
+Global Instance TypeEquality__BoolType
        LT `{FunctorLaws LT} `{LT supports BoolType}
-       T
-  : ProgramAlgebra TypeEquality BoolType T (TypeEqualityResult LT)
-  := {| programAlgebra := typeEquality_BoolType LT T|}.
+  : forall {T}, ProgramAlgebra TypeEquality BoolType T (TypeEqualityResult LT)
+  := fun _ => {| programAlgebra := typeEquality__BoolType |}.

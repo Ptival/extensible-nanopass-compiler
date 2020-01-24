@@ -106,13 +106,6 @@ Definition WellFormedValue
            V `{FunctorLaws V}
   := { e : Fix V | ReverseFoldUniversalProperty e }.
 
-Definition projectFix
-           {F G}
-           `{S : SubFunctor F G}
-           (g : WellFormedValue G)
-  : option (F (Fix G))
-  := project (proj1_sig g).
-
 Definition reverseFoldWrapFix (* cf. [in_t_UP'] *)
            {F} `{FunctorLaws F}
            (v : F (WellFormedValue F))
@@ -194,3 +187,17 @@ Definition UniversalPropertyF (* cf. [UP'_F] *)
            F `{FunctorLaws F}
   : Set
   := sig (ReverseFoldUniversalProperty (F := F)).
+
+Definition project
+           {F G}
+           `{S : SubFunctor F G}
+           (g : Fix G)
+  : option (F (WellFormedValue G))
+  := prj (reverseFoldUnwrapFix g).
+
+Definition projectFix
+           {F G}
+           `{S : SubFunctor F G}
+           (g : WellFormedValue G)
+  : option (F (Fix G))
+  := option_map (fmap (proj1_sig (A := Fix G) (P := _))) (project (proj1_sig g)).

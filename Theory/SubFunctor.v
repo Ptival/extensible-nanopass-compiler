@@ -26,13 +26,6 @@ Local Open Scope SubFunctor_scope.
    So we write [SubFunctor] where we need it for conciseness...
  *)
 
-Definition
-  project {F G}
-  `{S : SubFunctor F G}
-  (g : Fix G)
-  : option (F (Fix G))
-  := prj (unwrapFix g).
-
 Global Instance SubFunctorRefl {F}
        `{FunctorLaws F} : SubFunctor F F :=
   {|

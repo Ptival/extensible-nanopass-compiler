@@ -19,12 +19,12 @@ Definition eval__If1
            `{! V supports Bool}
            `{! V supports Unit}
            `{! V supports Stuck}
-  : forall {T}, MixinAlgebra If1 T (WellFormedValue V)
-  := fun _ rec '(MkIf1 condition thenBranch) =>
-       match projectFix (rec condition) with
+  : forall {T}, MixinAlgebra If1 T (EvalResult V)
+  := fun _ rec '(MkIf1 condition thenBranch) env =>
+       match projectFix (rec condition env) with
        | Some (MkBool b) =>
          if b
-         then rec thenBranch
+         then rec thenBranch env
          else unit
        | None => stuck "The condition of a unary branch did not evaluate to a boolean value"
        end.
@@ -34,7 +34,7 @@ Global Instance EvalAlgebra__If1
        `{! V supports Bool}
        `{! V supports Unit}
        `{! V supports Stuck}
-  : forall {T}, ProgramAlgebra Eval If1 T (WellFormedValue V)
+  : forall {T}, ProgramAlgebra Eval If1 T (EvalResult V)
   := fun T => {| programAlgebra := eval__If1; |}.
 
 Inductive Eval__If1 {E V}

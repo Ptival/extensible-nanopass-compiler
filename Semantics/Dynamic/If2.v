@@ -17,13 +17,13 @@ Definition eval__If2
            {V} `{FunctorLaws V}
            `{! V supports Bool}
            `{! V supports Stuck}
-  : forall {T}, MixinAlgebra If2 T (WellFormedValue V)
-  := fun _ rec '(MkIf2 condition thenBranch elseBranch) =>
-       match projectFix (rec condition) with
+  : forall {T}, MixinAlgebra If2 T (EvalResult V)
+  := fun _ rec '(MkIf2 condition thenBranch elseBranch) env =>
+       match projectFix (rec condition env) with
        | Some (MkBool b) =>
          if b
-         then rec thenBranch
-         else rec elseBranch
+         then rec thenBranch env
+         else rec elseBranch env
        | None => stuck "The condition of a binary branch was not a boolean"
        end.
 
@@ -31,7 +31,7 @@ Global Instance EvalAlgebra__If2
        {V} `{FunctorLaws V}
        `{! V supports Bool}
        `{! V supports Stuck}
-  : forall {T}, ProgramAlgebra Eval If2 T (WellFormedValue V)
+  : forall {T}, ProgramAlgebra Eval If2 T (EvalResult V)
   := fun _ => {| programAlgebra := eval__If2; |}.
 
 Inductive Eval__If2 {L V}

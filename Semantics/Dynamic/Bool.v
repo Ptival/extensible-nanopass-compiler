@@ -19,13 +19,13 @@ Local Open Scope SubFunctor_scope.
 Definition eval__Bool
            {V} `{FunctorLaws V}
            `{! V supports Bool}
-  : forall {T}, MixinAlgebra Bool T (WellFormedValue V)
-  := fun _ rec '(MkBool b) => boolean b.
+  : forall {T}, MixinAlgebra Bool T (EvalResult V)
+  := fun _ rec '(MkBool b) env => boolean b.
 
 Global Instance EvalAlgebra__Bool
        {V} `{FunctorLaws V}
        `{! V supports Bool}
-  : forall {T}, ProgramAlgebra Eval Bool T (WellFormedValue V)
+  : forall {T}, ProgramAlgebra Eval Bool T (EvalResult V)
   := fun _ => {| programAlgebra := eval__Bool; |}.
 
 Inductive Eval__Bool {L V}

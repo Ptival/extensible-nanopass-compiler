@@ -1,6 +1,7 @@
 From Coq Require Import ssreflect.
 
 From ExtensibleCompiler.Theory Require Import Algebra.
+From ExtensibleCompiler.Theory Require Import Environment.
 From ExtensibleCompiler.Theory Require Import Eval.
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import IndexedAlgebra.
@@ -79,19 +80,22 @@ Definition eval_alg_Soundness_P
           recTypeOf (reverseFoldWrapFix (reverseFoldUnwrapFix (proj1_sig e)))
       *)
 
-      (IH : forall (a : UniversalPropertyF L' * UniversalPropertyF L),
+      Gamma
+
+      (IH : forall (Gamma : Environment (ValueFix V))
+              (a : UniversalPropertyF L' * UniversalPropertyF L),
           (forall T,
               typeOfL recTypeOf (reverseFoldUnwrapFix (proj1_sig (fst a))) = Some T ->
-              WFValueC WT (evalL recEval (reverseFoldUnwrapFix (proj1_sig (snd a)))) T
+              WFValueC WT (evalL recEval (reverseFoldUnwrapFix (proj1_sig (snd a))) Gamma) T
           ) ->
           forall T,
             recTypeOf (fst a) = Some T ->
-            WFValueC WT (recEval (reverseFoldWrapFix (reverseFoldUnwrapFix (proj1_sig (snd a))))) T
+            WFValueC WT (recEval (reverseFoldWrapFix (reverseFoldUnwrapFix (proj1_sig (snd a)))) Gamma) T
       )
     ,
     forall (T : TypeFix LT),
       typeOfL recTypeOf (reverseFoldUnwrapFix (fst e)) = Some T ->
-      WFValueC WT (evalL recEval (reverseFoldUnwrapFix (snd e))) T.
+      WFValueC WT (evalL recEval (reverseFoldUnwrapFix (snd e)) Gamma) T.
 
 Definition Eval_Soundness_alg_F
            {L LT V}
@@ -123,9 +127,9 @@ Definition eval_Soundness_P
            (RFUP_e : ReverseFoldUniversalProperty e)
   : Prop
   :=
-    forall (T : TypeFix LT),
+    forall Gamma (T : TypeFix LT),
       typeOf e = Some T ->
-      WFValueC WT (eval e) T.
+      WFValueC WT (eval e Gamma) T.
 
 Lemma eval_Soundness
       {L LT V}
@@ -139,15 +143,15 @@ Lemma eval_Soundness
          forall recTypeOf recEval,
            WellFormedProofAlgebra2 (eval_Soundness_alg_F recTypeOf recEval)
       )
-  : forall (e : WellFormedValue L) (T : TypeFix LT),
+  : forall (e : WellFormedValue L) Gamma (T : TypeFix LT),
     typeOf (proj1_sig e) = Some T ->
-    WFValueC WT (eval (proj1_sig e)) T.
+    WFValueC WT (eval (proj1_sig e) Gamma) T.
 Proof.
-  move => e T TO.
-  setoid_rewrite <- reverseFoldWrapUnwrapFix_inverse.
+  move => e Gamma T TO.
+  rewrite <- (reverseFoldWrapUnwrapFix_inverse _ (proj1_sig e)).
   {
     rewrite // / eval / mendlerFold / reverseFoldWrapFix / wrapFix /=.
-    setoid_rewrite wellFormedMendlerAlgebra.
+    rewrite wellFormedMendlerAlgebra.
     rewrite / mendlerFold.
     elim (
         Induction2
@@ -162,7 +166,7 @@ Proof.
     rewrite / eval_alg_Soundness_P.
     move => e' E'.
     eapply E'.
-    move => [[f F][g G]].
+    move => Gamma' [[f F][g G]].
     rewrite reverseFoldWrapUnwrapFix_inverse /=.
     rewrite / eval / mendlerFold / reverseFoldUnwrapFix / programAlgebra'.
     admit.

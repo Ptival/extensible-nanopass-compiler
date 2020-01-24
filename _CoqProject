@@ -3,14 +3,17 @@
 -Q . ExtensibleCompiler
 
 Syntax/Terms/Bool.v
+Syntax/Terms/Closure.v
 Syntax/Terms/If1.v
 Syntax/Terms/If2.v
+Syntax/Terms/Lambda.v
 Syntax/Terms/Stuck.v
 Syntax/Terms/Unit.v
 
 Passes/RemoveUnaryIfs.v
 
 Theory/Algebra.v
+Theory/Environment.v
 Theory/Eval.v
 Theory/Functor.v
 Theory/IndexedAlgebra.v
@@ -25,17 +28,20 @@ Theory/Types.v
 Theory/TypeSoundness.v
 Theory/UniversalProperty.v
 
+Syntax/Types/ArrowType.v
 Syntax/Types/BoolType.v
 Syntax/Types/UnitType.v
 
 Semantics/Dynamic/Bool.v
 Semantics/Dynamic/If1.v
 Semantics/Dynamic/If2.v
+Semantics/Dynamic/Lambda.v
 Semantics/Dynamic/Unit.v
 
 Semantics/Static/Bool.v
 Semantics/Static/If1.v
 Semantics/Static/If2.v
+Semantics/Static/Lambda.v
 Semantics/Static/Unit.v
 
 Test/Semantics/Dynamic.v

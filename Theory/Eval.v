@@ -1,4 +1,5 @@
 From ExtensibleCompiler.Theory Require Import Algebra.
+From ExtensibleCompiler.Theory Require Import Environment.
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
@@ -17,7 +18,7 @@ Definition ValueFix
 
 Definition EvalResult
            V `{FunctorLaws V}
-  := ValueFix V.
+  := Environment (ValueFix V) -> ValueFix V.
 
 Variant Eval := .
 
