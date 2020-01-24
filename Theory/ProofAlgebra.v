@@ -60,7 +60,7 @@ F (Σ (e : Fix G) . P e) ---------------> Σ (e : Fix G) . P e
         | inj                                      |
         v                                          v
     G (Fix G) ---------------------------------> Fix G
-                           wrapFix
+                           wrap__F
 
 *)
 
@@ -80,7 +80,7 @@ Class WellFormedProofAlgebra (* cf. [WF_Ind] *)
         proj1_sig (proofAlgebra (ProofAlgebra := PA) e)
         =
         (* observe all subterms via [fmap], and combine them *)
-        wrapFix (inj (SubFunctor := S) (fmap (proj1_sig (P := P)) e));
+        wrap__F (inj (SubFunctor := S) (fmap (proj1_sig (P := P)) e));
     }.
 
 (** TODO: document why we need this *)
@@ -96,14 +96,14 @@ Class WellFormedProofAlgebra2 (* cf. [WF_Ind2] *)
         fst (proj1_sig (proofAlgebra (ProofAlgebra := PA) e))
         =
         (* observe all subterms via [fmap], and combine them *)
-        wrapFix (inj (SubFunctor := SG) (fmap (fun e => fst (proj1_sig (P := P) e)) e));
+        wrap__F (inj (SubFunctor := SG) (fmap (fun e => fst (proj1_sig (P := P) e)) e));
       proj2Eq
       : forall e,
         (* run [proofAlgebra], then observe the term *)
         snd (proj1_sig (proofAlgebra (ProofAlgebra := PA) e))
         =
         (* observe all subterms via [fmap], and combine them *)
-        wrapFix (inj (SubFunctor := SH) (fmap (fun e => snd (proj1_sig (P := P) e)) e));
+        wrap__F (inj (SubFunctor := SH) (fmap (fun e => snd (proj1_sig (P := P) e)) e));
     }.
 
 (* TODO *)
@@ -131,14 +131,14 @@ Qed.
 
 Lemma Fusion'
       {F} `{FunctorLaws F}
-      (e : Fix F) {UP : ReverseFoldUniversalProperty e}
+      (e : Fix F) {UP : Fold__UP' e}
       (A B : Set) (h : A -> B) (f : Algebra F A) (g : Algebra F B)
       (HF : forall a, h (f a) = g (fmap h a))
       : (fun e' => h (fold f e')) e = fold g e.
 Proof.
-  apply elimFoldUniversalProperty.
+  apply fold__UP'.
   intros e'.
-  rewrite (DirectFoldUniversalProperty F _ f).
+  rewrite (Fold__UP F _ f).
   { reflexivity. }
   {
     rewrite HF.
@@ -165,13 +165,13 @@ Lemma proj1_fold_is_id
       {PA : ProofAlgebra F (sig P)}
       {WFPA : WellFormedProofAlgebra PA}
   : forall (f : Fix F),
-    ReverseFoldUniversalProperty f ->
+    Fold__UP' f ->
     proj1_sig (fold (@proofAlgebra _ _ _ PA) f) = f.
 Proof.
   move => f UP.
-  setoid_rewrite Fusion' with (g := wrapFix) => //.
+  setoid_rewrite Fusion' with (g := wrap__F) => //.
   {
-    rewrite foldWrapFixIdentity //.
+    rewrite fold_wrap__F_Identity //.
   }
   {
     move => a.
@@ -185,13 +185,13 @@ Lemma fst_proj1_fold_is_id
       {PA : ProofAlgebra F (sig P)}
       {WFPA : WellFormedProofAlgebra2 PA}
   : forall (f : Fix F),
-    ReverseFoldUniversalProperty f ->
+    Fold__UP' f ->
     fst (proj1_sig (fold (@proofAlgebra _ _ _ PA) f)) = f.
 Proof.
   move => f UP.
-  setoid_rewrite (Fusion' f _ _ (fun e => fst (proj1_sig e)) _ wrapFix).
+  setoid_rewrite (Fusion' f _ _ (fun e => fst (proj1_sig e)) _ wrap__F).
   {
-    rewrite foldWrapFixIdentity //.
+    rewrite fold_wrap__F_Identity //.
   }
   {
     move => a.
@@ -205,13 +205,13 @@ Lemma snd_proj1_fold_is_id
       {PA : ProofAlgebra F (sig P)}
       {WFPA : WellFormedProofAlgebra2 PA}
   : forall (f : Fix F),
-    ReverseFoldUniversalProperty f ->
+    Fold__UP' f ->
     snd (proj1_sig (fold (@proofAlgebra _ _ _ PA) f)) = f.
 Proof.
   move => f UP.
-  setoid_rewrite (Fusion' f _ _ (fun e => snd (proj1_sig e)) _ wrapFix).
+  setoid_rewrite (Fusion' f _ _ (fun e => snd (proj1_sig e)) _ wrap__F).
   {
-    rewrite foldWrapFixIdentity //.
+    rewrite fold_wrap__F_Identity //.
   }
   {
     move => a.
@@ -225,7 +225,7 @@ Lemma Induction (* cf. [Ind] *)
       {PA : ProofAlgebra F (sig P)}
       {WFPA : WellFormedProofAlgebra PA}
   : forall (f : Fix F),
-    ReverseFoldUniversalProperty f ->
+    Fold__UP' f ->
     P f.
 Proof.
   move => f UP.
@@ -250,7 +250,7 @@ Lemma Induction2 (* cf. [Ind2] *)
       {PA : ProofAlgebra F (sig P)}
       {WFPA : WellFormedProofAlgebra2 PA}
   : forall (f : Fix F),
-    ReverseFoldUniversalProperty f ->
+    Fold__UP' f ->
     P (f, f).
 Proof.
   move => f UP.

@@ -55,7 +55,7 @@ Definition SoundnessStatement__EvalAlgebra (* cf. eval_alg_Soundness_P *)
            (recEval   : UniversalPropertyF L -> EvalResult   V)
            (recTypeOf : UniversalPropertyF L' -> TypeOfResult LT)
            (e : Fix L' * Fix L)
-           (RFUP_e : ReverseFoldUniversalProperty (fst e) /\ ReverseFoldUniversalProperty (snd e))
+           (RFUP_e : Fold__UP' (fst e) /\ Fold__UP' (snd e))
   : Prop
   :=
     forall
@@ -79,17 +79,17 @@ Definition SoundnessStatement__EvalAlgebra (* cf. eval_alg_Soundness_P *)
       (IH : forall (Gamma : Environment (ValueFix V))
               (a : UniversalPropertyF L' * UniversalPropertyF L),
           (forall T,
-              typeOfL recTypeOf (reverseFoldUnwrapFix (proj1_sig (fst a))) = Some T ->
-              WellTyped WT (evalL recEval (reverseFoldUnwrapFix (proj1_sig (snd a))) Gamma) T
+              typeOfL recTypeOf (unwrap__UP' (proj1_sig (fst a))) = Some T ->
+              WellTyped WT (evalL recEval (unwrap__UP' (proj1_sig (snd a))) Gamma) T
           ) ->
           forall T,
             recTypeOf (fst a) = Some T ->
-            WellTyped WT (recEval (reverseFoldWrapFix (reverseFoldUnwrapFix (proj1_sig (snd a)))) Gamma) T
+            WellTyped WT (recEval (wrap__UP' (unwrap__UP' (proj1_sig (snd a)))) Gamma) T
       )
     ,
     forall (T : TypeFix LT),
-      typeOfL recTypeOf (reverseFoldUnwrapFix (fst e)) = Some T ->
-      WellTyped WT (evalL recEval (reverseFoldUnwrapFix (snd e)) Gamma) T.
+      typeOfL recTypeOf (unwrap__UP' (fst e)) = Some T ->
+      WellTyped WT (evalL recEval (unwrap__UP' (snd e)) Gamma) T.
 
 Definition Soundness__EvalAlgebra
            {L LT V}
@@ -118,7 +118,7 @@ Definition SoundnessStatement__Eval
            (recEval : UniversalPropertyF L -> EvalResult V)
            (recTypeOf : UniversalPropertyF L -> TypeOfResult LT)
            (e : Fix L)
-           (RFUP_e : ReverseFoldUniversalProperty e)
+           (RFUP_e : Fold__UP' e)
   : Prop
   :=
     forall Gamma (T : TypeFix LT),
@@ -132,28 +132,24 @@ Lemma Soundness__Eval
       `{EvalL   : forall {T}, ProgramAlgebra Eval   L T (EvalResult V)}
       `{TypeOfL : forall {T}, ProgramAlgebra TypeOf L T (TypeOfResult LT)}
       `{WFEvalL : ! WellFormedMendlerAlgebra (@EvalL)}
-      (eval_Soundness_alg_F : Soundness__EvalAlgebra WT)
+      (soundness__EvalAlgebra : Soundness__EvalAlgebra WT)
       (WF_eval_Soundness_alg_F :
          forall recTypeOf recEval,
-           WellFormedProofAlgebra2 (eval_Soundness_alg_F recTypeOf recEval)
+           WellFormedProofAlgebra2 (soundness__EvalAlgebra recTypeOf recEval)
       )
   : forall (e : WellFormedValue L) Gamma (T : TypeFix LT),
     typeOf (proj1_sig e) = Some T ->
     WellTyped WT (eval (proj1_sig e) Gamma) T.
 Proof.
   move => e Gamma T TO.
-  rewrite <- (reverseFoldWrapUnwrapFix_inverse _ (proj1_sig e)).
+  rewrite <- (wrap_unwrap__UP' _ (proj1_sig e)).
   {
-    rewrite // / eval / mendlerFold / reverseFoldWrapFix / wrapFix /=.
+    rewrite // / eval / mendlerFold / wrap__UP' / wrap__F /=.
     rewrite wellFormedMendlerAlgebra.
     rewrite / mendlerFold.
     elim (
         Induction2
-          (PA :=
-             eval_Soundness_alg_F
-               (fun e => eval (proj1_sig e))
-               (fun e => typeOf (proj1_sig e))
-          )
+          (PA := soundness__EvalAlgebra (fun e => eval (proj1_sig e)) (fun e => typeOf (proj1_sig e)))
           _
           (proj2_sig e)
       ).
@@ -161,7 +157,7 @@ Proof.
     move => e' E'.
     eapply E'.
     move => Gamma' [[f F][g G]].
-    rewrite reverseFoldWrapUnwrapFix_inverse /=.
-    rewrite / eval / mendlerFold / reverseFoldUnwrapFix / programAlgebra'.
+    rewrite wrap_unwrap__UP' /=.
+    rewrite / eval / mendlerFold / unwrap__F / programAlgebra'.
     admit.
 Admitted.

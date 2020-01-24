@@ -29,7 +29,7 @@ Definition stuck
            {L} `{FunctorLaws L} `{L supports Stuck}
            (reason : string)
   : UniversalPropertyF L
-  := injectUniversalProperty (MkStuck reason).
+  := inject (MkStuck reason).
 
 Definition stuck_Fix
            {L} `{FunctorLaws L} `{L supports Stuck}

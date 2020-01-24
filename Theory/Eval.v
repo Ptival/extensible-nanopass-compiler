@@ -58,7 +58,7 @@ Global
   : MendlerEval F (F + G)
   | 3 :=
   {|
-    evalMendlerAlgebra := fun A rec v => wrapFix (inl1 (fmap rec v));
+    evalMendlerAlgebra := fun A rec v => wrap__F (inl1 (fmap rec v));
   |}.
 
 Global
@@ -69,13 +69,13 @@ Global
   : MendlerEval G (F + G)
   | 4 :=
   {|
-    evalMendlerAlgebra := fun A rec v => wrapFix (inr1 (fmap rec v));
+    evalMendlerAlgebra := fun A rec v => wrap__F (inr1 (fmap rec v));
   |}.
 
 Global Instance MendlerEvalRefl F `{FunctorLaws F} : MendlerEval F F
   | 1 :=
   {|
-    evalMendlerAlgebra := fun A rec v => wrapFix (fmap rec v);
+    evalMendlerAlgebra := fun A rec v => wrap__F (fmap rec v);
   |}.
 
 (**
@@ -112,7 +112,7 @@ Global
   : MixinEval T F (F + G)
   | 3 :=
   {|
-    evalMixinAlgebra := fun rec v S alg => mendlerFold alg (wrapFix (inl1 (fmap rec v)));
+    evalMixinAlgebra := fun rec v S alg => mendlerFold alg (wrap__F (inl1 (fmap rec v)));
   |}.
 
 Global
@@ -123,7 +123,7 @@ Global
   : MixinEval T G (F + G)
   | 3 :=
   {|
-    evalMixinAlgebra := fun rec v S alg => mendlerFold alg (wrapFix (inr1 (fmap rec v)));
+    evalMixinAlgebra := fun rec v S alg => mendlerFold alg (wrap__F (inr1 (fmap rec v)));
   |}.
 
 Fixpoint boundedFix
@@ -136,7 +136,7 @@ Fixpoint boundedFix
   :=
   match n with
   | 0   => default
-  | S n => fM (boundedFix n fM default) (unwrapFix e)
+  | S n => fM (boundedFix n fM default) (unwrap__F e)
   end.
 
 Class WellFormedMendlerEval

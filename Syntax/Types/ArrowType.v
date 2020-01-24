@@ -32,7 +32,7 @@ Definition arrowType'
            {LT} `{FunctorLaws LT} `{LT supports ArrowType}
            d c
   : TypeFix LT
-  := injectUniversalProperty (MkArrowType d c).
+  := inject (MkArrowType d c).
 
 Definition arrowType
            {LT} `{FunctorLaws LT} `{LT supports ArrowType}
@@ -43,7 +43,7 @@ Definition arrowType
 Global Instance ReverseFoldUniversalProperty_arrowType
        LT `{FunctorLaws LT} `{LT supports ArrowType}
        d c
-  : ReverseFoldUniversalProperty (arrowType d c)
+  : Fold__UP' (arrowType d c)
   := proj2_sig (arrowType' d c).
 
 Definition isArrowType

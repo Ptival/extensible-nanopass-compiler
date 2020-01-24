@@ -45,20 +45,20 @@ Definition closure
            `{(L V) supports (Closure L)}
            c e
   : UniversalPropertyF (L V)
-  := injectUniversalProperty (MkClosure c e).
+  := inject (MkClosure c e).
 
-Definition closure__Fix
+Definition closure__F
            {L V} `{F : forall V, Functor (L V)} `{FL : forall V, FunctorLaws (L V)}
            `{(L V) supports (Closure L)}
            c e
   : Fix (L V)
   := proj1_sig (closure c e).
 
-Global Instance ReverseFoldUniversalProperty__closure
+Global Instance Fold__UP'__closure
        {L V} `{F : forall V, Functor (L V)} `{FL : forall V, FunctorLaws (L V)}
        `{(L V) supports (Closure L)}
        c e
-  : ReverseFoldUniversalProperty (closure__Fix c e)
+  : Fold__UP' (closure__F c e)
   := proj2_sig (closure c e).
 
 Definition isClosure

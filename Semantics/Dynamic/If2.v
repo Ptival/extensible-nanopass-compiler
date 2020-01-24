@@ -19,7 +19,7 @@ Definition eval__If2
            `{! V supports Stuck}
   : forall {T}, MixinAlgebra If2 T (EvalResult V)
   := fun _ rec '(MkIf2 condition thenBranch elseBranch) env =>
-       match projectFix (rec condition env) with
+       match project__F (rec condition env) with
        | Some (MkBool b) =>
          if b
          then rec thenBranch env

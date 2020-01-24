@@ -41,7 +41,7 @@ Qed.
 Definition unitType'
            {LT} `{FunctorLaws LT} `{LT supports UnitType}
   : TypeFix LT
-  := injectUniversalProperty MkUnitType.
+  := inject MkUnitType.
 
 Definition unitType
            {LT} `{FunctorLaws LT} `{LT supports UnitType}
@@ -50,7 +50,7 @@ Definition unitType
 
 Global Instance ReverseFoldUniversalProperty_unitType
            {LT} `{FunctorLaws LT} `{LT supports UnitType}
-  : ReverseFoldUniversalProperty unitType
+  : Fold__UP' unitType
   := proj2_sig unitType'.
 
 Definition isUnitType

@@ -52,7 +52,7 @@ Definition app
            `{L supports (Lambda LT V)}
            g a
   : UniversalPropertyF L
-  := injectUniversalProperty (App g a).
+  := inject (App g a).
 
 Definition lam
            {LT V L}
@@ -60,7 +60,7 @@ Definition lam
            `{L supports (Lambda LT V)}
            t b
   : UniversalPropertyF L
-  := injectUniversalProperty (Lam t b).
+  := inject (Lam t b).
 
 Definition var
            {LT V L}
@@ -68,4 +68,4 @@ Definition var
             `{L supports (Lambda LT V)}
            v
   : UniversalPropertyF L
-  := injectUniversalProperty (Var v).
+  := inject (Var v).

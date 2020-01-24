@@ -62,7 +62,7 @@ Definition
   `{S : SubFunctor F G}
   : MendlerAlgebra F (Fix G)
   := fun A rec v =>
-       wrapFix (fmap rec (inj v)).
+       wrap__F (fmap rec (inj v)).
 
 Class WellFormedSubFunctor F G
       `{SubFunctor F G}

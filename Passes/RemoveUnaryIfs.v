@@ -24,7 +24,7 @@ Definition
   {L V} `{FunctorLaws L} `{FunctorLaws V}
   `{! V supports L}
   : forall {T}, MixinAlgebra L T (WellFormedValue V)
-  := fun _ rec v => injectUniversalProperty (fmap rec v).
+  := fun _ rec v => inject (fmap rec v).
 
 Variant RemoveUnaryIfs := .
 

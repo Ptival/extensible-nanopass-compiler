@@ -36,14 +36,14 @@ Definition if2
            {L} `{FunctorLaws L} `{L supports If2}
            (condition thenBranch elseBranch : UniversalPropertyF L)
   : UniversalPropertyF L
-  := injectUniversalProperty (MkIf2 condition thenBranch elseBranch).
+  := inject (MkIf2 condition thenBranch elseBranch).
 
 Definition if2_Fix_UPF
            {L} `{FunctorLaws L} `{L supports If2}
            (condition thenBranch elseBranch : Fix L)
-           {H_condition  : ReverseFoldUniversalProperty condition}
-           {H_thenBranch : ReverseFoldUniversalProperty thenBranch}
-           {H_elseBranch : ReverseFoldUniversalProperty elseBranch}
+           {H_condition  : Fold__UP' condition}
+           {H_thenBranch : Fold__UP' thenBranch}
+           {H_elseBranch : Fold__UP' elseBranch}
   : UniversalPropertyF L
   := if2
        (exist _ _ H_condition)
@@ -53,9 +53,9 @@ Definition if2_Fix_UPF
 Definition if2_Fix_Fix
            {L} `{FunctorLaws L} `{L supports If2}
            (condition thenBranch elseBranch : Fix L)
-           {H_condition  : ReverseFoldUniversalProperty condition}
-           {H_thenBranch : ReverseFoldUniversalProperty thenBranch}
-           {H_elseBranch : ReverseFoldUniversalProperty elseBranch}
+           {H_condition  : Fold__UP' condition}
+           {H_thenBranch : Fold__UP' thenBranch}
+           {H_elseBranch : Fold__UP' elseBranch}
   : Fix L
   := proj1_sig (if2_Fix_UPF condition thenBranch elseBranch).
 
@@ -85,9 +85,9 @@ Definition if2_UPP_Fix
 (* Definition if2_UP_Fix *)
 (*            {L} `{FunctorLaws L} `{L supports If2} *)
 (*            {condition thenBranch elseBranch : Fix L} *)
-(*            (H_condition  : ReverseFoldUniversalProperty condition) *)
-(*            (H_thenBranch : ReverseFoldUniversalProperty thenBranch) *)
-(*            (H_elseBranch : ReverseFoldUniversalProperty elseBranch) *)
+(*            (H_condition  : Fold__UP' condition) *)
+(*            (H_thenBranch : Fold__UP' thenBranch) *)
+(*            (H_elseBranch : Fold__UP' elseBranch) *)
 (*   : Fix L *)
 (*   := proj1_sig (if2 *)
 (*                   (exist _ _ H_condition) *)
@@ -97,7 +97,7 @@ Definition if2_UPP_Fix
 
 Definition If2Induction
            {F} `{FunctorLaws F} `{S : F supports If2}
-           (P : forall (e : Fix F), ReverseFoldUniversalProperty e -> Prop)
+           (P : forall (e : Fix F), Fold__UP' e -> Prop)
            (Hif2 : forall (c t e : Fix F)
                      (H_c : UniversalPropertyP P c)
                      (H_t : UniversalPropertyP P t)
@@ -115,7 +115,7 @@ introduce a copy of [Functor If2] and make a mess... *)
 
 Global Instance If2ProofAlgebra
        {F} `{FunctorLaws F} `{S : ! F supports If2}
-       `(P : forall (e : Fix F), ReverseFoldUniversalProperty e -> Prop)
+       `(P : forall (e : Fix F), Fold__UP' e -> Prop)
        `(H_if2 : forall c t e
                    (H_c : UniversalPropertyP P c)
                    (H_t : UniversalPropertyP P t)
@@ -126,7 +126,7 @@ Global Instance If2ProofAlgebra
 
 Global Instance If2ProofAlgebraWellFormed
        F `{FunctorLaws F} `{! F supports If2} `{! WellFormedSubFunctor If2 F}
-       `(P : forall (e : Fix F), ReverseFoldUniversalProperty e -> Prop)
+       `(P : forall (e : Fix F), Fold__UP' e -> Prop)
        `(H_if2 : forall c t e
                    (IH_c : UniversalPropertyP P c)
                    (IH_t : UniversalPropertyP P t)
@@ -138,7 +138,7 @@ Proof.
   constructor.
   rewrite /= / If2Induction.
   move => [] c t e /=.
-  rewrite / if2_UPP_Fix / if2 / if2 / injectUniversalProperty /=.
+  rewrite / if2_UPP_Fix / if2 / if2 / inject /=.
   erewrite wellFormedSubFunctor => /=.
   reflexivity.
 Qed.

@@ -31,7 +31,7 @@ Qed.
 Definition boolType'
            {LT} `{FunctorLaws LT} `{LT supports BoolType}
   : TypeFix LT
-  := injectUniversalProperty MkBoolType.
+  := inject MkBoolType.
 
 Definition boolType
            {LT} `{FunctorLaws LT} `{LT supports BoolType}
@@ -40,7 +40,7 @@ Definition boolType
 
 Global Instance ReverseFoldUniversalProperty_boolType
            LT `{FunctorLaws LT} `{LT supports BoolType}
-  : ReverseFoldUniversalProperty boolType
+  : Fold__UP' boolType
   := proj2_sig boolType'.
 
 Definition isBoolType

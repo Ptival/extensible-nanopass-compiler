@@ -32,9 +32,9 @@ Definition boolean
            {L} `{FunctorLaws L} `{L supports Bool}
            (b : bool)
   : UniversalPropertyF L
-  := injectUniversalProperty (MkBool b).
+  := inject (MkBool b).
 
-Definition boolean_Fix
+Definition boolean__F
            {L} `{FunctorLaws L} `{L supports Bool}
            (b : bool)
   : Fix L
@@ -45,8 +45,8 @@ Section One.
   Context {L} `{FunctorLaws L} `{! L supports Bool}.
 
   Definition InductionAlgebra_Bool
-             (P : forall (e : Fix L), ReverseFoldUniversalProperty e -> Prop)
-             (H_boolean : forall b, UniversalPropertyP P (boolean_Fix b))
+             (P : forall (e : Fix L), Fold__UP' e -> Prop)
+             (H_boolean : forall b, UniversalPropertyP P (boolean__F b))
     : Algebra Bool (sig (UniversalPropertyP P))
     := fun '(MkBool b) => exist _ _ (H_boolean b).
 
@@ -58,10 +58,8 @@ Section Two.
   Context {M} `{FunctorLaws M} `{! M supports Bool}.
 
   Definition Induction2Algebra_Bool
-             (P : forall (e : Fix L * Fix M),
-                 ReverseFoldUniversalProperty (fst e) /\ ReverseFoldUniversalProperty (snd e) -> Prop
-             )
-             (H_boolean : forall b, UniversalPropertyP2 P (boolean_Fix b, boolean_Fix b))
+             (P : forall (e : Fix L * Fix M), Fold__UP' (fst e) /\ Fold__UP' (snd e) -> Prop)
+             (H_boolean : forall b, UniversalPropertyP2 P (boolean__F b, boolean__F b))
     : Algebra Bool (sig (UniversalPropertyP2 P))
     := fun '(MkBool b) => exist _ _ (H_boolean b).
 

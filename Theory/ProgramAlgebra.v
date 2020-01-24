@@ -74,7 +74,7 @@ Global Instance
   := fun T =>
     {|
       programAlgebra :=
-        fun rec v => reverseFoldWrapFix (inl1 (fmap rec v))
+        fun rec v => wrap__UP' (inl1 (fmap rec v))
       ;
     |}.
 
@@ -86,7 +86,7 @@ Global Instance
   := fun T =>
     {|
       programAlgebra :=
-        fun rec v => reverseFoldWrapFix (inr1 (fmap rec v))
+        fun rec v => wrap__UP' (inr1 (fmap rec v))
       ;
     |}.
 

@@ -32,9 +32,9 @@ Qed.
 Definition unit
            {L} `{FunctorLaws L} `{L supports Unit}
   : UniversalPropertyF L
-  := injectUniversalProperty MkUnit.
+  := inject MkUnit.
 
-Definition unit__Fix
+Definition unit__F
            {L} `{FunctorLaws L} `{L supports Unit}
   : Fix L
   := proj1_sig unit.
@@ -44,8 +44,8 @@ Section One.
   Context {L} `{FunctorLaws L} `{! L supports Unit}.
 
   Definition InductionAlgebra__Unit
-             (P : forall (e : Fix L), ReverseFoldUniversalProperty e -> Prop)
-             (H_unit : UniversalPropertyP P unit__Fix)
+             (P : forall (e : Fix L), Fold__UP' e -> Prop)
+             (H_unit : UniversalPropertyP P unit__F)
     : Algebra Unit (sig (UniversalPropertyP P))
     := fun '(MkUnit) => exist _ _ (H_unit).
 
@@ -57,10 +57,8 @@ Section Two.
   Context {M} `{FunctorLaws M} `{! M supports Unit}.
 
   Definition Induction2Algebra__Unit
-             (P : forall (e : Fix L * Fix M),
-                 ReverseFoldUniversalProperty (fst e) /\ ReverseFoldUniversalProperty (snd e) -> Prop
-             )
-             (H_unit : UniversalPropertyP2 P (unit__Fix, unit__Fix))
+             (P : forall (e : Fix L * Fix M), Fold__UP' (fst e) /\ Fold__UP' (snd e) -> Prop)
+             (H_unit : UniversalPropertyP2 P (unit__F, unit__F))
     : Algebra Unit (sig (UniversalPropertyP2 P))
     := fun '(MkUnit) => exist _ _ (H_unit).
 

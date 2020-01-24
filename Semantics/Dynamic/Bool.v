@@ -66,15 +66,16 @@ Global Instance EvalSoundness__Bool
   : ProofAlgebra Bool (sig (UniversalPropertyP2 (SoundnessStatement__Bool WT recEval recTypeOf))).
 Proof.
   constructor.
-  pose proof (Induction2Algebra_Bool (SoundnessStatement__Bool WT recEval recTypeOf)) as PP.
-  apply : PP.
-  (* apply : Induction2Algebra_Bool => b. *)
-  rewrite / SoundnessStatement__Bool / SoundnessStatement__EvalAlgebra / UniversalPropertyP2.
-  constructor => /=.
+  apply Induction2Algebra_Bool => b.
+  rewrite / SoundnessStatement__Bool / SoundnessStatement__EvalAlgebra / UniversalPropertyP2 /=.
+  constructor.
   {
-    apply conj; apply : (proj2_sig (boolean b)).
+    apply conj; apply (proj2_sig (boolean b)).
   }
   {
+    move => Gamma IH T TY.
+    rewrite / boolean__F / boolean / inject /=.
+
     admit.
   }
 Admitted.
