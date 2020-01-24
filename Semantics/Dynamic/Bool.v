@@ -38,39 +38,38 @@ Inductive Eval__Bool {L V}
   | BoolValue : forall b, Eval__Bool Eval_E (boolean b, boolean b)
 .
 
+Definition SoundnessStatement__Bool
+           {L LT V}
+           `{FunctorLaws L} `{FunctorLaws LT} `{FunctorLaws V}
+           `{! L supports Bool}
+           (WT : (TypedValue V LT -> Prop) -> TypedValue V LT -> Prop)
+           `{Eval_L   : forall {T}, ProgramAlgebra Eval   L T (EvalResult   V)}
+           `{TypeOf_L : forall {T}, ProgramAlgebra TypeOf L T (TypeOfResult LT)}
+           (recEval   : UniversalPropertyF L -> EvalResult   V)
+           (recTypeOf : UniversalPropertyF L -> TypeOfResult LT)
+  :=
+    (SoundnessStatement__EvalAlgebra WT
+                                   (evalL   := fun _ => programAlgebra' Eval_L)
+                                   (typeOfL := fun _ => programAlgebra' TypeOf_L)
+                                   recEval recTypeOf
+    ).
+
 Global Instance EvalSoundness__Bool
        {L LT V}
        `{FunctorLaws L} `{FunctorLaws LT} `{FunctorLaws V}
        `{! L supports Bool}
-       (WT : (WellTypedValue V LT -> Prop) -> WellTypedValue V LT -> Prop)
+       (WT : (TypedValue V LT -> Prop) -> TypedValue V LT -> Prop)
        `{Eval_L   : forall {T}, ProgramAlgebra Eval   L T (EvalResult   V)}
        `{TypeOf_L : forall {T}, ProgramAlgebra TypeOf L T (TypeOfResult LT)}
        (recEval   : UniversalPropertyF L -> EvalResult   V)
        (recTypeOf : UniversalPropertyF L -> TypeOfResult LT)
-  : ProofAlgebra Bool
-      (sig
-         (UniversalPropertyP2
-            (eval_alg_Soundness_P WT
-               (evalL   := fun _ => programAlgebra' Eval_L)
-               (typeOfL := fun _ => programAlgebra' TypeOf_L)
-               recEval recTypeOf
-      ))).
+  : ProofAlgebra Bool (sig (UniversalPropertyP2 (SoundnessStatement__Bool WT recEval recTypeOf))).
 Proof.
   constructor.
-  pose proof (
-         Induction2Algebra_Bool
-           (@eval_alg_Soundness_P
-              _ _ _ _ _ _ _ _ _ _ _ _
-              WT
-              (fun _ => programAlgebra' (Eval_L   _))
-              (fun _ => programAlgebra' (TypeOf_L _))
-              recEval
-              recTypeOf
-           )
-       ) as PP.
+  pose proof (Induction2Algebra_Bool (SoundnessStatement__Bool WT recEval recTypeOf)) as PP.
   apply : PP.
   (* apply : Induction2Algebra_Bool => b. *)
-  rewrite / eval_alg_Soundness_P / UniversalPropertyP2.
+  rewrite / SoundnessStatement__Bool / SoundnessStatement__EvalAlgebra / UniversalPropertyP2.
   constructor => /=.
   {
     apply conj; apply : (proj2_sig (boolean b)).

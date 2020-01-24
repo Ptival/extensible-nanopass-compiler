@@ -14,34 +14,28 @@ From ExtensibleCompiler.Theory Require Import UniversalProperty.
 
 Local Open Scope SubFunctor_scope.
 
-Record WellTypedValue (* cf. WellTypedValue *)
+Record TypedValue (* cf. WFValue_i *)
        V LT `{FunctorLaws V} `{FunctorLaws LT}
   : Set
-  := MkWellTypedValue (* cf. mk_WellTypedValue *)
+  := MkTypedValue (* cf. mk_WFValue_i *)
        {
-         wellFormedValue : UniversalPropertyF V;
-         wellFormedType  : UniversalPropertyF LT;
+         type  : UniversalPropertyF LT;
+         value : UniversalPropertyF V;
        }.
+Arguments MkTypedValue {V LT _ _ _ _}.
 
 (**
 In MTC, this is parameterized by some indexed relation.  In practice I don't
 think I am using it yet, so leaving it hardcoded until it becomes necessary.
 *)
 
-Definition WFValue
-           V LT
-           `{FunctorLaws V} `{FunctorLaws LT}
-           (WT : (WellTypedValue V LT)-indexedProp)
-  : WellTypedValue V LT -> Prop
-  := IndexedFix WT.
-
-Definition WFValueC
+Definition WellTyped
            {V LT}
            `{FunctorLaws V} `{FunctorLaws LT}
-           (WT : (WellTypedValue V LT)-indexedProp)
+           (WT : (TypedValue V LT)-indexedProp)
            v lt
   : Prop
-  := WFValue V LT WT (MkWellTypedValue V LT _ _ _ _ v lt).
+  := IndexedFix WT {| type := lt; value := v; |}.
 
 (**
 This is the most abstract statement of the type soundness of evaluation.
@@ -52,13 +46,13 @@ abstracted over the operation to run recursively, namely [recEval] and
 
  *)
 
-Definition eval_alg_Soundness_P
+Definition SoundnessStatement__EvalAlgebra (* cf. eval_alg_Soundness_P *)
            {L L' LT V}
            `{FunctorLaws L} `{FunctorLaws L'} `{FunctorLaws LT} `{FunctorLaws V}
-           (WT : (WellTypedValue V LT -> Prop) -> WellTypedValue V LT -> Prop)
+           (WT : (TypedValue V LT -> Prop) -> TypedValue V LT -> Prop)
            `{evalL   : forall {T}, MixinAlgebra L  T (EvalResult   V)}
            `{typeOfL : forall {T}, MixinAlgebra L' T (TypeOfResult LT)}
-           (recEval : UniversalPropertyF L -> EvalResult V)
+           (recEval   : UniversalPropertyF L -> EvalResult   V)
            (recTypeOf : UniversalPropertyF L' -> TypeOfResult LT)
            (e : Fix L' * Fix L)
            (RFUP_e : ReverseFoldUniversalProperty (fst e) /\ ReverseFoldUniversalProperty (snd e))
@@ -86,21 +80,21 @@ Definition eval_alg_Soundness_P
               (a : UniversalPropertyF L' * UniversalPropertyF L),
           (forall T,
               typeOfL recTypeOf (reverseFoldUnwrapFix (proj1_sig (fst a))) = Some T ->
-              WFValueC WT (evalL recEval (reverseFoldUnwrapFix (proj1_sig (snd a))) Gamma) T
+              WellTyped WT (evalL recEval (reverseFoldUnwrapFix (proj1_sig (snd a))) Gamma) T
           ) ->
           forall T,
             recTypeOf (fst a) = Some T ->
-            WFValueC WT (recEval (reverseFoldWrapFix (reverseFoldUnwrapFix (proj1_sig (snd a)))) Gamma) T
+            WellTyped WT (recEval (reverseFoldWrapFix (reverseFoldUnwrapFix (proj1_sig (snd a)))) Gamma) T
       )
     ,
     forall (T : TypeFix LT),
       typeOfL recTypeOf (reverseFoldUnwrapFix (fst e)) = Some T ->
-      WFValueC WT (evalL recEval (reverseFoldUnwrapFix (snd e)) Gamma) T.
+      WellTyped WT (evalL recEval (reverseFoldUnwrapFix (snd e)) Gamma) T.
 
-Definition Eval_Soundness_alg_F
+Definition Soundness__EvalAlgebra
            {L LT V}
            `{FunctorLaws L} `{FunctorLaws LT} `{FunctorLaws V}
-           (WT : (WellTypedValue V LT -> Prop) -> WellTypedValue V LT -> Prop)
+           (WT : (TypedValue V LT -> Prop) -> TypedValue V LT -> Prop)
            `{EvalL   : forall {T}, ProgramAlgebra Eval   L T (EvalResult V)}
            `{TypeOfL : forall {T}, ProgramAlgebra TypeOf L T (TypeOfResult LT)}
   := forall recTypeOf recEval,
@@ -108,17 +102,17 @@ Definition Eval_Soundness_alg_F
       L
       (sig
          (UniversalPropertyP2
-            (eval_alg_Soundness_P
+            (SoundnessStatement__EvalAlgebra
                (evalL   := fun _ => programAlgebra' EvalL)
                (typeOfL := fun _ => programAlgebra' TypeOfL)
                WT
                recTypeOf recEval
       ))).
 
-Definition eval_Soundness_P
+Definition SoundnessStatement__Eval
            {L LT V}
            `{FunctorLaws L} `{FunctorLaws LT} `{FunctorLaws V}
-           (WT : (WellTypedValue V LT -> Prop) -> WellTypedValue V LT -> Prop)
+           (WT : (TypedValue V LT -> Prop) -> TypedValue V LT -> Prop)
            `{EvalL   : forall {T}, ProgramAlgebra Eval   L T (EvalResult V)}
            `{TypeOfL : forall {T}, ProgramAlgebra TypeOf L T (TypeOfResult LT)}
            (recEval : UniversalPropertyF L -> EvalResult V)
@@ -129,23 +123,23 @@ Definition eval_Soundness_P
   :=
     forall Gamma (T : TypeFix LT),
       typeOf e = Some T ->
-      WFValueC WT (eval e Gamma) T.
+      WellTyped WT (eval e Gamma) T.
 
-Lemma eval_Soundness
+Lemma Soundness__Eval
       {L LT V}
       `{FunctorLaws L} `{FunctorLaws LT} `{FunctorLaws V}
-      (WT : (WellTypedValue V LT -> Prop) -> WellTypedValue V LT -> Prop)
+      (WT : (TypedValue V LT -> Prop) -> TypedValue V LT -> Prop)
       `{EvalL   : forall {T}, ProgramAlgebra Eval   L T (EvalResult V)}
       `{TypeOfL : forall {T}, ProgramAlgebra TypeOf L T (TypeOfResult LT)}
       `{WFEvalL : ! WellFormedMendlerAlgebra (@EvalL)}
-      (eval_Soundness_alg_F : Eval_Soundness_alg_F WT)
+      (eval_Soundness_alg_F : Soundness__EvalAlgebra WT)
       (WF_eval_Soundness_alg_F :
          forall recTypeOf recEval,
            WellFormedProofAlgebra2 (eval_Soundness_alg_F recTypeOf recEval)
       )
   : forall (e : WellFormedValue L) Gamma (T : TypeFix LT),
     typeOf (proj1_sig e) = Some T ->
-    WFValueC WT (eval (proj1_sig e) Gamma) T.
+    WellTyped WT (eval (proj1_sig e) Gamma) T.
 Proof.
   move => e Gamma T TO.
   rewrite <- (reverseFoldWrapUnwrapFix_inverse _ (proj1_sig e)).
@@ -163,7 +157,7 @@ Proof.
           _
           (proj2_sig e)
       ).
-    rewrite / eval_alg_Soundness_P.
+    rewrite / SoundnessStatement__EvalAlgebra.
     move => e' E'.
     eapply E'.
     move => Gamma' [[f F][g G]].
