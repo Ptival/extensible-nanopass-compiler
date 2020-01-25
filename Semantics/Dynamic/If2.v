@@ -27,26 +27,27 @@ Definition eval__If2
        | None => stuck "The condition of a binary branch was not a boolean"
        end.
 
-Global Instance EvalAlgebra__If2
+Global Instance Eval__If2
        {V} `{FunctorLaws V}
        `{! V supports Bool}
        `{! V supports Stuck}
   : forall {T}, ProgramAlgebra Eval If2 T (EvalResult V)
   := fun _ => {| programAlgebra := eval__If2; |}.
 
-Inductive Eval__If2 {L V}
-          `{FunctorLaws L} `{FunctorLaws V}
-          `{! L supports If2}
+Inductive EvalP__If2
+          {E V}
+          `{FunctorLaws E} `{FunctorLaws V}
+          `{! E supports If2}
           `{! V supports Bool}
-          (Eval : (WellFormedValue L * WellFormedValue V) -> Prop)
-  : (WellFormedValue L * WellFormedValue V) -> Prop
+          (EvalP__E : (WellFormedValue E * WellFormedValue V) -> Prop)
+  : (WellFormedValue E * WellFormedValue V) -> Prop
   :=
   | If2True : forall c t e t',
-      Eval (c, boolean true) ->
-      Eval (t, t') ->
-      Eval__If2 Eval (if2 c t e, t')
+      EvalP__E (c, boolean true) ->
+      EvalP__E (t, t') ->
+      EvalP__If2 EvalP__E (if2 c t e, t')
   | If2False : forall c t e e',
-      Eval (c, boolean false) ->
-      Eval (e, e') ->
-      Eval__If2 Eval (if2 c t e, e')
+      EvalP__E (c, boolean false) ->
+      EvalP__E (e, e') ->
+      EvalP__If2 EvalP__E (if2 c t e, e')
 .

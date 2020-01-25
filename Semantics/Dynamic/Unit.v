@@ -17,19 +17,19 @@ Definition eval__Unit
   : forall {T}, MixinAlgebra Unit T (EvalResult V)
   := fun T rec '(MkUnit) env => unit.
 
-Global Instance EvalAlgebra__Unit
+Global Instance Eval__Unit
        {V} `{FunctorLaws V}
        `{! V supports Unit}
   : forall {T}, ProgramAlgebra Eval Unit T (EvalResult V)
   := fun T => {| programAlgebra := eval__Unit; |}.
 
-Inductive Eval__Unit
+Inductive EvalP__Unit
           {L V}
           `{FunctorLaws L} `{FunctorLaws V}
           `{! L supports Unit}
           `{! V supports Unit}
-          (Eval : (WellFormedValue L * WellFormedValue V) -> Prop)
+          (EvalP__E : (WellFormedValue L * WellFormedValue V) -> Prop)
   : (WellFormedValue L * WellFormedValue V) -> Prop
   :=
-  | UnitValue : Eval__Unit Eval (unit, unit)
+  | UnitValue : EvalP__Unit EvalP__E (unit, unit)
 .

@@ -133,25 +133,81 @@ Definition unwrap__UP' (* cf. [out_t_UP'] *)
   : F (WellFormedValue F)
   := fold (fmap wrap__UP') v.
 
-Theorem wrap_unwrap__UP' (* cf. [in_out_UP'_inverse] *)
-        H `{FunctorLaws H}
-  : forall (h : Fix H),
-    Fold__UP' h ->
-    proj1_sig (wrap__UP' (unwrap__UP' h)) = h.
-Proof.
-  move => h UP /=.
-  admit.
-Admitted.
-
 Lemma unwrap__UP'_wrap__F
-      {F} `{FunctorLaws F}
-  : forall (e : F (Fix F)),
+      E `{FunctorLaws E}
+  : forall (e : E (Fix E)),
     unwrap__UP' (wrap__F e) = fmap (fun e => wrap__UP' (unwrap__UP' e)) e.
 Proof.
   move => e.
   rewrite {1} / unwrap__UP'.
   setoid_rewrite Fold__UP => //.
   rewrite fmapFusion //.
+Qed.
+
+Lemma fmap_unwrap__UP'
+      E `{FunctorLaws E}
+  : forall (e : Fix E),
+    Fold__UP' e ->
+    fmap (@proj1_sig _ _) (unwrap__UP' e) = unwrap__F e.
+Proof.
+  move => e UP__e.
+  rewrite / unwrap__F.
+  apply (fold__UP' _ _ (fun e => fmap (@proj1_sig _ _) (unwrap__UP' e))).
+  move => e'.
+  rewrite fmapFusion / Extras.compose.
+  rewrite unwrap__UP'_wrap__F.
+  rewrite fmapFusion //.
+Qed.
+
+Lemma fmap_wrap__F
+      E `{FunctorLaws E}
+  :
+    (fun (R : Set) (rec : R -> E (Fix E)) (e : E R) => fmap wrap__F (fmap rec e))
+    =
+    (fun (R : Set) (rec : R -> E (Fix E)) (e : E R) => fmap (fun r => wrap__F (rec r)) e).
+Proof.
+  eapply functional_extensionality_dep => R.
+  eapply functional_extensionality_dep => rec.
+  eapply functional_extensionality_dep => e.
+  rewrite fmapFusion //.
+Qed.
+
+Lemma unwrap__F_wrap__F
+   E `{FunctorLaws E}
+  : forall (e : E (Fix E)),
+    unwrap__F (wrap__F e) = fmap (fun e => wrap__F (unwrap__F e)) e.
+Proof.
+  move => e.
+  rewrite / unwrap__F /=.
+  erewrite (MendlerFold__UP _ _ (fun R rec fp => fmap (fun r => wrap__F (rec r)) fp)) => //.
+  rewrite / fold / mendlerFold.
+  eapply functional_extensionality.
+  move => e'.
+  rewrite fmap_wrap__F //.
+Qed.
+
+Lemma wrap__F_unwrap__F
+      E `{FunctorLaws E}
+  : forall (e : Fix E),
+    Fold__UP' e ->
+    wrap__F (unwrap__F e) = e.
+Proof.
+  move => e UP__e.
+  rewrite <- fold_wrap__F_Identity => //.
+  apply (fold__UP' _ _ (fun e => wrap__F (unwrap__F e))).
+  move => e'.
+  rewrite unwrap__F_wrap__F //.
+Qed.
+
+Theorem wrap_unwrap__UP' (* cf. [in_out_UP'_inverse] *)
+        E `{FunctorLaws E}
+  : forall (e : Fix E),
+    Fold__UP' e ->
+    proj1_sig (wrap__UP' (unwrap__UP' e)) = e.
+Proof.
+  move => e UP__e /=.
+  rewrite fmap_unwrap__UP'.
+  rewrite wrap__F_unwrap__F //.
 Qed.
 
 (**

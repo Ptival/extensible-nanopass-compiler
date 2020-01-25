@@ -29,7 +29,7 @@ Definition eval__If1
        | None => stuck "The condition of a unary branch did not evaluate to a boolean value"
        end.
 
-Global Instance EvalAlgebra__If1
+Global Instance Eval__If1
        {V} `{FunctorLaws V}
        `{! V supports Bool}
        `{! V supports Unit}
@@ -37,19 +37,19 @@ Global Instance EvalAlgebra__If1
   : forall {T}, ProgramAlgebra Eval If1 T (EvalResult V)
   := fun T => {| programAlgebra := eval__If1; |}.
 
-Inductive Eval__If1 {E V}
+Inductive EvalP__If1 {E V}
           `{FunctorLaws E} `{FunctorLaws V}
           `{! E supports If1}
           `{! V supports Bool}
           `{! V supports Unit}
-          (Eval : (WellFormedValue E * WellFormedValue V) -> Prop)
+          (EvalP__E : (WellFormedValue E * WellFormedValue V) -> Prop)
   : (WellFormedValue E * WellFormedValue V) -> Prop
   :=
   | If1True : forall c t t',
-      Eval (c, boolean true) ->
-      Eval (t, t') ->
-      Eval__If1 Eval (if1 c t, t')
+      EvalP__E (c, boolean true) ->
+      EvalP__E (t, t') ->
+      EvalP__If1 EvalP__E (if1 c t, t')
   | If1alse : forall c t,
-      Eval (c, boolean false) ->
-      Eval__If1 Eval (if1 c t, unit)
+      EvalP__E (c, boolean false) ->
+      EvalP__If1 EvalP__E (if1 c t, unit)
 .

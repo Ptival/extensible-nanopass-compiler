@@ -99,13 +99,13 @@ Definition SourceExpr := Bool + If1 + Unit.
 Definition TargetExpr := Bool + If2 + Unit.
 Definition Value := Bool + Stuck + Unit.
 
-Definition Eval__Source
+Definition EvalP__Source
   : (WellFormedValue SourceExpr * WellFormedValue Value)-indexedProp
-  := (Eval__Bool + Eval__If1)%IndexedSum1.
+  := (EvalP__Bool + EvalP__If1)%IndexedSum1.
 
-Definition Eval__Target
+Definition EvalP__Target
   : (WellFormedValue TargetExpr * WellFormedValue Value)-indexedProp
-  := (Eval__Bool + Eval__If2 + Eval__Unit)%IndexedSum1.
+  := (EvalP__Bool + EvalP__If2 + EvalP__Unit)%IndexedSum1.
 
 Definition removeUnaryIfs
            (e : WellFormedValue SourceExpr)
@@ -118,12 +118,12 @@ Proof. reflexivity. Qed.
 
 Theorem removeUnaryIfsCorrectness
   : forall e v,
-    IndexedFix Eval__Source (e, v) ->
-    IndexedFix Eval__Target (removeUnaryIfs e, v).
+    IndexedFix EvalP__Source (e, v) ->
+    IndexedFix EvalP__Target (removeUnaryIfs e, v).
 Proof.
   move => e v S.
   pose proof (@iUnwrapFix) as U.
-  specialize (U _ Eval__Source).
+  specialize (U _ EvalP__Source).
 
   (* TODO: IndexedFunctor instances *)
 
