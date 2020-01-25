@@ -3,21 +3,21 @@
 Definition Environment (A : Set) := list A.
 
 Fixpoint lookup
-         {A: Set} (env : Environment A) (i : nat)
+         {A: Set} (Gamma : Environment A) (i : nat)
   : option A :=
-  match (env, i) with
-  | (nil,         _)            => None
-  | (cons _ env', S i') => lookup env' i'
-  | (cons a _,    0)       => Some a
+  match (Gamma, i) with
+  | (nil,         _) => None
+  | (cons _ Gamma, S i') => lookup Gamma i'
+  | (cons a _,    0) => Some a
   end.
 
 Fixpoint insert
-         {A : Set} (e : A) (env : Environment A)
+         {A : Set} (e : A) (Gamma : Environment A)
   : Environment A
   :=
-    match env with
-    | nil          => cons e (nil)
-    | cons e' env' => cons e' (insert e env')
+    match Gamma with
+    | nil       => cons e (nil)
+    | cons e' Gamma => cons e' (insert e Gamma)
     end.
 
 Definition empty A

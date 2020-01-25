@@ -143,6 +143,17 @@ Proof.
   admit.
 Admitted.
 
+Lemma unwrap__UP'_wrap__F
+      {F} `{FunctorLaws F}
+  : forall (e : F (Fix F)),
+    unwrap__UP' (wrap__F e) = fmap (fun e => wrap__UP' (unwrap__UP' e)) e.
+Proof.
+  move => e.
+  rewrite {1} / unwrap__UP'.
+  setoid_rewrite Fold__UP => //.
+  rewrite fmapFusion //.
+Qed.
+
 (**
 This could be called [inject__UP'], but we will use it a lot, so it gets to be
 [inject].
