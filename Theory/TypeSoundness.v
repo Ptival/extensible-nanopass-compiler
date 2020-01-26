@@ -130,8 +130,9 @@ Lemma Soundness__Eval
       `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
       (WT : (TypedExpr T V -> Prop) -> TypedExpr T V -> Prop)
       `{Eval__E   : forall {R}, ProgramAlgebra Eval   E R (EvalResult   V)}
-      `{TypeOf__E : forall {R}, ProgramAlgebra TypeOf E R (TypeOfResult T)}
       `{WFEval__E : ! WellFormedMendlerAlgebra (@Eval__E)}
+      `{TypeOf__E : forall {R}, ProgramAlgebra TypeOf E R (TypeOfResult T)}
+      `{WFTypeOf__E : ! WellFormedMendlerAlgebra (@TypeOf__E)}
       (soundness__EvalAlgebra : Soundness__EvalAlgebra WT)
       (WF_eval_Soundness_alg_F :
          forall recEval recTypeOf,
@@ -142,22 +143,42 @@ Lemma Soundness__Eval
     WellTyped WT tau (eval (proj1_sig e) Gamma).
 Proof.
   move => e Gamma tau TO.
-  rewrite <- (wrap_unwrap__UP' _ (proj1_sig e)).
+  rewrite <- (wrap__UP'_unwrap__UP' (proj1_sig e) (proj2_sig e)).
+  rewrite /= / eval / mendlerFold / wrap__F.
+  rewrite wellFormedMendlerAlgebra / mendlerFold.
+  elim (
+      Induction2
+        (PA := soundness__EvalAlgebra (fun e => eval (proj1_sig e)) (fun e => typeOf (proj1_sig e)))
+        _
+        (proj2_sig e)
+    ) => e' E'.
+  apply:  E'.
+  (* Missing: one premise *)
+  (* Missing: one premise *)
+  move => Gamma' a IH tau1 TY1.
+  rewrite / eval / mendlerFold /= / wrap__F.
+  rewrite wellFormedMendlerAlgebra.
+  rewrite / mendlerFold.
+  apply : IH.
   {
-    rewrite // / eval / mendlerFold / wrap__UP' / wrap__F /=.
-    rewrite wellFormedMendlerAlgebra.
-    rewrite / mendlerFold.
-    elim (
-        Induction2
-          (PA := soundness__EvalAlgebra (fun e => eval (proj1_sig e)) (fun e => typeOf (proj1_sig e)))
-          _
-          (proj2_sig e)
-      ).
-    rewrite / SoundnessStatement__EvalAlgebra.
-    move => e' E'.
-    eapply E'.
-    move => Gamma' [[f F][g G]].
-    rewrite wrap_unwrap__UP' /=.
-    rewrite / eval / mendlerFold / unwrap__F / programAlgebra'.
-    admit.
-Admitted.
+    rewrite <- (wrap__UP'_unwrap__UP' (proj1_sig (snd a)) (proj2_sig (snd a))) in TY1.
+    rewrite /= in TY1.
+    rewrite / typeOf / mendlerFold / wrap__F in TY1.
+    erewrite wellFormedMendlerAlgebra in TY1 => //.
+  }
+  {
+    rewrite <- (wrap__F_unwrap__F (proj1_sig e) (proj2_sig e)) in TO.
+    rewrite / typeOf / mendlerFold / wrap__F /= in TO.
+    rewrite / programAlgebra'.
+    erewrite <- wellFormedMendlerAlgebra.
+    rewrite /= / unwrap__UP'.
+    erewrite Fusion.
+    {
+      eapply TO.
+    }
+    {
+      move => a.
+      do 2 rewrite fmapFusion => //.
+    }
+  }
+Qed.

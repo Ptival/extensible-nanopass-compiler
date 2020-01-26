@@ -134,7 +134,7 @@ Definition unwrap__UP' (* cf. [out_t_UP'] *)
   := fold (fmap wrap__UP') v.
 
 Lemma unwrap__UP'_wrap__F
-      E `{FunctorLaws E}
+      {E} `{FunctorLaws E}
   : forall (e : E (Fix E)),
     unwrap__UP' (wrap__F e) = fmap (fun e => wrap__UP' (unwrap__UP' e)) e.
 Proof.
@@ -145,7 +145,7 @@ Proof.
 Qed.
 
 Lemma fmap_unwrap__UP'
-      E `{FunctorLaws E}
+      {E} `{FunctorLaws E}
   : forall (e : Fix E),
     Fold__UP' e ->
     fmap (@proj1_sig _ _) (unwrap__UP' e) = unwrap__F e.
@@ -160,7 +160,7 @@ Proof.
 Qed.
 
 Lemma fmap_wrap__F
-      E `{FunctorLaws E}
+      {E} `{FunctorLaws E}
   :
     (fun (R : Set) (rec : R -> E (Fix E)) (e : E R) => fmap wrap__F (fmap rec e))
     =
@@ -173,7 +173,7 @@ Proof.
 Qed.
 
 Lemma unwrap__F_wrap__F
-   E `{FunctorLaws E}
+   {E} `{FunctorLaws E}
   : forall (e : E (Fix E)),
     unwrap__F (wrap__F e) = fmap (fun e => wrap__F (unwrap__F e)) e.
 Proof.
@@ -187,7 +187,7 @@ Proof.
 Qed.
 
 Lemma wrap__F_unwrap__F
-      E `{FunctorLaws E}
+      {E} `{FunctorLaws E}
   : forall (e : Fix E),
     Fold__UP' e ->
     wrap__F (unwrap__F e) = e.
@@ -199,8 +199,8 @@ Proof.
   rewrite unwrap__F_wrap__F //.
 Qed.
 
-Theorem wrap_unwrap__UP' (* cf. [in_out_UP'_inverse] *)
-        E `{FunctorLaws E}
+Theorem wrap__UP'_unwrap__UP' (* cf. [in_out_UP'_inverse] *)
+        {E} `{FunctorLaws E}
   : forall (e : Fix E),
     Fold__UP' e ->
     proj1_sig (wrap__UP' (unwrap__UP' e)) = e.
