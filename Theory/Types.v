@@ -1,10 +1,14 @@
-From Coq Require Import ssreflect.
+From Coq Require Import
+     ssreflect
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import ProofAlgebra.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Functor
+     ProgramAlgebra
+     ProofAlgebra
+     UniversalProperty
+.
 
 (** [TypeFix] is just an alias for [UniversalPropertyF], but it makes it so that
     code that depends on wrapping types can use this, in case we ever need to

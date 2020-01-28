@@ -3,17 +3,21 @@ From Coq Require Import
      String
 .
 
-From ExtensibleCompiler.Syntax.Terms Require Import Bool.
-From ExtensibleCompiler.Syntax.Terms Require Import If1.
-From ExtensibleCompiler.Syntax.Terms Require Import Stuck.
-From ExtensibleCompiler.Syntax.Terms Require Import Unit.
+From ExtensibleCompiler.Syntax Require Import
+     Terms.Bool
+     Terms.If1
+     Terms.Stuck
+     Terms.Unit
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Eval.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Eval
+     Functor
+     ProgramAlgebra
+     SubFunctor
+     UniversalProperty
+.
 
 Local Open Scope SubFunctor_scope.
 

@@ -1,8 +1,12 @@
-From Coq Require Import ssreflect.
+From Coq Require Import
+     ssreflect
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import Sum1.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Functor
+     Sum1
+.
 
 Local Open Scope Sum1_scope.
 

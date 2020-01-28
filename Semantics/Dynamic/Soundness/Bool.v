@@ -1,27 +1,31 @@
-From Coq Require Import ssreflect.
+From Coq Require Import
+     ssreflect
+.
 
-From ExtensibleCompiler Require Import
+From ExtensibleCompiler.Semantics Require Import
+     Dynamic.Eval.Bool
+     Static.TypeOf.Bool
+     Static.WellTyped.Bool
+.
 
-     Semantics.Dynamic.Eval.Bool
-     Semantics.Static.TypeOf.Bool
-     Semantics.Static.WellTyped.Bool
+From ExtensibleCompiler.Syntax Require Import
+     Terms.Bool
+     Types.BoolType
+.
 
-     Syntax.Terms.Bool
-     Syntax.Types.BoolType
-
-     Theory.Algebra
-     Theory.Eval
-     Theory.Functor
-     Theory.IndexedAlgebra
-     Theory.IndexedFunctor
-     Theory.IndexedSubFunctor
-     Theory.ProofAlgebra
-     Theory.ProgramAlgebra
-     Theory.SubFunctor
-     Theory.Types
-     Theory.TypeSoundness
-     Theory.UniversalProperty
-
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Eval
+     Functor
+     IndexedAlgebra
+     IndexedFunctor
+     IndexedSubFunctor
+     ProofAlgebra
+     ProgramAlgebra
+     SubFunctor
+     Types
+     TypeSoundness
+     UniversalProperty
 .
 
 Local Open Scope SubFunctor_scope.

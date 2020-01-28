@@ -1,14 +1,18 @@
-From Coq Require Import ssreflect.
+From Coq Require Import
+     ssreflect
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Eval.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import ProofAlgebra.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import Sum1.
-From ExtensibleCompiler.Theory Require Import Types.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Eval
+     Functor
+     ProofAlgebra
+     ProgramAlgebra
+     SubFunctor
+     Sum1
+     Types
+     UniversalProperty
+.
 
 Local Open Scope SubFunctor_scope.
 

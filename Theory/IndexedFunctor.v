@@ -1,4 +1,6 @@
-From ExtLib Require Import Programming.Extras.
+From ExtLib Require Import
+     Programming.Extras
+.
 
 Notation "I '-indexedProp'" := (I -> Prop) (at level 50, only parsing).
 Notation "I '-indexedPropFunctor'" := (I-indexedProp -> I-indexedProp) (at level 50).

@@ -1,10 +1,14 @@
-From Coq Require Import FunctionalExtensionality.
-From Coq Require Import ssreflect.
-From Coq Require Import String.
+From Coq Require Import
+     FunctionalExtensionality
+     ssreflect
+     String
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Functor
+     SubFunctor
+.
 
 Local Open Scope SubFunctor_scope.
 

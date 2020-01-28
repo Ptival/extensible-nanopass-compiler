@@ -1,6 +1,8 @@
-From ExtensibleCompiler.Theory Require Import IndexedAlgebra.
-From ExtensibleCompiler.Theory Require Import IndexedFunctor.
-From ExtensibleCompiler.Theory Require Import IndexedSum1.
+From ExtensibleCompiler.Theory Require Import
+     IndexedAlgebra
+     IndexedFunctor
+     IndexedSum1
+.
 
 Local Open Scope IndexedSum1_scope.
 

@@ -1,4 +1,6 @@
-From ExtensibleCompiler.Theory Require Import IndexedFunctor.
+From ExtensibleCompiler.Theory Require Import
+     IndexedFunctor
+.
 
 Delimit Scope IndexedSum1_scope with IndexedSum1.
 Open Scope IndexedSum1_scope.

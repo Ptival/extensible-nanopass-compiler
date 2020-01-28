@@ -1,29 +1,35 @@
-From Coq Require Import ssreflect.
-From Coq Require Import String.
+From Coq Require Import
+     ssreflect
+     String
+.
 
-From ExtensibleCompiler.Semantics.Dynamic.Eval Require Import If2.
+From ExtensibleCompiler.Semantics Require Import
+     Dynamic.Eval.If2
+     Static.TypeOf.If2
+     Static.WellTyped.If2
+.
 
-From ExtensibleCompiler.Semantics.Static.TypeOf Require Import If2.
-From ExtensibleCompiler.Semantics.Static.WellTyped Require Import If2.
+From ExtensibleCompiler.Syntax Require Import
+     Terms.Bool
+     Terms.If2
+     Terms.Stuck
+     Types.BoolType
+.
 
-From ExtensibleCompiler.Syntax.Types Require Import BoolType.
-
-From ExtensibleCompiler.Syntax.Terms Require Import Bool.
-From ExtensibleCompiler.Syntax.Terms Require Import If2.
-From ExtensibleCompiler.Syntax.Terms Require Import Stuck.
-
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Eval.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import IndexedAlgebra.
-From ExtensibleCompiler.Theory Require Import IndexedFunctor.
-From ExtensibleCompiler.Theory Require Import IndexedSubFunctor.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import ProofAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import Types.
-From ExtensibleCompiler.Theory Require Import TypeSoundness.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Eval
+     Functor
+     IndexedAlgebra
+     IndexedFunctor
+     IndexedSubFunctor
+     ProgramAlgebra
+     ProofAlgebra
+     SubFunctor
+     Types
+     TypeSoundness
+     UniversalProperty
+.
 
 Local Open Scope SubFunctor_scope.
 

@@ -1,14 +1,22 @@
-From Coq Require Import ssreflect.
+From Coq Require Import
+     ssreflect
+.
 
-From ExtensibleCompiler.Syntax.Terms Require Import Bool.
+From ExtensibleCompiler.Syntax.Terms Require Import
+     Bool
+.
 
-From ExtensibleCompiler.Syntax.Types Require Import BoolType.
+From ExtensibleCompiler.Syntax.Types Require Import
+     BoolType
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import Types.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Functor
+     ProgramAlgebra
+     SubFunctor
+     Types
+.
 
 Local Open Scope SubFunctor_scope.
 

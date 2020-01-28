@@ -1,12 +1,16 @@
-From ExtensibleCompiler.Syntax.Terms Require Import If1.
-From ExtensibleCompiler.Syntax.Terms Require Import If2.
-From ExtensibleCompiler.Syntax.Terms Require Import Unit.
+From ExtensibleCompiler.Syntax Require Import
+     Terms.If1
+     Terms.If2
+     Terms.Unit
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Functor
+     ProgramAlgebra
+     SubFunctor
+     UniversalProperty
+.
 
 Local Open Scope SubFunctor_scope.
 

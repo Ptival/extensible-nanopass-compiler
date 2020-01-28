@@ -1,4 +1,6 @@
-From ExtensibleCompiler.Theory Require Import Functor.
+From ExtensibleCompiler.Theory Require Import
+     Functor
+.
 
 Delimit Scope Sum1_scope with Sum1.
 Open Scope Sum1_scope.
