@@ -1,22 +1,19 @@
-From Coq Require Import ssreflect.
-From Coq Require Import String.
+From Coq Require Import
+     ssreflect
+     String
+.
 
-From ExtensibleCompiler.Syntax.Terms Require Import Bool.
-From ExtensibleCompiler.Syntax.Terms Require Import If2.
-From ExtensibleCompiler.Syntax.Terms Require Import Stuck.
+From ExtensibleCompiler.Syntax.Terms Require Import
+     Bool
+     If2
+     Stuck
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Eval.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import IndexedAlgebra.
-From ExtensibleCompiler.Theory Require Import IndexedFunctor.
-From ExtensibleCompiler.Theory Require Import IndexedSubFunctor.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import ProofAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import Types.
-From ExtensibleCompiler.Theory Require Import TypeSoundness.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+From ExtensibleCompiler.Theory Require Import
+     Functor
+     SubFunctor
+     UniversalProperty
+.
 
 Local Open Scope SubFunctor_scope.
 
@@ -24,13 +21,13 @@ Section If2.
 
   Context
 
-    {V}
-    `{FunctorLaws V}
-    `{! V supports Bool}
-
     {E}
     `{FunctorLaws E}
     `{! E supports If2}
+
+    {V}
+    `{FunctorLaws V}
+    `{! V supports Bool}
 
   .
 

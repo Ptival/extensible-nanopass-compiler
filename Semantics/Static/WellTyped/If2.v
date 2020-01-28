@@ -1,22 +1,31 @@
-From Coq Require Import ssreflect.
+From Coq Require Import
+     ssreflect
+.
 
-From ExtensibleCompiler.Syntax.Terms Require Import If2.
+From ExtensibleCompiler.Syntax.Terms Require Import
+     If2
+.
 
-From ExtensibleCompiler.Syntax.Types Require Import BoolType.
+From ExtensibleCompiler.Syntax.Types Require Import
+     BoolType
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import IndexedFunctor.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import TypeSoundness.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Functor
+     IndexedFunctor
+     ProgramAlgebra
+     SubFunctor
+     TypeSoundness
+     UniversalProperty
+.
 
 Local Open Scope SubFunctor_scope.
 
 Section If2.
 
   Context
+
     {T}
     `{FunctorLaws T}
     `{! T supports BoolType}
@@ -25,6 +34,7 @@ Section If2.
     {E}
     `{FunctorLaws E}
     `{E supports If2}
+
   .
 
   Inductive WellTyped__If2

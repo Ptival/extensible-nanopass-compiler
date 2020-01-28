@@ -1,17 +1,19 @@
-From Coq Require Import ssreflect.
-From Coq Require Import String.
+From Coq Require Import
+     ssreflect
+     String
+.
 
-From ExtensibleCompiler.Syntax.Terms Require Import Bool.
-From ExtensibleCompiler.Syntax.Terms Require Import If1.
-From ExtensibleCompiler.Syntax.Terms Require Import Stuck.
-From ExtensibleCompiler.Syntax.Terms Require Import Unit.
+From ExtensibleCompiler.Syntax.Terms Require Import
+     Bool
+     If1
+     Unit
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Eval.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+From ExtensibleCompiler.Theory Require Import
+     Functor
+     SubFunctor
+     UniversalProperty
+.
 
 Local Open Scope SubFunctor_scope.
 
@@ -23,6 +25,7 @@ captures how [If1] evaluates in a larger language [E].
    *)
 
   Context
+
     {E}
     `{FunctorLaws E}
     `{! E supports If1}
@@ -31,6 +34,7 @@ captures how [If1] evaluates in a larger language [E].
     `{FunctorLaws V}
     `{! V supports Bool}
     `{! V supports Unit}
+
   .
 
   Inductive EvalRelation__If1

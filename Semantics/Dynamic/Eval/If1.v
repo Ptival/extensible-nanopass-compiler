@@ -1,5 +1,7 @@
-From Coq Require Import ssreflect.
-From Coq Require Import String.
+From Coq Require Import
+     ssreflect
+     String
+.
 
 From ExtensibleCompiler.Syntax.Terms Require Import Bool.
 From ExtensibleCompiler.Syntax.Terms Require Import If1.
@@ -55,7 +57,7 @@ placeholder, for when the condition does not evaluate to a boolean value.
     : WellFormedMendlerAlgebra Eval__If1'.
   Proof.
     constructor.
-    move => T T' f rec [] //.
+    move => ???? [] //.
   Qed.
 
 End If1.

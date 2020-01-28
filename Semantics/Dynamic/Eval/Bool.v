@@ -1,13 +1,20 @@
-From Coq Require Import ssreflect.
+From Coq Require Import
+     ssreflect
+     String
+.
 
-From ExtensibleCompiler.Syntax.Terms Require Import Bool.
+From ExtensibleCompiler.Syntax.Terms Require Import
+     Bool
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Eval.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Eval
+     Functor
+     ProgramAlgebra
+     SubFunctor
+     UniversalProperty
+.
 
 Local Open Scope SubFunctor_scope.
 
@@ -31,7 +38,7 @@ Section Bool.
     : WellFormedMendlerAlgebra (fun _ => Eval__Bool).
   Proof.
     constructor.
-    move => T T' f rec [] b //.
+    move => ???? [] //.
   Qed.
 
 End Bool.

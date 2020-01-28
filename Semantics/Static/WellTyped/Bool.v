@@ -1,38 +1,46 @@
-From Coq Require Import ssreflect.
+From Coq Require Import
+     ssreflect
+.
 
-From ExtensibleCompiler.Semantics.Dynamic.Eval Require Import Bool.
+From ExtensibleCompiler.Syntax.Terms Require Import
+     Bool
+.
 
-From ExtensibleCompiler.Syntax.Terms Require Import Bool.
+From ExtensibleCompiler.Syntax.Types Require Import
+     BoolType
+.
 
-From ExtensibleCompiler.Syntax.Types Require Import BoolType.
-
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Eval.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import IndexedFunctor.
-From ExtensibleCompiler.Theory Require Import IndexedSubFunctor.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import TypeSoundness.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Eval
+     Functor
+     IndexedFunctor
+     IndexedSubFunctor
+     ProgramAlgebra
+     SubFunctor
+     TypeSoundness
+     UniversalProperty
+.
 
 Local Open Scope SubFunctor_scope.
 
 Section Bool.
 
   Context
-    {V}
-    `{FunctorLaws V}
-    `{! V supports Bool}
+
+    {T}
+    `{FunctorLaws T}
+    `{! T supports BoolType}
 
     {E}
     `{FunctorLaws E}
     `{! E supports Bool}
     `{! WellFormedSubFunctor Bool E}
 
-    {T}
-    `{FunctorLaws T}
-    `{! T supports BoolType}
+    {V}
+    `{FunctorLaws V}
+    `{! V supports Bool}
+
   .
 
   Inductive WellTyped__Bool

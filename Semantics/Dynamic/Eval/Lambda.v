@@ -1,16 +1,22 @@
-From Coq Require Import String.
+From Coq Require Import
+     String
+.
 
-From ExtensibleCompiler.Syntax.Terms Require Import Closure.
-From ExtensibleCompiler.Syntax.Terms Require Import Lambda.
-From ExtensibleCompiler.Syntax.Terms Require Import Stuck.
+From ExtensibleCompiler.Syntax.Terms Require Import
+     Closure
+     Lambda
+     Stuck
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Environment.
-From ExtensibleCompiler.Theory Require Import Eval.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Environment
+     Eval
+     Functor
+     ProgramAlgebra
+     SubFunctor
+     UniversalProperty
+.
 
 Local Open Scope SubFunctor_scope.
 
@@ -22,8 +28,8 @@ Section Lambda.
     `{FunctorLaws T}
 
     {E}
-    `{! forall Var, Functor (E Var)}
-    `{! forall Var, FunctorLaws (E Var)}
+    `{! forall B, Functor (E B)}
+    `{! forall B, FunctorLaws (E B)}
     `{(E nat) supports (Closure E)}
     `{(E nat) supports Stuck}
 
@@ -47,7 +53,7 @@ Section Lambda.
            end
          end.
 
-  Global Instance EvalAlgebra__Lambda
+  Global Instance Eval__Lambda
     : ProgramAlgebra ForEval (Lambda T nat) (ValueFix (E nat)) (EvalResult (E nat))
     := {| programAlgebra := eval__Lambda; |}.
 

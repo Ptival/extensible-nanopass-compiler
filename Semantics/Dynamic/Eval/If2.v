@@ -1,16 +1,22 @@
-From Coq Require Import ssreflect.
-From Coq Require Import String.
+From Coq Require Import
+     ssreflect
+     String
+.
 
-From ExtensibleCompiler.Syntax.Terms Require Import Bool.
-From ExtensibleCompiler.Syntax.Terms Require Import If2.
-From ExtensibleCompiler.Syntax.Terms Require Import Stuck.
+From ExtensibleCompiler.Syntax.Terms Require Import
+     Bool
+     If2
+     Stuck
+.
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Eval.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Eval
+     Functor
+     ProgramAlgebra
+     SubFunctor
+     UniversalProperty
+.
 
 Local Open Scope SubFunctor_scope.
 
@@ -46,7 +52,7 @@ Section If2.
     : WellFormedMendlerAlgebra Eval__If2'.
   Proof.
     constructor.
-    move => T T' f rec [] //.
+    move => ???? [] //.
   Qed.
 
 End If2.
