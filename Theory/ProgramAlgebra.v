@@ -1,3 +1,5 @@
+From Coq Require Import ssreflect.
+
 From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
@@ -66,24 +68,24 @@ Global Instance
       ;
     |}.
 
-Global Instance
-       ProgramAlgebraLeft {Label F G}
+Global Instance ProgramAlgebraLeft
+       Label F G
        `{FunctorLaws F}
        `{FunctorLaws G}
-  : forall {T}, ProgramAlgebra Label F T (WellFormedValue (F + G))
-  := fun T =>
+  : forall {R}, ProgramAlgebra Label F R (WellFormedValue (F + G))
+  := fun _ =>
     {|
       programAlgebra :=
         fun rec v => wrap__UP' (inl1 (fmap rec v))
       ;
     |}.
 
-Global Instance
-       ProgramAlgebraRight {Label F G}
+Global Instance ProgramAlgebraRight
+       Label F G
        `{FunctorLaws F}
        `{FunctorLaws G}
-  : forall {T}, ProgramAlgebra Label G T (WellFormedValue (F + G))
-  := fun T =>
+  : forall {R}, ProgramAlgebra Label G R (WellFormedValue (F + G))
+  := fun _ =>
     {|
       programAlgebra :=
         fun rec v => wrap__UP' (inr1 (fmap rec v))
@@ -172,11 +174,59 @@ Qed.
 Class WellFormedMendlerAlgebra (* cf. [WF_Malgebra] *)
       {Label F A}
       `{FunctorLaws F}
-      (MAlg : forall T, ProgramAlgebra Label F T A)
+      (alg : forall T, ProgramAlgebra Label F T A)
   :=
     {
       wellFormedMendlerAlgebra (* cf. [wf_malgebra] *)
       : forall (T T' : Set) (f : T' -> T) (rec : T -> A) (ft : F T'),
-        programAlgebra (ProgramAlgebra := MAlg T) rec (fmap f ft) =
-        programAlgebra (ProgramAlgebra := MAlg T') (fun ft' => rec (f ft')) ft
+        programAlgebra (ProgramAlgebra := alg T) rec (fmap f ft) =
+        programAlgebra (ProgramAlgebra := alg T') (fun ft' => rec (f ft')) ft
     }.
+
+Global Instance
+       WellFormedMendlerAlgebraSum1 (* cf. [WF_Malgebra_Plus] *)
+       {Label F G A}
+       `{FunctorLaws F} `{FunctorLaws G}
+       `{alg__F : ! forall {R}, ProgramAlgebra Label F R A}
+       `{alg__G : ! forall {R}, ProgramAlgebra Label G R A}
+       `{! WellFormedMendlerAlgebra (@alg__F)}
+       `{! WellFormedMendlerAlgebra (@alg__G)}
+  : WellFormedMendlerAlgebra (F := F + G) (fun _ => ProgramAlgebraSum1 Label F G).
+Proof.
+  constructor.
+  move => T T' f rec [].
+  - apply wellFormedMendlerAlgebra.
+  - apply wellFormedMendlerAlgebra.
+Qed.
+
+Global Instance
+       WellFormedMendlerAlgebra_Left
+       {Label F G A}
+       `{FunctorLaws F} `{FunctorLaws G}
+       `{alg__F : ! forall {R}, ProgramAlgebra Label F R A}
+       `{alg__G : ! forall {R}, ProgramAlgebra Label G R A}
+       `{! WellFormedMendlerAlgebra (@alg__F)}
+       `{! WellFormedMendlerAlgebra (@alg__G)}
+  : WellFormedMendlerAlgebra (fun _ => ProgramAlgebraLeft Label F G).
+Proof.
+  constructor.
+  move => T T' f rec ft.
+  rewrite / programAlgebra / ProgramAlgebraLeft.
+  rewrite fmapFusion //.
+Qed.
+
+Global Instance
+       WellFormedMendlerAlgebra_Right
+       {Label F G A}
+       `{FunctorLaws F} `{FunctorLaws G}
+       `{alg__F : ! forall {R}, ProgramAlgebra Label F R A}
+       `{alg__G : ! forall {R}, ProgramAlgebra Label G R A}
+       `{! WellFormedMendlerAlgebra (@alg__F)}
+       `{! WellFormedMendlerAlgebra (@alg__G)}
+  : WellFormedMendlerAlgebra (fun _ => ProgramAlgebraRight Label F G).
+Proof.
+  constructor.
+  move => T T' f rec ft.
+  rewrite / programAlgebra / ProgramAlgebraRight.
+  rewrite fmapFusion //.
+Qed.

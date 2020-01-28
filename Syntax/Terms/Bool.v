@@ -54,8 +54,17 @@ End One.
 
 Section Two.
 
-  Context {L} `{FunctorLaws L} `{! L supports Bool}.
-  Context {M} `{FunctorLaws M} `{! M supports Bool}.
+  Context
+    {L}
+    `{FunctorLaws L}
+    `{! L supports Bool}
+  .
+
+  Context
+    {M}
+    `{FunctorLaws M}
+    `{! M supports Bool}
+  .
 
   Definition Induction2Algebra_Bool
              (P : forall (e : Fix L * Fix M), Fold__UP' (fst e) /\ Fold__UP' (snd e) -> Prop)

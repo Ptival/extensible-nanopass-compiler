@@ -1,3 +1,5 @@
+From Coq Require Import ssreflect.
+
 From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import Sum1.
@@ -12,6 +14,11 @@ Class SubFunctor (F G : Set -> Set)
   {
     inj : forall {A}, F A -> G A;
     prj : forall {A}, G A -> option (F A);
+    inj_prj : forall {A} (ga : G A) (fa : F A),
+        prj ga = Some fa ->
+        ga = inj fa;
+    prj_inj : forall {A} (fa : F A),
+        prj (inj fa) = Some fa;
   }.
 
 Delimit Scope SubFunctor_scope with SubFunctor.
@@ -32,6 +39,10 @@ Global Instance SubFunctorRefl {F}
     inj := fun _ fa => fa;
     prj := fun _ fa => Some fa;
   |}.
+Proof.
+  - move => ??? [] //.
+  - move => ?? //.
+Defined.
 
 Global Instance SubFunctorLeft {F G H}
        `{S : SubFunctor F G} `{FunctorLaws H}
@@ -44,6 +55,16 @@ Global Instance SubFunctorLeft {F G H}
              | inr1 _  => None
              end;
   |}.
+Proof.
+  {
+    move => ? [] => // ?? EQ.
+    rewrite (inj_prj _ _ EQ) //.
+  }
+  {
+    move => ??.
+    rewrite prj_inj //.
+  }
+Defined.
 
 Global Instance SubFunctorRight {F G H}
        `{S : SubFunctor F H} `{FunctorLaws G}
@@ -56,6 +77,16 @@ Global Instance SubFunctorRight {F G H}
              | inr1 ha => prj ha
              end;
   |}.
+Proof.
+  {
+    move => ? [] => // ?? EQ.
+    rewrite (inj_prj _ _ EQ) //.
+  }
+  {
+    move => ??.
+    rewrite prj_inj //.
+  }
+Defined.
 
 Definition
   subFunctorMendlerAlgebra {F G}

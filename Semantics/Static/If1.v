@@ -12,30 +12,35 @@ From ExtensibleCompiler.Theory Require Import Types.
 
 Local Open Scope SubFunctor_scope.
 
-Definition typeOf__If1
-           {LT} `{FunctorLaws LT}
-           `{LT supports BoolType}
-           `{LT supports UnitType}
-  : forall {T}, MixinAlgebra If1 T (TypeOfResult LT)
-  := fun _ rec '(MkIf1 c t) =>
-       match rec c with
-       | Some cType =>
-         if isBoolType (proj1_sig cType)
-         then
-           match rec t with
-           | Some tType =>
-             if isUnitType (proj1_sig tType)
-             then Some unitType'
-             else None
-           | None => None
-           end
-         else None
-       | None => None
-       end.
+Section If1.
 
-Global Instance TypeOf__If1
-       {LT} `{FunctorLaws LT}
-       `{LT supports BoolType}
-       `{LT supports UnitType}
-  : forall {T}, ProgramAlgebra TypeOf If1 T (TypeOfResult LT)
-  := fun _ => {| programAlgebra := typeOf__If1; |}.
+  Context
+    {LT}
+    `{FunctorLaws LT}
+    `{LT supports BoolType}
+    `{LT supports UnitType}
+  .
+
+  Definition typeOf__If1
+    : forall {T}, MixinAlgebra If1 T (TypeOfResult LT)
+    := fun _ rec '(MkIf1 c t) =>
+         match rec c with
+         | Some cType =>
+           if isBoolType (proj1_sig cType)
+           then
+             match rec t with
+             | Some tType =>
+               if isUnitType (proj1_sig tType)
+               then Some unitType'
+               else None
+             | None => None
+             end
+           else None
+         | None => None
+         end.
+
+  Global Instance TypeOf__If1
+    : forall {T}, ProgramAlgebra ForTypeOf If1 T (TypeOfResult LT)
+    := fun _ => {| programAlgebra := typeOf__If1; |}.
+
+End If1.

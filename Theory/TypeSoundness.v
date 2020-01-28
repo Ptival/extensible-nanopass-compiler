@@ -6,6 +6,7 @@ From ExtensibleCompiler.Theory Require Import Eval.
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import IndexedAlgebra.
 From ExtensibleCompiler.Theory Require Import IndexedFunctor.
+From ExtensibleCompiler.Theory Require Import IndexedSubFunctor.
 From ExtensibleCompiler.Theory Require Import ProofAlgebra.
 From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
@@ -32,7 +33,7 @@ think I am using it yet, so leaving it hardcoded until it becomes necessary.
 Definition WellTyped
            {T E}
            `{FunctorLaws T} `{FunctorLaws E}
-           (WT : (TypedExpr T E)-indexedProp)
+           (WT : (TypedExpr T E)-indexedPropFunctor)
            t e
   : Prop
   := IndexedFix WT {| type := t; expr := e; |}.
@@ -46,10 +47,10 @@ abstracted over the operation to run recursively, namely [recEval] and
 
  *)
 
-Definition SoundnessStatement__EvalAlgebra (* cf. eval_alg_Soundness_P *)
+Definition AbstractSoundnessStatement (* cf. eval_alg_Soundness_P *)
            {T E F V}
            `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws F} `{FunctorLaws V}
-           (WT : (TypedExpr T V -> Prop) -> TypedExpr T V -> Prop)
+           (WT : (TypedExpr T V)-indexedPropFunctor)
            `{eval__E   : forall {R}, MixinAlgebra E R (EvalResult   V)}
            `{typeOf__F : forall {R}, MixinAlgebra F R (TypeOfResult T)}
            (recEval   : UniversalPropertyF E -> EvalResult   V)
@@ -91,52 +92,38 @@ Definition SoundnessStatement__EvalAlgebra (* cf. eval_alg_Soundness_P *)
       typeOf__F recTypeOf (unwrap__UP' (snd e)) = Some tau ->
       WellTyped WT tau (eval__E recEval (unwrap__UP' (fst e)) Gamma).
 
-Definition Soundness__EvalAlgebra
+Variant ForSoundness := .
+
+Definition Soundness__ProofAlgebra
            {T E V}
            `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
-           (WT : (TypedExpr T V -> Prop) -> TypedExpr T V -> Prop)
-           `{Eval__E   : forall {R}, ProgramAlgebra Eval   E R (EvalResult   V)}
-           `{TypeOf__E : forall {R}, ProgramAlgebra TypeOf E R (TypeOfResult T)}
+           (WT : (TypedExpr T V)-indexedPropFunctor)
+           `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
+           `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
   := forall recEval recTypeOf,
-    ProofAlgebra
+    ProofAlgebra ForSoundness
       E
       (sig
          (UniversalPropertyP2
-            (SoundnessStatement__EvalAlgebra
+            (AbstractSoundnessStatement
                (eval__E   := fun _ => programAlgebra' Eval__E)
                (typeOf__F := fun _ => programAlgebra' TypeOf__E)
                WT
                recEval recTypeOf
       ))).
 
-Definition SoundnessStatement__Eval
-           {T E V}
-           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
-           (WT : (TypedExpr T V -> Prop) -> TypedExpr T V -> Prop)
-           `{Eval__E   : forall {R}, ProgramAlgebra Eval   E R (EvalResult   V)}
-           `{TypeOf__E : forall {R}, ProgramAlgebra TypeOf E R (TypeOfResult T)}
-           (recEval   : UniversalPropertyF E -> EvalResult   V)
-           (recTypeOf : UniversalPropertyF E -> TypeOfResult T)
-           (e : Fix E)
-           (RFUP_e : Fold__UP' e)
-  : Prop
-  :=
-    forall Gamma (tau : TypeFix T),
-      typeOf e = Some tau ->
-      WellTyped WT tau (eval e Gamma).
-
-Lemma Soundness__Eval
+Lemma Soundness
       {T E V}
       `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
-      (WT : (TypedExpr T V -> Prop) -> TypedExpr T V -> Prop)
-      `{Eval__E   : forall {R}, ProgramAlgebra Eval   E R (EvalResult   V)}
+      (WT : (TypedExpr T V)-indexedPropFunctor)
+      `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
       `{WFEval__E : ! WellFormedMendlerAlgebra (@Eval__E)}
-      `{TypeOf__E : forall {R}, ProgramAlgebra TypeOf E R (TypeOfResult T)}
+      `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
       `{WFTypeOf__E : ! WellFormedMendlerAlgebra (@TypeOf__E)}
-      (soundness__EvalAlgebra : Soundness__EvalAlgebra WT)
+      (soundness__ProofAlgebra : Soundness__ProofAlgebra WT)
       (WF_eval_Soundness_alg_F :
          forall recEval recTypeOf,
-           WellFormedProofAlgebra2 (soundness__EvalAlgebra recEval recTypeOf)
+           WellFormedProofAlgebra2 (soundness__ProofAlgebra recEval recTypeOf)
       )
   : forall (e : WellFormedValue E) Gamma (tau : TypeFix T),
     typeOf (proj1_sig e) = Some tau ->
@@ -148,7 +135,7 @@ Proof.
   rewrite wellFormedMendlerAlgebra / mendlerFold.
   elim (
       Induction2
-        (PA := soundness__EvalAlgebra (fun e => eval (proj1_sig e)) (fun e => typeOf (proj1_sig e)))
+        (PA := soundness__ProofAlgebra (fun e => eval (proj1_sig e)) (fun e => typeOf (proj1_sig e)))
         _
         (proj2_sig e)
     ) => e' E'.
@@ -182,3 +169,42 @@ Proof.
     }
   }
 Qed.
+
+(*
+A more concise version of [AbstractSoundnessStatement], to be used in client
+files.
+ *)
+Definition AbstractSoundnessStatement'
+           {T E V}
+           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           (WT : (TypedExpr T V)-indexedPropFunctor)
+           `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
+           `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
+           (recEval   : UniversalPropertyF E -> EvalResult   V)
+           (recTypeOf : UniversalPropertyF E -> TypeOfResult T)
+  :=
+    (AbstractSoundnessStatement
+       WT
+       (eval__E   := fun _ => programAlgebra' Eval__E)
+       (typeOf__F := fun _ => programAlgebra' TypeOf__E)
+       recEval recTypeOf
+    ).
+
+(*
+A nicer version of [AbstractSoundnessStatement], to be used in client files.
+ *)
+Definition SoundnessStatement
+           {T E V}
+           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           (WT : (TypedExpr T V)-indexedPropFunctor)
+           `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
+           `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
+           (recEval   : UniversalPropertyF E -> EvalResult   V)
+           (recTypeOf : UniversalPropertyF E -> TypeOfResult T)
+           (e : Fix E)
+           (RFUP_e : Fold__UP' e)
+  : Prop
+  :=
+    forall Gamma (tau : TypeFix T),
+      typeOf e = Some tau ->
+      WellTyped WT tau (eval e Gamma).

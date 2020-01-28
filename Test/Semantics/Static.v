@@ -36,11 +36,11 @@ Inductive Result :=
 .
 
 
-Variant ComputeResult := .
+Variant ForComputeResult := .
 
 (* Algebra to turn the extensible results into concrete results *)
 Global Instance computeResult
-  : forall T, ProgramAlgebra ComputeResult LT T Result
+  : forall T, ProgramAlgebra ForComputeResult LT T Result
   := fun _ =>
        {|
          programAlgebra :=

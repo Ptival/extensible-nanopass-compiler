@@ -26,25 +26,25 @@ Definition
   : forall {T}, MixinAlgebra L T (WellFormedValue V)
   := fun _ rec v => inject (fmap rec v).
 
-Variant RemoveUnaryIfs := .
+Variant ForRemoveUnaryIfs := .
 
 Global Instance Algebra__RemoveUnaryIfsIf1
   {V} `{FunctorLaws V}
   `{! V supports Unit}
   `{! V supports If2}
-  : forall {T}, ProgramAlgebra RemoveUnaryIfs If1 T (WellFormedValue V)
+  : forall {T}, ProgramAlgebra ForRemoveUnaryIfs If1 T (WellFormedValue V)
 | 0
   := fun T => {| programAlgebra := removeUnaryIfs__If1; |}.
 
 Global Instance Algebra__RemoveUnaryIfsOther
   {L V} `{FunctorLaws L} `{FunctorLaws V}
   `{! V supports L}
-  : forall {T}, ProgramAlgebra RemoveUnaryIfs L T (WellFormedValue V)
+  : forall {T}, ProgramAlgebra ForRemoveUnaryIfs L T (WellFormedValue V)
 | 1
   := fun T => {| programAlgebra := removeUnaryIfs__Other; |}.
 
 Definition removeUnaryIfs
            {L V}
            `{FunctorLaws L} `{FunctorLaws V}
-           {removeUnaryIfs__L : forall T, ProgramAlgebra RemoveUnaryIfs L T (WellFormedValue V)}
+           {removeUnaryIfs__L : forall T, ProgramAlgebra ForRemoveUnaryIfs L T (WellFormedValue V)}
   := mendlerFold (fun _ => @programAlgebra _ _ _ _ _ _ (removeUnaryIfs__L _)).

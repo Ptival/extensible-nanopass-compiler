@@ -1,3 +1,5 @@
+From Coq Require Import ssreflect.
+
 From ExtensibleCompiler.Syntax.Terms Require Import Bool.
 
 From ExtensibleCompiler.Syntax.Types Require Import BoolType.
@@ -10,12 +12,32 @@ From ExtensibleCompiler.Theory Require Import Types.
 
 Local Open Scope SubFunctor_scope.
 
-Definition typeOf__Bool
-           {LT} `{FunctorLaws LT} `{LT supports BoolType}
-  : forall {T}, MixinAlgebra Bool T (TypeOfResult LT)
-  := fun _ rec '(MkBool _) => Some boolType'.
+Section Bool.
 
-Global Instance TypeOf__Bool
-       {LT} `{FunctorLaws LT} `{LT supports BoolType}
-  : forall {T}, ProgramAlgebra TypeOf Bool T (TypeOfResult LT)
-  := fun _ => {| programAlgebra := typeOf__Bool; |}.
+  Context
+    {T}
+    `{FunctorLaws T}
+    `{! T supports BoolType}
+    `{! WellFormedSubFunctor BoolType T}
+  .
+
+  Definition typeOf__Bool
+    : forall {R}, MixinAlgebra Bool R (TypeOfResult T)
+    := fun _ rec '(MkBool _) => Some boolType'.
+
+  Global Instance TypeOf__Bool
+    : forall {R}, ProgramAlgebra ForTypeOf Bool R (TypeOfResult T)
+    := fun _ => {| programAlgebra := typeOf__Bool; |}.
+
+  Global Instance TypeOf__Bool'
+    : forall R, ProgramAlgebra ForTypeOf Bool R (TypeOfResult T)
+    := fun _ => TypeOf__Bool.
+
+  Global Instance WellFormedMendlerAlgebra_TypeOf__Bool
+    : WellFormedMendlerAlgebra TypeOf__Bool'.
+  Proof.
+    constructor.
+    move => T' T'' f rec [] //.
+  Qed.
+
+End Bool.

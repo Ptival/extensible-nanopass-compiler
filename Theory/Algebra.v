@@ -1,4 +1,5 @@
 From ExtensibleCompiler.Theory Require Import Functor.
+From ExtensibleCompiler.Theory Require Import Sum1.
 
 Definition Algebra (F : Set -> Set) (A : Set)
   := F A -> A.

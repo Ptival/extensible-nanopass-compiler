@@ -14,7 +14,7 @@ Local Open Scope SubFunctor_scope.
 Definition typeOf__Lambda
            {LT} `{FunctorLaws LT}
            `{LT supports ArrowType}
-           `{typeEqualityForLT : forall {T}, ProgramAlgebra TypeEquality LT T (TypeEqualityResult LT)}
+           `{typeEqualityForLT : forall {T}, ProgramAlgebra ForTypeEquality LT T (TypeEqualityResult LT)}
   : forall {T}, MixinAlgebra (Lambda LT (TypeOfResult LT)) T (TypeOfResult LT)
   := fun _ rec v =>
        match v with
@@ -23,7 +23,7 @@ Definition typeOf__Lambda
          | (Some tf, Some ta) =>
            match isArrowType (proj1_sig tf) with
            | Some (td, tc) =>
-             if typeEquality LT (proj1_sig td) ta
+             if typeEquality (proj1_sig td) ta
              then Some tc
              else None
            | _ => None
@@ -39,8 +39,8 @@ Definition typeOf__Lambda
        end.
 
 Global Instance TypeOf__Lambda
-       {LT} `{FunctorLaws LT}
-       `{LT supports ArrowType}
-       `{typeEqualityForLT : forall {T}, ProgramAlgebra TypeEquality LT T (TypeEqualityResult LT)}
-  : forall {T}, ProgramAlgebra TypeOf (Lambda LT (TypeOfResult LT)) T (TypeOfResult LT)
+       {T} `{FunctorLaws T}
+       `{T supports ArrowType}
+       `{typeEqualityForT : forall {R}, ProgramAlgebra ForTypeEquality T R (TypeEqualityResult T)}
+  : forall {R}, ProgramAlgebra ForTypeOf (Lambda T (TypeOfResult T)) R (TypeOfResult T)
   := fun _ => {| programAlgebra := typeOf__Lambda; |}.

@@ -74,5 +74,5 @@ Definition typeEquality_UnitType
 Global Instance TypeEquality_UnitType
        LT `{FunctorLaws LT} `{LT supports UnitType}
        T
-  : ProgramAlgebra TypeEquality UnitType T (TypeEqualityResult LT)
+  : ProgramAlgebra ForTypeEquality UnitType T (TypeEqualityResult LT)
   := {| programAlgebra := typeEquality_UnitType LT T|}.

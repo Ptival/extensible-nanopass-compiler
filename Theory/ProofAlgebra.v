@@ -18,21 +18,41 @@ advanced algebras like Mendler of Mixin.  Simple, plain old algebras suffice.
 In practice, we will use them at type [sig P] for a given property [P] to prove
 about the term of interest.
 
+In order to distinguish some [ProofAlgebra]s that would otherwise have the
+same signature, each [ProofAlgebra] is given a unique [Label].  This helps
+the typeclass mechanism find the appropriate instance among a bunch of program
+algebras with the same carrier types.
+
+You can just create a new label with:
+[Variant MyLabel := .]
+The type does not need any inhabitant, we only use its type identity.
+
 *)
 
 Class ProofAlgebra (* cf. [PAlgebra] *)
-      F `{Functor F} A :=
+      (Label : Set) F `{Functor F} A :=
   {
     proofAlgebra (* cf. [p_algebra] *)
     : Algebra F A;
   }.
 
+(**
+Just like [proofAlgebra], but when you want to provide the [ProofAlgebra]
+explicitly.
+ *)
+Definition proofAlgebra'
+           {Label F A}
+           `{FunctorLaws F}
+      (PA : ProofAlgebra Label F A)
+  := proofAlgebra (ProofAlgebra := PA).
+
 Global Instance
        ProofAlgebraSum1
-       {A}
-       {F} `{Functor F} (FAlg : ProofAlgebra F A)
-       {G} `{Functor G} (GAlg : ProofAlgebra G A)
-  : ProofAlgebra (F + G) A
+       {Label F G A}
+       `{Functor F} `{Functor G}
+       (FAlg : ProofAlgebra Label F A)
+       (GAlg : ProofAlgebra Label G A)
+  : ProofAlgebra Label (F + G) A
   :=
     {|
       proofAlgebra :=
@@ -69,9 +89,9 @@ F (Σ (e : Fix G) . P e) ---------------> Σ (e : Fix G) . P e
     dependent pair, only about its [proj1_sig].
 *)
 Class WellFormedProofAlgebra (* cf. [WF_Ind] *)
-      {F G}
+      {Label F G}
       `{S : SubFunctor F G}
-      {P : Fix G -> Prop} `(PA : ! ProofAlgebra F (sig P))
+      {P : Fix G -> Prop} `(PA : ! ProofAlgebra Label F (sig P))
   :=
     {
       projEq
@@ -85,9 +105,9 @@ Class WellFormedProofAlgebra (* cf. [WF_Ind] *)
 
 (** TODO: document why we need this *)
 Class WellFormedProofAlgebra2 (* cf. [WF_Ind2] *)
-      {F G H}
+      {Label F G H}
       `{SG : SubFunctor F G} `{SH : SubFunctor F H}
-      {P : (Fix G * Fix H) -> Prop} `(PA : ! ProofAlgebra F (sig P))
+      {P : (Fix G * Fix H) -> Prop} `(PA : ! ProofAlgebra Label F (sig P))
   :=
     {
       proj1Eq
@@ -160,13 +180,13 @@ Proof.
 Qed.
 
 Lemma proj1_fold_is_id
-      {F} `{FunctorLaws F}
+      {Label F} `{FunctorLaws F}
       {P : Fix F -> Prop}
-      {PA : ProofAlgebra F (sig P)}
+      {PA : ProofAlgebra Label F (sig P)}
       {WFPA : WellFormedProofAlgebra PA}
   : forall (f : Fix F),
     Fold__UP' f ->
-    proj1_sig (fold (@proofAlgebra _ _ _ PA) f) = f.
+    proj1_sig (fold (proofAlgebra' PA) f) = f.
 Proof.
   move => f UP.
   setoid_rewrite Fusion' with (g := wrap__F) => //.
@@ -180,13 +200,13 @@ Proof.
 Qed.
 
 Lemma fst_proj1_fold_is_id
-      {F} `{FunctorLaws F}
+      {Label F} `{FunctorLaws F}
       {P : (Fix F * Fix F) -> Prop}
-      {PA : ProofAlgebra F (sig P)}
+      {PA : ProofAlgebra Label F (sig P)}
       {WFPA : WellFormedProofAlgebra2 PA}
   : forall (f : Fix F),
     Fold__UP' f ->
-    fst (proj1_sig (fold (@proofAlgebra _ _ _ PA) f)) = f.
+    fst (proj1_sig (fold (proofAlgebra' PA) f)) = f.
 Proof.
   move => f UP.
   setoid_rewrite (Fusion' f _ _ (fun e => fst (proj1_sig e)) _ wrap__F).
@@ -200,13 +220,13 @@ Proof.
 Qed.
 
 Lemma snd_proj1_fold_is_id
-      {F} `{FunctorLaws F}
+      {Label F} `{FunctorLaws F}
       {P : (Fix F * Fix F) -> Prop}
-      {PA : ProofAlgebra F (sig P)}
+      {PA : ProofAlgebra Label F (sig P)}
       {WFPA : WellFormedProofAlgebra2 PA}
   : forall (f : Fix F),
     Fold__UP' f ->
-    snd (proj1_sig (fold (@proofAlgebra _ _ _ PA) f)) = f.
+    snd (proj1_sig (fold (proofAlgebra' PA) f)) = f.
 Proof.
   move => f UP.
   setoid_rewrite (Fusion' f _ _ (fun e => snd (proj1_sig e)) _ wrap__F).
@@ -220,9 +240,9 @@ Proof.
 Qed.
 
 Lemma Induction (* cf. [Ind] *)
-      {F} `{FunctorLaws F}
+      {Label F} `{FunctorLaws F}
       {P : Fix F -> Prop}
-      {PA : ProofAlgebra F (sig P)}
+      {PA : ProofAlgebra Label F (sig P)}
       {WFPA : WellFormedProofAlgebra PA}
   : forall (f : Fix F),
     Fold__UP' f ->
@@ -234,9 +254,9 @@ Proof.
 Qed.
 
 Lemma Induction'
-      {F} `{Functor F} `{FunctorLaws F}
+      {Label F} `{Functor F} `{FunctorLaws F}
       {P : Fix F -> Prop}
-      {PA : ProofAlgebra F (sig P)}
+      {PA : ProofAlgebra Label F (sig P)}
       {WFPA : WellFormedProofAlgebra PA}
   : forall (f : WellFormedValue F), P (proj1_sig f).
 Proof.
@@ -245,9 +265,9 @@ Proof.
 Qed.
 
 Lemma Induction2 (* cf. [Ind2] *)
-      {F} `{FunctorLaws F}
+      {Label F} `{FunctorLaws F}
       {P : (Fix F * Fix F) -> Prop}
-      {PA : ProofAlgebra F (sig P)}
+      {PA : ProofAlgebra Label F (sig P)}
       {WFPA : WellFormedProofAlgebra2 PA}
   : forall (f : Fix F),
     Fold__UP' f ->

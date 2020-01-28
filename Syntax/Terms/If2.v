@@ -38,6 +38,12 @@ Definition if2
   : UniversalPropertyF L
   := inject (MkIf2 condition thenBranch elseBranch).
 
+Definition if2__F
+           {L} `{FunctorLaws L} `{L supports If2}
+           (condition thenBranch elseBranch : UniversalPropertyF L)
+  : Fix L
+  := proj1_sig (if2 condition thenBranch elseBranch).
+
 Definition if2_Fix_UPF
            {L} `{FunctorLaws L} `{L supports If2}
            (condition thenBranch elseBranch : Fix L)
@@ -95,7 +101,7 @@ Definition if2_UPP_Fix
 (*                   (exist _ _ H_elseBranch) *)
 (*                ). *)
 
-Definition If2Induction
+Definition Induction__If2
            {F} `{FunctorLaws F} `{S : F supports If2}
            (P : forall (e : Fix F), Fold__UP' e -> Prop)
            (Hif2 : forall (c t e : Fix F)
@@ -113,6 +119,8 @@ Definition If2Induction
 (** NOTE: we don't let [SubFunctor] introduce implicitly because it would
 introduce a copy of [Functor If2] and make a mess... *)
 
+Variant ForInduction :=.
+
 Global Instance If2ProofAlgebra
        {F} `{FunctorLaws F} `{S : ! F supports If2}
        `(P : forall (e : Fix F), Fold__UP' e -> Prop)
@@ -121,8 +129,8 @@ Global Instance If2ProofAlgebra
                    (H_t : UniversalPropertyP P t)
                    (H_e : UniversalPropertyP P e),
             UniversalPropertyP P (if2_UPP_Fix H_c H_t H_e))
-  : ProofAlgebra If2 (sig (UniversalPropertyP P))
-  := {| proofAlgebra := If2Induction P H_if2; |}.
+  : ProofAlgebra ForInduction If2 (sig (UniversalPropertyP P))
+  := {| proofAlgebra := Induction__If2 P H_if2; |}.
 
 Global Instance If2ProofAlgebraWellFormed
        F `{FunctorLaws F} `{! F supports If2} `{! WellFormedSubFunctor If2 F}
@@ -136,9 +144,57 @@ Global Instance If2ProofAlgebraWellFormed
   : WellFormedProofAlgebra (If2ProofAlgebra P H_if2).
 Proof.
   constructor.
-  rewrite /= / If2Induction.
+  rewrite /= / Induction__If2.
   move => [] c t e /=.
   rewrite / if2_UPP_Fix / if2 / if2 / inject /=.
   erewrite wellFormedSubFunctor => /=.
   reflexivity.
 Qed.
+
+Section Two.
+
+  Context
+    {E}
+    `{FunctorLaws E}
+    `{! E supports If2}
+  .
+
+  Context
+    {F}
+    `{FunctorLaws F}
+    `{! F supports If2}
+  .
+
+  Definition Induction2Algebra__If2
+             (P : forall (e : Fix E * Fix F), Fold__UP' (fst e) /\ Fold__UP' (snd e) -> Prop)
+             (H__if2  : forall c t e
+                        (H__c : UniversalPropertyP2 P c)
+                        (H__t : UniversalPropertyP2 P t)
+                        (H__e : UniversalPropertyP2 P e)
+               ,
+                 UniversalPropertyP2
+                   P
+                   (if2__F
+                      (exist _ _ (proj1 (proj1_sig H__c)))
+                      (exist _ _ (proj1 (proj1_sig H__t)))
+                      (exist _ _ (proj1 (proj1_sig H__e)))
+                    ,
+                    if2__F
+                      (exist _ _ (proj2 (proj1_sig H__c)))
+                      (exist _ _ (proj2 (proj1_sig H__t)))
+                      (exist _ _ (proj2 (proj1_sig H__e)))
+             ))
+    : Algebra If2 (sig (UniversalPropertyP2 P))
+    := fun '(MkIf2 c t e) =>
+         exist
+           (UniversalPropertyP2 P) _
+           (H__if2
+              (proj1_sig c)
+              (proj1_sig t)
+              (proj1_sig e)
+              (proj2_sig c)
+              (proj2_sig t)
+              (proj2_sig e)
+           ).
+
+End Two.

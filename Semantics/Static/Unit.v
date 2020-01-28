@@ -1,3 +1,5 @@
+From Coq Require Import ssreflect.
+
 From ExtensibleCompiler.Syntax.Terms Require Import Unit.
 
 From ExtensibleCompiler.Syntax.Types Require Import UnitType.
@@ -11,12 +13,32 @@ From ExtensibleCompiler.Theory Require Import UniversalProperty.
 
 Local Open Scope SubFunctor_scope.
 
-Definition typeOf__UnitType
-           {LT} `{FunctorLaws LT} `{LT supports UnitType}
-  : forall {T}, MixinAlgebra Unit T (TypeOfResult LT)
-  := fun _ rec '(Unit) => Some unitType'.
+Section UnitType.
 
-Global Instance TypeOf__Unit
-       LT `{FunctorLaws LT} `{LT supports UnitType}
-  : forall {T}, ProgramAlgebra TypeOf Unit T (TypeOfResult LT)
-  := fun _ => {| programAlgebra := typeOf__UnitType; |}.
+  Context
+    {T}
+    `{FunctorLaws T}
+    `{! T supports UnitType}
+    `{! WellFormedSubFunctor UnitType T}
+  .
+
+  Definition typeOf__UnitType
+  : forall {R}, MixinAlgebra Unit R (TypeOfResult T)
+    := fun _ rec '(Unit) => Some unitType'.
+
+  Global Instance TypeOf__Unit
+    : forall {R}, ProgramAlgebra ForTypeOf Unit R (TypeOfResult T)
+    := fun _ => {| programAlgebra := typeOf__UnitType; |}.
+
+  Definition TypeOf__Unit'
+    : forall R, ProgramAlgebra ForTypeOf Unit R (TypeOfResult T)
+    := fun _ => TypeOf__Unit.
+
+  Global Instance WellFormedMendlerAlgebra_TypeOf__Unit
+    : WellFormedMendlerAlgebra TypeOf__Unit'.
+  Proof.
+    constructor.
+    move => T' T'' f rec [] //.
+  Qed.
+
+End UnitType.
