@@ -3,40 +3,46 @@ From Coq Require Import
      String
 .
 
-From ExtensibleCompiler Require Import
+From ExtensibleCompiler.Passes Require Import
+     RemoveUnaryIfs
+.
 
-     Passes.RemoveUnaryIfs
+From ExtensibleCompiler.Semantics.All Require Import
+     Bool
+     If1
+     If2
+     Lambda
+     Unit
+.
 
-     Semantics.All.Bool
-     Semantics.All.If1
-     Semantics.All.If2
-     Semantics.All.Lambda
-     Semantics.All.Unit
+From ExtensibleCompiler.Syntax.Terms Require Import
+     Bool
+     If1
+     If2
+     Stuck
+     Unit
+.
 
-     Syntax.Terms.Bool
-     Syntax.Terms.If1
-     Syntax.Terms.If2
-     Syntax.Terms.Stuck
-     Syntax.Terms.Unit
+From ExtensibleCompiler.Syntax.Types Require Import
+     BoolType
+     UnitType
+.
 
-     Syntax.Types.BoolType
-     Syntax.Types.UnitType
-
-     Theory.Algebra
-     Theory.Environment
-     Theory.Eval
-     Theory.Functor
-     Theory.IndexedAlgebra
-     Theory.IndexedFunctor
-     Theory.IndexedSum1
-     Theory.ProgramAlgebra
-     Theory.ProofAlgebra
-     Theory.SubFunctor
-     Theory.Sum1
-     Theory.Types
-     Theory.TypeSoundness
-     Theory.UniversalProperty
-
+From ExtensibleCompiler.Theory Require Import
+     Algebra
+     Environment
+     Eval
+     Functor
+     IndexedAlgebra
+     IndexedFunctor
+     IndexedSum1
+     ProgramAlgebra
+     ProofAlgebra
+     SubFunctor
+     Sum1
+     Types
+     TypeSoundness
+     UniversalProperty
 .
 
 Local Open Scope Sum1_scope.
@@ -61,11 +67,11 @@ Inductive Result :=
 | EvalFailed
 .
 
-Variant ComputeResult := .
+Variant ForComputeResult := .
 
 (* Algebra to turn the extensible results into concrete results *)
 Global Instance computeResult
-  : forall T, ProgramAlgebra ComputeResult V T Result
+  : forall R, ProgramAlgebra ForComputeResult V R Result
   := fun _ =>
        {|
          programAlgebra :=
