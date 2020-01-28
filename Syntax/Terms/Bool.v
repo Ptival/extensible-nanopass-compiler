@@ -32,48 +32,48 @@ Proof.
   - move => ????? [] //.
 Qed.
 
-Definition boolean
-           {L} `{FunctorLaws L} `{L supports Bool}
-           (b : bool)
-  : UniversalPropertyF L
-  := inject (MkBool b).
+Section Bool.
 
-Definition booleanF
-           {L} `{FunctorLaws L} `{L supports Bool}
-           (b : bool)
-  : Fix L
-  := proj1_sig (boolean b).
+  Context
+    {E}
+    `{FunctorLaws E}
+    `{! E supports Bool}
+  .
 
-Section One.
+  Definition boolean
+             (b : bool)
+    : UniversalPropertyF E
+    := inject (MkBool b).
 
-  Context {L} `{FunctorLaws L} `{! L supports Bool}.
+  Definition booleanF
+             (b : bool)
+    : Fix E
+    := proj1_sig (boolean b).
 
   Definition InductionAlgebra_Bool
-             (P : forall (e : Fix L), FoldUP' e -> Prop)
+             (P : forall (e : Fix E), FoldUP' e -> Prop)
              (H_boolean : forall b, UniversalPropertyP P (booleanF b))
     : Algebra Bool (sig (UniversalPropertyP P))
     := fun '(MkBool b) => exist _ _ (H_boolean b).
 
-End One.
+End Bool.
 
-Section Two.
-
-  Context
-    {L}
-    `{FunctorLaws L}
-    `{! L supports Bool}
-  .
+Section Bool.
 
   Context
-    {M}
-    `{FunctorLaws M}
-    `{! M supports Bool}
+    {E}
+    `{FunctorLaws E}
+    `{! E supports Bool}
+
+    {F}
+    `{FunctorLaws F}
+    `{! F supports Bool}
   .
 
   Definition Induction2Algebra_Bool
-             (P : forall (e : Fix L * Fix M), FoldUP' (fst e) /\ FoldUP' (snd e) -> Prop)
+             (P : forall (e : Fix E * Fix F), FoldUP' (fst e) /\ FoldUP' (snd e) -> Prop)
              (H_boolean : forall b, UniversalPropertyP2 P (booleanF b, booleanF b))
     : Algebra Bool (sig (UniversalPropertyP2 P))
     := fun '(MkBool b) => exist _ _ (H_boolean b).
 
-End Two.
+End Bool.

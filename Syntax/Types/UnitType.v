@@ -25,14 +25,14 @@ Inductive UnitType (A : Set) : Set :=
 .
 Arguments MkUnitType {A}.
 
-Global Instance Functor_UnitType
+Global Instance Functor__UnitType
   : Functor UnitType
   :=
     {|
       fmap := fun A B f 'MkUnitType => MkUnitType;
     |}.
 
-Global Instance FunctorLaws_UnitType
+Global Instance FunctorLaws__UnitType
   : FunctorLaws UnitType.
 Proof.
   apply Build_FunctorLaws.
@@ -45,40 +45,35 @@ Proof.
 Qed.
 
 Definition unitType'
-           {LT} `{FunctorLaws LT} `{LT supports UnitType}
-  : TypeFix LT
+           {T} `{FunctorLaws T} `{T supports UnitType}
+  : TypeFix T
   := inject MkUnitType.
 
 Definition unitType
-           {LT} `{FunctorLaws LT} `{LT supports UnitType}
-  : Fix LT
+           {T} `{FunctorLaws T} `{T supports UnitType}
+  : Fix T
   := proj1_sig unitType'.
 
-Global Instance ReverseFoldUniversalProperty_unitType
-           {LT} `{FunctorLaws LT} `{LT supports UnitType}
+Global Instance FoldUP'__unitType
+           {T} `{FunctorLaws T} `{T supports UnitType}
   : FoldUP' unitType
   := proj2_sig unitType'.
 
 Definition isUnitType
-           {LT} `{FunctorLaws LT} `{LT supports UnitType}
-  : Fix LT -> bool
+           {T} `{FunctorLaws T} `{T supports UnitType}
+  : Fix T -> bool
   := fun typ =>
        match project typ with
        | Some MkUnitType => true
        | None            => false
        end.
 
-Definition typeEquality_UnitType
-           LT `{FunctorLaws LT} `{LT supports UnitType}
-           (R : Set) (rec : R -> TypeEqualityResult LT) (e : UnitType R)
-  : TypeEqualityResult LT
-  :=
-    match e with
-    | MkUnitType => fun t => isUnitType (proj1_sig t)
-    end.
+Definition typeEquality__UnitType
+           T `{FunctorLaws T} `{T supports UnitType}
+  : forall {R}, MixinAlgebra UnitType R (TypeEqualityResult T)
+  := fun _ _ '(MkUnitType) => fun t => isUnitType (proj1_sig t).
 
-Global Instance TypeEquality_UnitType
-       LT `{FunctorLaws LT} `{LT supports UnitType}
-       T
-  : ProgramAlgebra ForTypeEquality UnitType T (TypeEqualityResult LT)
-  := {| programAlgebra := typeEquality_UnitType LT T|}.
+Global Instance TypeEquality__UnitType
+       T `{FunctorLaws T} `{T supports UnitType}
+  : forall {R}, ProgramAlgebra ForTypeEquality UnitType R (TypeEqualityResult T)
+  := fun _ => {| programAlgebra := typeEquality__UnitType T; |}.

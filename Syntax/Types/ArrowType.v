@@ -20,11 +20,11 @@ Inductive ArrowType (A : Set) : Set :=
 .
 Arguments MkArrowType {A}.
 
-Global Instance Functor_ArrowType
+Global Instance Functor__ArrowType
   : Functor ArrowType
   := {| fmap := fun A B f '(MkArrowType d c) => MkArrowType (f d) (f c); |}.
 
-Global Instance FunctorLaws_ArrowType
+Global Instance FunctorLaws__ArrowType
   : FunctorLaws ArrowType.
 Proof.
   constructor.
@@ -33,26 +33,26 @@ Proof.
 Qed.
 
 Definition arrowType'
-           {LT} `{FunctorLaws LT} `{LT supports ArrowType}
+           {T} `{FunctorLaws T} `{T supports ArrowType}
            d c
-  : TypeFix LT
+  : TypeFix T
   := inject (MkArrowType d c).
 
 Definition arrowType
-           {LT} `{FunctorLaws LT} `{LT supports ArrowType}
+           {T} `{FunctorLaws T} `{T supports ArrowType}
            d c
-  : Fix LT
+  : Fix T
   := proj1_sig (arrowType' d c).
 
-Global Instance ReverseFoldUniversalProperty_arrowType
-       LT `{FunctorLaws LT} `{LT supports ArrowType}
+Global Instance FoldUP'__arrowType
+       T `{FunctorLaws T} `{T supports ArrowType}
        d c
   : FoldUP' (arrowType d c)
   := proj2_sig (arrowType' d c).
 
 Definition isArrowType
-           {LT} `{FunctorLaws LT} `{LT supports ArrowType}
-  : Fix LT -> option (TypeFix LT * TypeFix LT)%type
+           {T} `{FunctorLaws T} `{T supports ArrowType}
+  : Fix T -> option (TypeFix T * TypeFix T)%type
   := fun typ =>
        match project typ with
        | Some (MkArrowType d c) => Some (d, c)
@@ -62,16 +62,16 @@ Definition isArrowType
 (* FIXME *)
 
 (* Definition typeEquality_ArrowType *)
-(*            LT `{FunctorLaws LT} `{LT supports ArrowType} *)
-(*            (R : Set) (rec : R -> TypeEqualityResult LT) (e : ArrowType R) *)
-(*   : TypeEqualityResult LT *)
+(*            T `{FunctorLaws T} `{T supports ArrowType} *)
+(*            (R : Set) (rec : R -> TypeEqualityResult T) (e : ArrowType R) *)
+(*   : TypeEqualityResult T *)
 (*   := *)
 (*     match e with *)
 (*     | MkArrowType _ _ => fun t => isArrowType (proj1_sig t) *)
 (*     end. *)
 
 (* Global Instance TypeEquality_ArrowType *)
-(*        LT `{FunctorLaws LT} `{LT supports ArrowType} *)
+(*        T `{FunctorLaws T} `{T supports ArrowType} *)
 (*        T *)
-(*   : ProgramAlgebra TypeEquality ArrowType T (TypeEqualityResult LT) *)
-(*   := {| programAlgebra := typeEquality_ArrowType LT T|}. *)
+(*   : ProgramAlgebra TypeEquality ArrowType T (TypeEqualityResult T) *)
+(*   := {| programAlgebra := typeEquality_ArrowType T T|}. *)

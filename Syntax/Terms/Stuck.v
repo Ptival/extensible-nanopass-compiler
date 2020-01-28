@@ -30,13 +30,13 @@ Proof.
 Qed.
 
 Definition stuck
-           {L} `{FunctorLaws L} `{L supports Stuck}
+           {E} `{FunctorLaws E} `{E supports Stuck}
            (reason : string)
-  : UniversalPropertyF L
+  : UniversalPropertyF E
   := inject (MkStuck reason).
 
 Definition stuck_Fix
-           {L} `{FunctorLaws L} `{L supports Stuck}
+           {E} `{FunctorLaws E} `{E supports Stuck}
            (reason : string)
-  : Fix L
+  : Fix E
   := proj1_sig (stuck reason).

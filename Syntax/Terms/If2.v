@@ -39,68 +39,68 @@ Proof.
 Qed.
 
 Definition if2
-           {L} `{FunctorLaws L} `{L supports If2}
-           (condition thenBranch elseBranch : UniversalPropertyF L)
-  : UniversalPropertyF L
+           {E} `{FunctorLaws E} `{E supports If2}
+           (condition thenBranch elseBranch : UniversalPropertyF E)
+  : UniversalPropertyF E
   := inject (MkIf2 condition thenBranch elseBranch).
 
 Definition if2F
-           {L} `{FunctorLaws L} `{L supports If2}
-           (condition thenBranch elseBranch : UniversalPropertyF L)
-  : Fix L
+           {E} `{FunctorLaws E} `{E supports If2}
+           (condition thenBranch elseBranch : UniversalPropertyF E)
+  : Fix E
   := proj1_sig (if2 condition thenBranch elseBranch).
 
 Definition if2_Fix_UPF
-           {L} `{FunctorLaws L} `{L supports If2}
-           (condition thenBranch elseBranch : Fix L)
+           {E} `{FunctorLaws E} `{E supports If2}
+           (condition thenBranch elseBranch : Fix E)
            {H_condition  : FoldUP' condition}
            {H_thenBranch : FoldUP' thenBranch}
            {H_elseBranch : FoldUP' elseBranch}
-  : UniversalPropertyF L
+  : UniversalPropertyF E
   := if2
        (exist _ _ H_condition)
        (exist _ _ H_thenBranch)
        (exist _ _ H_elseBranch).
 
 Definition if2_Fix_Fix
-           {L} `{FunctorLaws L} `{L supports If2}
-           (condition thenBranch elseBranch : Fix L)
+           {E} `{FunctorLaws E} `{E supports If2}
+           (condition thenBranch elseBranch : Fix E)
            {H_condition  : FoldUP' condition}
            {H_thenBranch : FoldUP' thenBranch}
            {H_elseBranch : FoldUP' elseBranch}
-  : Fix L
+  : Fix E
   := proj1_sig (if2_Fix_UPF condition thenBranch elseBranch).
 
 Definition if2_UPP_UPF
-           {L} `{FunctorLaws L} `{L supports If2}
-           {condition thenBranch elseBranch : Fix L}
+           {E} `{FunctorLaws E} `{E supports If2}
+           {condition thenBranch elseBranch : Fix E}
            {P}
            (H_condition  : UniversalPropertyP P condition)
            (H_thenBranch : UniversalPropertyP P thenBranch)
            (H_elseBranch : UniversalPropertyP P elseBranch)
-  : UniversalPropertyF L
+  : UniversalPropertyF E
   := if2_Fix_UPF condition thenBranch elseBranch
        (H_condition  := proj1_sig H_condition)
        (H_thenBranch := proj1_sig H_thenBranch)
        (H_elseBranch := proj1_sig H_elseBranch).
 
 Definition if2_UPP_Fix
-           {L} `{FunctorLaws L} `{L supports If2}
-           {condition thenBranch elseBranch : Fix L}
+           {E} `{FunctorLaws E} `{E supports If2}
+           {condition thenBranch elseBranch : Fix E}
            {P}
            (H_condition  : UniversalPropertyP P condition)
            (H_thenBranch : UniversalPropertyP P thenBranch)
            (H_elseBranch : UniversalPropertyP P elseBranch)
-  : Fix L
+  : Fix E
   := proj1_sig (if2_UPP_UPF H_condition H_thenBranch H_elseBranch).
 
 (* Definition if2_UP_Fix *)
-(*            {L} `{FunctorLaws L} `{L supports If2} *)
-(*            {condition thenBranch elseBranch : Fix L} *)
+(*            {E} `{FunctorLaws E} `{E supports If2} *)
+(*            {condition thenBranch elseBranch : Fix E} *)
 (*            (H_condition  : FoldUP' condition) *)
 (*            (H_thenBranch : FoldUP' thenBranch) *)
 (*            (H_elseBranch : FoldUP' elseBranch) *)
-(*   : Fix L *)
+(*   : Fix E *)
 (*   := proj1_sig (if2 *)
 (*                   (exist _ _ H_condition) *)
 (*                   (exist _ _ H_thenBranch) *)

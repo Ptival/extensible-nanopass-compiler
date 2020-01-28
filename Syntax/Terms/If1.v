@@ -40,13 +40,13 @@ Proof.
 Qed.
 
 Definition if1
-           {L} `{FunctorLaws L} `{L supports If1} c t
-  : UniversalPropertyF L
+           {E} `{FunctorLaws E} `{E supports If1} c t
+  : UniversalPropertyF E
   := inject (MkIf1 c t).
 
 Definition if1__F
-           {L} `{FunctorLaws L} `{L supports If1} c t
-  : Fix L
+           {E} `{FunctorLaws E} `{E supports If1} c t
+  : Fix E
   := proj1_sig (if1 c t).
 
 (* Definition If1Induction *)

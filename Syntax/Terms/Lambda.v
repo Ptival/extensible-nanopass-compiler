@@ -16,20 +16,20 @@ From ExtensibleCompiler.Theory Require Import
 Local Open Scope SubFunctor_scope.
 
 Inductive Lambda
-          LT `{FLT : FunctorLaws LT}
-          (V L : Set)
+          T `{FunctorLaws T}
+          (B E : Set)
   : Set :=
-| App (function : L) (argument : L)
-| Lam (type : TypeFix LT) (lambda : V -> L)
-| Var (variable : V)
+| App (function : E) (argument : E)
+| Lam (type : TypeFix T) (lambda : B -> E)
+| Var (variable : B)
 .
-Arguments App {LT _ _ V L}.
-Arguments Lam {LT _ _ V L}.
-Arguments Var {LT _ _ V L}.
+Arguments App {T _ _ B E}.
+Arguments Lam {T _ _ B E}.
+Arguments Var {T _ _ B E}.
 
 Global Instance Functor__Lambda
-       {LT V} `{FunctorLaws LT}
-  : Functor (Lambda LT V)
+       {T B} `{FunctorLaws T}
+  : Functor (Lambda T B)
   := {|
       fmap :=
         fun A B f v =>
@@ -42,8 +42,8 @@ Global Instance Functor__Lambda
     |}.
 
 Global Instance FunctorLaws__Lambda
-       {LT V} `{FunctorLaws LT}
-  : FunctorLaws (Lambda LT V).
+       {T B} `{FunctorLaws T}
+  : FunctorLaws (Lambda T B).
 Proof.
   constructor.
   - move => ? [] //.
@@ -51,25 +51,25 @@ Proof.
 Qed.
 
 Definition app
-           {LT V L}
-           `{FunctorLaws LT} `{FunctorLaws L}
-           `{L supports (Lambda LT V)}
+           {T B E}
+           `{FunctorLaws T} `{FunctorLaws E}
+           `{E supports (Lambda T B)}
            g a
-  : UniversalPropertyF L
+  : UniversalPropertyF E
   := inject (App g a).
 
 Definition lam
-           {LT V L}
-           `{FunctorLaws LT} `{FunctorLaws L}
-           `{L supports (Lambda LT V)}
+           {T B E}
+           `{FunctorLaws T} `{FunctorLaws E}
+           `{E supports (Lambda T B)}
            t b
-  : UniversalPropertyF L
+  : UniversalPropertyF E
   := inject (Lam t b).
 
 Definition var
-           {LT V L}
-           `{FunctorLaws LT} `{FunctorLaws L}
-            `{L supports (Lambda LT V)}
+           {T B E}
+           `{FunctorLaws T} `{FunctorLaws E}
+            `{E supports (Lambda T B)}
            v
-  : UniversalPropertyF L
+  : UniversalPropertyF E
   := inject (Var v).
