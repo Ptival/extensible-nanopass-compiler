@@ -2,6 +2,56 @@
 
 -Q . ExtensibleCompiler
 
+Passes/RemoveUnaryIfs.v
+
+Semantics/All/Bool.v
+Semantics/All/If1.v
+Semantics/All/If2.v
+Semantics/All/Lambda.v
+Semantics/All/Unit.v
+
+Semantics/Dynamic/All/Bool.v
+Semantics/Dynamic/All/If1.v
+Semantics/Dynamic/All/If2.v
+Semantics/Dynamic/All/Lambda.v
+Semantics/Dynamic/All/Unit.v
+
+Semantics/Dynamic/Eval/Bool.v
+Semantics/Dynamic/Eval/If1.v
+Semantics/Dynamic/Eval/If2.v
+Semantics/Dynamic/Eval/Lambda.v
+Semantics/Dynamic/Eval/Unit.v
+
+Semantics/Dynamic/EvalRelation/Bool.v
+Semantics/Dynamic/EvalRelation/If1.v
+Semantics/Dynamic/EvalRelation/If2.v
+# Semantics/Dynamic/EvalRelation/Lambda.v
+Semantics/Dynamic/EvalRelation/Unit.v
+
+Semantics/Dynamic/Soundness/Bool.v
+# Semantics/Dynamic/Soundness/If1.v
+Semantics/Dynamic/Soundness/If2.v
+# Semantics/Dynamic/Soundness/Lambda.v
+Semantics/Dynamic/Soundness/Unit.v
+
+Semantics/Static/All/Bool.v
+Semantics/Static/All/If1.v
+Semantics/Static/All/If2.v
+Semantics/Static/All/Lambda.v
+Semantics/Static/All/Unit.v
+
+Semantics/Static/TypeOf/Bool.v
+Semantics/Static/TypeOf/If1.v
+Semantics/Static/TypeOf/If2.v
+Semantics/Static/TypeOf/Lambda.v
+Semantics/Static/TypeOf/Unit.v
+
+Semantics/Static/WellTyped/Bool.v
+# Semantics/Static/WellTyped/If1.v
+Semantics/Static/WellTyped/If2.v
+# Semantics/Static/WellTyped/Lambda.v
+Semantics/Static/WellTyped/Unit.v
+
 Syntax/Terms/Bool.v
 Syntax/Terms/Closure.v
 Syntax/Terms/If1.v
@@ -10,7 +60,12 @@ Syntax/Terms/Lambda.v
 Syntax/Terms/Stuck.v
 Syntax/Terms/Unit.v
 
-Passes/RemoveUnaryIfs.v
+Syntax/Types/ArrowType.v
+Syntax/Types/BoolType.v
+Syntax/Types/UnitType.v
+
+Test/Semantics/Dynamic.v
+Test/Semantics/Static.v
 
 Theory/Algebra.v
 Theory/Environment.v
@@ -27,22 +82,3 @@ Theory/Sum1.v
 Theory/Types.v
 Theory/TypeSoundness.v
 Theory/UniversalProperty.v
-
-Syntax/Types/ArrowType.v
-Syntax/Types/BoolType.v
-Syntax/Types/UnitType.v
-
-Semantics/Dynamic/Bool.v
-Semantics/Dynamic/If1.v
-Semantics/Dynamic/If2.v
-Semantics/Dynamic/Lambda.v
-Semantics/Dynamic/Unit.v
-
-Semantics/Static/Bool.v
-Semantics/Static/If1.v
-Semantics/Static/If2.v
-Semantics/Static/Lambda.v
-Semantics/Static/Unit.v
-
-Test/Semantics/Dynamic.v
-Test/Semantics/Static.v

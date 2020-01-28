@@ -43,7 +43,7 @@ Definition arrowType
 Global Instance ReverseFoldUniversalProperty_arrowType
        LT `{FunctorLaws LT} `{LT supports ArrowType}
        d c
-  : Fold__UP' (arrowType d c)
+  : FoldUP' (arrowType d c)
   := proj2_sig (arrowType' d c).
 
 Definition isArrowType

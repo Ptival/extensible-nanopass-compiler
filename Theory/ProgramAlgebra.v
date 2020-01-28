@@ -76,7 +76,7 @@ Global Instance ProgramAlgebraLeft
   := fun _ =>
     {|
       programAlgebra :=
-        fun rec v => wrap__UP' (inl1 (fmap rec v))
+        fun rec v => wrapUP' (inl1 (fmap rec v))
       ;
     |}.
 
@@ -88,7 +88,7 @@ Global Instance ProgramAlgebraRight
   := fun _ =>
     {|
       programAlgebra :=
-        fun rec v => wrap__UP' (inr1 (fmap rec v))
+        fun rec v => wrapUP' (inr1 (fmap rec v))
       ;
     |}.
 
@@ -107,7 +107,7 @@ to its sub-algebras.
 
 *)
 
-(* Corresponds to [WF__FAlgebra] *)
+(* Corresponds to [WFFAlgebra] *)
 Class WellFormedProgramAlgebra {Label F G T A}
       `{S : SubFunctor F G}
       `(FAlg : ProgramAlgebra Label F T A)

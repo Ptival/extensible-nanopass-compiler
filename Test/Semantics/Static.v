@@ -1,6 +1,6 @@
-From ExtensibleCompiler.Semantics.Static Require Import Bool.
-From ExtensibleCompiler.Semantics.Static Require Import If2.
-From ExtensibleCompiler.Semantics.Static Require Import Unit.
+From ExtensibleCompiler.Semantics.Static.All Require Import Bool.
+From ExtensibleCompiler.Semantics.Static.All Require Import If2.
+From ExtensibleCompiler.Semantics.Static.All Require Import Unit.
 
 From ExtensibleCompiler.Syntax.Terms Require Import Bool.
 From ExtensibleCompiler.Syntax.Terms Require Import If1.
@@ -21,11 +21,11 @@ From ExtensibleCompiler.Theory Require Import UniversalProperty.
 
 Local Open Scope SubFunctor_scope.
 
-(* Create a language [L] that supports [Bool], [If2], and [Unit] *)
-Definition L := (Bool + If2 + Unit).
+(* Create an expression language that supports [Bool], [If2], and [Unit] *)
+Definition E := (Bool + If2 + Unit).
 
-(* Creates a type language [LT] that supports [Bool] and [Unit] *)
-Definition LT := (BoolType + UnitType).
+(* Create a type language that supports [Bool] and [Unit] *)
+Definition T := (BoolType + UnitType).
 
 (* Create a concrete representation for the result of type-checking, so
    that it is easy to inspect manually *)
@@ -35,12 +35,11 @@ Inductive Result :=
 | IllTyped
 .
 
-
 Variant ForComputeResult := .
 
 (* Algebra to turn the extensible results into concrete results *)
 Global Instance computeResult
-  : forall T, ProgramAlgebra ForComputeResult LT T Result
+  : forall {R}, ProgramAlgebra ForComputeResult T R Result
   := fun _ =>
        {|
          programAlgebra :=
@@ -51,11 +50,11 @@ Global Instance computeResult
        |}.
 
 Definition typeCheck
-           (e : WellFormedValue L)
+           (e : WellFormedValue E)
   : Result
   :=
-    match typeOf (L := L) (LT := LT) (proj1_sig e) with
-    | Some t => foldProgramAlgebra (Alg := computeResult) (proj1_sig t)
+    match typeOf (E := E) (T := T) (proj1_sig e) with
+    | Some t => foldProgramAlgebra (Alg := @computeResult) (proj1_sig t)
     | None   => IllTyped
     end.
 

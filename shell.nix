@@ -6,5 +6,6 @@ mkShell {
     coq
     coqPackages.coq-ext-lib
   ];
+  COQBIN = "";
   name = "extensible-nanopass-compiler";
 }

@@ -9,25 +9,25 @@ From ExtensibleCompiler.Theory Require Import UniversalProperty.
 (** [TypeFix] is just an alias for [UniversalPropertyF], but it makes it so that
     code that depends on wrapping types can use this, in case we ever need to
     change what type of fixed point to use.  *)
-Definition TypeFix LT `{FunctorLaws LT}
-  := UniversalPropertyF LT.
+Definition TypeFix T `{FunctorLaws T}
+  := UniversalPropertyF T.
 
 Definition TypeOfResult
-           LT `{FunctorLaws LT}
-  := option (TypeFix LT).
+           T `{FunctorLaws T}
+  := option (TypeFix T).
 
 Variant ForTypeOf := .
 
 Definition typeOf
-           {L LT}
-           `{FunctorLaws L} `{FunctorLaws LT}
-           {TypeOfL : forall T, ProgramAlgebra ForTypeOf L T (TypeOfResult LT)}
-  : Fix L -> TypeOfResult LT
-  := mendlerFold (fun _ => @programAlgebra _ _ _ _ _ _ (TypeOfL _)).
+           {E T}
+           `{FunctorLaws E} `{FunctorLaws T}
+           {TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
+  : Fix E -> TypeOfResult T
+  := mendlerFold (fun _ => @programAlgebra _ _ _ _ _ _ TypeOf__E).
 
 Definition TypeEqualityResult
-           LT `{FunctorLaws LT}
-  := TypeFix LT -> bool.
+           T `{FunctorLaws T}
+  := TypeFix T -> bool.
 
 Variant ForTypeEquality := .
 
@@ -42,10 +42,10 @@ Definition typeEquality
 Definition typeEqualityCorrectnessStatement
            {T} `{FunctorLaws T}
            {typeEqualityForT :
-              forall R,
+              forall {R},
                 ProgramAlgebra ForTypeEquality T R (TypeEqualityResult T)}
            (tau : Fix T)
-           (UP'__tau : Fold__UP' tau)
+           (UP'__tau : FoldUP' tau)
   : Prop
   := forall tau',
     typeEquality tau tau' = true ->

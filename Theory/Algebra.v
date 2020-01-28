@@ -25,14 +25,14 @@ Definition
   := mendlerFold (fun r rec fa => f (fmap rec fa)).
 
 Definition
-  wrap__F
+  wrapF
   {F} (unwrapped : F (Fix F))
   : Fix F
   := fun A f
      => f _ (mendlerFold f) unwrapped.
 
 Definition
-  unwrap__F
+  unwrapF
   {F : Set -> Set} {F_Functor : Functor F}
   : Fix F -> F (Fix F)
-  := fold (fmap wrap__F).
+  := fold (fmap wrapF).

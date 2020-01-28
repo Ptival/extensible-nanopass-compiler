@@ -47,18 +47,18 @@ Definition closure
   : UniversalPropertyF (L V)
   := inject (MkClosure c e).
 
-Definition closure__F
+Definition closureF
            {L V} `{F : forall V, Functor (L V)} `{FL : forall V, FunctorLaws (L V)}
            `{(L V) supports (Closure L)}
            c e
   : Fix (L V)
   := proj1_sig (closure c e).
 
-Global Instance Fold__UP'__closure
+Global Instance FoldUP'__closure
        {L V} `{F : forall V, Functor (L V)} `{FL : forall V, FunctorLaws (L V)}
        `{(L V) supports (Closure L)}
        c e
-  : Fold__UP' (closure__F c e)
+  : FoldUP' (closureF c e)
   := proj2_sig (closure c e).
 
 Definition isClosure

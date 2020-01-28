@@ -50,7 +50,7 @@ Definition unitType
 
 Global Instance ReverseFoldUniversalProperty_unitType
            {LT} `{FunctorLaws LT} `{LT supports UnitType}
-  : Fold__UP' unitType
+  : FoldUP' unitType
   := proj2_sig unitType'.
 
 Definition isUnitType

@@ -51,23 +51,4 @@ Section Lambda.
     : ProgramAlgebra ForEval (Lambda T nat) (ValueFix (E nat)) (EvalResult (E nat))
     := {| programAlgebra := eval__Lambda; |}.
 
-  (* TODO *)
-
-  (* Inductive Eval__Lambda *)
-  (*        {LT L} `{FunctorLaws LT} *)
-  (*        `{F : forall V, Functor (L V)} `{FL : forall V, FunctorLaws (L V)} *)
-  (*        `{(L nat) supports (Closure L)} *)
-  (*        `{(L nat) supports Stuck} *)
-  (*   : (WellFormedValue L * WellFormedValue V) -> Prop *)
-  (*   := *)
-  (*   | LambdaTrue : forall c t e t', *)
-  (*       Eval (c, boolean true) -> *)
-  (*       Eval (t, t') -> *)
-  (*       Eval__Lambda Eval (lambda c t e, t') *)
-  (*   | Lambdaalse : forall c t e e', *)
-  (*       Eval (c, boolean false) -> *)
-  (*       Eval (e, e') -> *)
-  (*       Eval__Lambda Eval (lambda c t e, e') *)
-  (* . *)
-
 End Lambda.

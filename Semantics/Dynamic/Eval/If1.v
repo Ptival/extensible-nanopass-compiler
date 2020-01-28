@@ -34,7 +34,7 @@ placeholder, for when the condition does not evaluate to a boolean value.
   Definition eval__If1
     : forall {T}, MixinAlgebra If1 T (EvalResult V)
     := fun _ rec '(MkIf1 condition thenBranch) env =>
-         match project__F (rec condition env) with
+         match projectF (rec condition env) with
          | Some (MkBool b) =>
            if b
            then rec thenBranch env
@@ -57,29 +57,5 @@ placeholder, for when the condition does not evaluate to a boolean value.
     constructor.
     move => T T' f rec [] //.
   Qed.
-
-  (*
-We now define an extensible big-step semantics relation [EvalRelation] that
-captures how [If1] evaluates in a larger language [E].
-   *)
-
-  Context
-    {E}
-    `{FunctorLaws E}
-    `{! E supports If1}
-  .
-
-  Inductive EvalRelation__If1
-            (EvalRelation__E : (WellFormedValue E * WellFormedValue V) -> Prop)
-    : (WellFormedValue E * WellFormedValue V) -> Prop
-    :=
-    | If1True : forall c t t',
-        EvalRelation__E (c, boolean true) ->
-        EvalRelation__E (t, t') ->
-        EvalRelation__If1 EvalRelation__E (if1 c t, t')
-    | If1alse : forall c t,
-        EvalRelation__E (c, boolean false) ->
-        EvalRelation__If1 EvalRelation__E (if1 c t, unit)
-  .
 
 End If1.

@@ -38,7 +38,7 @@ Definition if2
   : UniversalPropertyF L
   := inject (MkIf2 condition thenBranch elseBranch).
 
-Definition if2__F
+Definition if2F
            {L} `{FunctorLaws L} `{L supports If2}
            (condition thenBranch elseBranch : UniversalPropertyF L)
   : Fix L
@@ -47,9 +47,9 @@ Definition if2__F
 Definition if2_Fix_UPF
            {L} `{FunctorLaws L} `{L supports If2}
            (condition thenBranch elseBranch : Fix L)
-           {H_condition  : Fold__UP' condition}
-           {H_thenBranch : Fold__UP' thenBranch}
-           {H_elseBranch : Fold__UP' elseBranch}
+           {H_condition  : FoldUP' condition}
+           {H_thenBranch : FoldUP' thenBranch}
+           {H_elseBranch : FoldUP' elseBranch}
   : UniversalPropertyF L
   := if2
        (exist _ _ H_condition)
@@ -59,9 +59,9 @@ Definition if2_Fix_UPF
 Definition if2_Fix_Fix
            {L} `{FunctorLaws L} `{L supports If2}
            (condition thenBranch elseBranch : Fix L)
-           {H_condition  : Fold__UP' condition}
-           {H_thenBranch : Fold__UP' thenBranch}
-           {H_elseBranch : Fold__UP' elseBranch}
+           {H_condition  : FoldUP' condition}
+           {H_thenBranch : FoldUP' thenBranch}
+           {H_elseBranch : FoldUP' elseBranch}
   : Fix L
   := proj1_sig (if2_Fix_UPF condition thenBranch elseBranch).
 
@@ -91,9 +91,9 @@ Definition if2_UPP_Fix
 (* Definition if2_UP_Fix *)
 (*            {L} `{FunctorLaws L} `{L supports If2} *)
 (*            {condition thenBranch elseBranch : Fix L} *)
-(*            (H_condition  : Fold__UP' condition) *)
-(*            (H_thenBranch : Fold__UP' thenBranch) *)
-(*            (H_elseBranch : Fold__UP' elseBranch) *)
+(*            (H_condition  : FoldUP' condition) *)
+(*            (H_thenBranch : FoldUP' thenBranch) *)
+(*            (H_elseBranch : FoldUP' elseBranch) *)
 (*   : Fix L *)
 (*   := proj1_sig (if2 *)
 (*                   (exist _ _ H_condition) *)
@@ -103,7 +103,7 @@ Definition if2_UPP_Fix
 
 Definition Induction__If2
            {F} `{FunctorLaws F} `{S : F supports If2}
-           (P : forall (e : Fix F), Fold__UP' e -> Prop)
+           (P : forall (e : Fix F), FoldUP' e -> Prop)
            (Hif2 : forall (c t e : Fix F)
                      (H_c : UniversalPropertyP P c)
                      (H_t : UniversalPropertyP P t)
@@ -123,7 +123,7 @@ Variant ForInduction :=.
 
 Global Instance If2ProofAlgebra
        {F} `{FunctorLaws F} `{S : ! F supports If2}
-       `(P : forall (e : Fix F), Fold__UP' e -> Prop)
+       `(P : forall (e : Fix F), FoldUP' e -> Prop)
        `(H_if2 : forall c t e
                    (H_c : UniversalPropertyP P c)
                    (H_t : UniversalPropertyP P t)
@@ -134,7 +134,7 @@ Global Instance If2ProofAlgebra
 
 Global Instance If2ProofAlgebraWellFormed
        F `{FunctorLaws F} `{! F supports If2} `{! WellFormedSubFunctor If2 F}
-       `(P : forall (e : Fix F), Fold__UP' e -> Prop)
+       `(P : forall (e : Fix F), FoldUP' e -> Prop)
        `(H_if2 : forall c t e
                    (IH_c : UniversalPropertyP P c)
                    (IH_t : UniversalPropertyP P t)
@@ -166,7 +166,7 @@ Section Two.
   .
 
   Definition Induction2Algebra__If2
-             (P : forall (e : Fix E * Fix F), Fold__UP' (fst e) /\ Fold__UP' (snd e) -> Prop)
+             (P : forall (e : Fix E * Fix F), FoldUP' (fst e) /\ FoldUP' (snd e) -> Prop)
              (H__if2  : forall c t e
                         (H__c : UniversalPropertyP2 P c)
                         (H__t : UniversalPropertyP2 P t)
@@ -174,12 +174,12 @@ Section Two.
                ,
                  UniversalPropertyP2
                    P
-                   (if2__F
+                   (if2F
                       (exist _ _ (proj1 (proj1_sig H__c)))
                       (exist _ _ (proj1 (proj1_sig H__t)))
                       (exist _ _ (proj1 (proj1_sig H__e)))
                     ,
-                    if2__F
+                    if2F
                       (exist _ _ (proj2 (proj1_sig H__c)))
                       (exist _ _ (proj2 (proj1_sig H__t)))
                       (exist _ _ (proj2 (proj1_sig H__e)))

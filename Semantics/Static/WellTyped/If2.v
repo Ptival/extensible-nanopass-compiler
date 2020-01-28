@@ -8,9 +8,7 @@ From ExtensibleCompiler.Theory Require Import Algebra.
 From ExtensibleCompiler.Theory Require Import Functor.
 From ExtensibleCompiler.Theory Require Import IndexedFunctor.
 From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import ProofAlgebra.
 From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import Types.
 From ExtensibleCompiler.Theory Require Import TypeSoundness.
 From ExtensibleCompiler.Theory Require Import UniversalProperty.
 
@@ -23,11 +21,6 @@ Section If2.
     `{FunctorLaws T}
     `{! T supports BoolType}
     `{! WellFormedSubFunctor BoolType T}
-
-    {typeEqualityForT : forall R, ProgramAlgebra ForTypeEquality T R (TypeEqualityResult T)}
-    (* {typeEqualityCorrectnessForT
-     : ProofAlgebra ForTypeEqualityCorrectness
-                    T (sig (UniversalPropertyP typeEqualityCorrectnessStatement))} *)
 
     {E}
     `{FunctorLaws E}

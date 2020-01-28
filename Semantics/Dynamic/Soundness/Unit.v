@@ -1,7 +1,10 @@
 From Coq Require Import ssreflect.
 From Coq Require Import String.
 
-From ExtensibleCompiler.Semantics.Static Require Import Unit.
+From ExtensibleCompiler.Semantics.Dynamic.Eval Require Import Unit.
+
+From ExtensibleCompiler.Semantics.Static.TypeOf Require Import Unit.
+From ExtensibleCompiler.Semantics.Static.WellTyped Require Import Unit.
 
 From ExtensibleCompiler.Syntax.Terms Require Import Unit.
 
@@ -61,28 +64,28 @@ Section AbstractLemma.
           (Gamma' : Environment.Environment (ValueFix V))
           (a : UniversalPropertyF E * UniversalPropertyF E),
           (forall tau : TypeFix T,
-              programAlgebra' TypeOf__E recTypeOf (unwrap__UP' (proj1_sig (snd a))) =
+              programAlgebra' TypeOf__E recTypeOf (unwrapUP' (proj1_sig (snd a))) =
               Some tau ->
               WellTyped WT__E tau
-                        (programAlgebra' Eval__E recEval (unwrap__UP' (proj1_sig (fst a)))
+                        (programAlgebra' Eval__E recEval (unwrapUP' (proj1_sig (fst a)))
                                          Gamma')) ->
           forall tau : TypeFix T,
             recTypeOf (snd a) = Some tau ->
-            WellTyped WT__E tau (recEval (wrap__UP' (unwrap__UP' (proj1_sig (fst a)))) Gamma')) ->
+            WellTyped WT__E tau (recEval (wrapUP' (unwrapUP' (proj1_sig (fst a)))) Gamma')) ->
       forall tau : TypeFix T,
-        programAlgebra' TypeOf__E recTypeOf (unwrap__UP' (proj1_sig (inject ctor))) = Some tau ->
+        programAlgebra' TypeOf__E recTypeOf (unwrapUP' (proj1_sig (inject ctor))) = Some tau ->
 
         (WT__C (IndexedFix WT__E) ({|
              type := tau;
-             expr := programAlgebra' Eval__E recEval (unwrap__UP' (proj1_sig (inject ctor))) Gamma;
+             expr := programAlgebra' Eval__E recEval (unwrapUP' (proj1_sig (inject ctor))) Gamma;
            |})) ->
 
 
         WellTyped WT__E tau
-                  (programAlgebra' Eval__E recEval (unwrap__UP' (proj1_sig (inject ctor))) Gamma).
+                  (programAlgebra' Eval__E recEval (unwrapUP' (proj1_sig (inject ctor))) Gamma).
   Proof.
     rewrite / inject /=.
-    rewrite unwrap__UP'_wrap__F /=.
+    rewrite unwrapUP'_wrapF /=.
     rewrite fmapFusion / Extras.compose /=.
     rewrite wellFormedSubFunctor => //=.
     rewrite / programAlgebra'.
@@ -101,66 +104,17 @@ Section Unit.
     `{FunctorLaws V}
     `{! V supports Unit}
     `{! WellFormedSubFunctor Unit V}
-  .
 
-  Definition eval__Unit
-    : forall {R}, MixinAlgebra Unit R (EvalResult V)
-    := fun _ rec '(MkUnit) env => unit.
-
-  Global Instance Eval__Unit
-    : forall {R}, ProgramAlgebra ForEval Unit R (EvalResult V)
-    := fun _ => {| programAlgebra := eval__Unit; |}.
-
-  Definition Eval__Unit'
-    : forall R, ProgramAlgebra ForEval Unit R (EvalResult V)
-    := fun _ => Eval__Unit.
-
-  Global Instance WF_Eval__Bool
-    : WellFormedMendlerAlgebra Eval__Unit'.
-  Proof.
-    constructor.
-    move => T T' f rec [] //.
-  Qed.
-
-  Context
     {E}
     `{FunctorLaws E}
     `{! E supports Unit}
     `{!WellFormedSubFunctor Unit E}
-  .
 
-  Inductive EvalRelation__Unit
-            (EvalRelation__E : (WellFormedValue E * WellFormedValue V) -> Prop)
-    : (WellFormedValue E * WellFormedValue V) -> Prop
-    :=
-    | UnitValue : EvalRelation__Unit EvalRelation__E (unit, unit)
-  .
-
-  Context
     {T}
     `{FunctorLaws T}
     `{! T supports UnitType}
     `{! WellFormedSubFunctor UnitType T}
   .
-
-  Inductive WellTyped__Unit
-            (WT : (TypedExpr T V)-indexedProp)
-    : (TypedExpr T V)-indexedProp
-    :=
-    | WellTyped__unit : forall t e,
-        proj1_sig e = unit__F ->
-        proj1_sig t = unitType ->
-        WellTyped__Unit WT {| type := t; expr := e; |}
-  .
-
-  Global Instance IndexedFunctor_WellTyped__Unit
-    : IndexedFunctor (TypedExpr T V) WellTyped__Unit.
-  Proof.
-    constructor.
-    move => A B i IH [] [t UP__t] [e UP__e] /= => Eq__e Eq__t.
-    move : Eq__t Eq__e UP__t UP__e => -> -> => UP__t UP__e.
-    econstructor => //.
-  Qed.
 
   Global Instance Soundness__Unit
 
@@ -191,8 +145,8 @@ Section Unit.
     }
     {
       move => Gamma.
-      rewrite / unit__F / unit / inject /=.
-      rewrite unwrap__UP'_wrap__F /=.
+      rewrite / unitF / unit / inject /=.
+      rewrite unwrapUP'_wrapF /=.
       rewrite fmapFusion / Extras.compose /=.
       rewrite wellFormedSubFunctor => //=.
       rewrite / programAlgebra'.

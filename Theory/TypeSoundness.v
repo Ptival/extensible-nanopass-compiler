@@ -56,7 +56,7 @@ Definition AbstractSoundnessStatement (* cf. eval_alg_Soundness_P *)
            (recEval   : UniversalPropertyF E -> EvalResult   V)
            (recTypeOf : UniversalPropertyF F -> TypeOfResult T)
            (e : Fix E * Fix F)
-           (RFUP_e : Fold__UP' (fst e) /\ Fold__UP' (snd e))
+           (RFUP_e : FoldUP' (fst e) /\ FoldUP' (snd e))
   : Prop
   :=
     forall
@@ -80,17 +80,17 @@ Definition AbstractSoundnessStatement (* cf. eval_alg_Soundness_P *)
       (IH : forall (Gamma : Environment (ValueFix V))
               (a : UniversalPropertyF E * UniversalPropertyF F),
           (forall (tau : TypeFix T),
-              typeOf__F recTypeOf (unwrap__UP' (proj1_sig (snd a))) = Some tau ->
-              WellTyped WT tau (eval__E recEval (unwrap__UP' (proj1_sig (fst a))) Gamma)
+              typeOf__F recTypeOf (unwrapUP' (proj1_sig (snd a))) = Some tau ->
+              WellTyped WT tau (eval__E recEval (unwrapUP' (proj1_sig (fst a))) Gamma)
           ) ->
           forall (tau : TypeFix T),
             recTypeOf (snd a) = Some tau ->
-            WellTyped WT tau (recEval (wrap__UP' (unwrap__UP' (proj1_sig (fst a)))) Gamma)
+            WellTyped WT tau (recEval (wrapUP' (unwrapUP' (proj1_sig (fst a)))) Gamma)
       )
     ,
     forall (tau : TypeFix T),
-      typeOf__F recTypeOf (unwrap__UP' (snd e)) = Some tau ->
-      WellTyped WT tau (eval__E recEval (unwrap__UP' (fst e)) Gamma).
+      typeOf__F recTypeOf (unwrapUP' (snd e)) = Some tau ->
+      WellTyped WT tau (eval__E recEval (unwrapUP' (fst e)) Gamma).
 
 Variant ForSoundness := .
 
@@ -130,8 +130,8 @@ Lemma Soundness
     WellTyped WT tau (eval (proj1_sig e) Gamma).
 Proof.
   move => e Gamma tau TO.
-  rewrite <- (wrap__UP'_unwrap__UP' (proj1_sig e) (proj2_sig e)).
-  rewrite /= / eval / mendlerFold / wrap__F.
+  rewrite <- (wrapUP'_unwrapUP' (proj1_sig e) (proj2_sig e)).
+  rewrite /= / eval / mendlerFold / wrapF.
   rewrite wellFormedMendlerAlgebra / mendlerFold.
   elim (
       Induction2
@@ -143,22 +143,22 @@ Proof.
   (* Missing: one premise *)
   (* Missing: one premise *)
   move => Gamma' a IH tau1 TY1.
-  rewrite / eval / mendlerFold /= / wrap__F.
+  rewrite / eval / mendlerFold /= / wrapF.
   rewrite wellFormedMendlerAlgebra.
   rewrite / mendlerFold.
   apply : IH.
   {
-    rewrite <- (wrap__UP'_unwrap__UP' (proj1_sig (snd a)) (proj2_sig (snd a))) in TY1.
+    rewrite <- (wrapUP'_unwrapUP' (proj1_sig (snd a)) (proj2_sig (snd a))) in TY1.
     rewrite /= in TY1.
-    rewrite / typeOf / mendlerFold / wrap__F in TY1.
+    rewrite / typeOf / mendlerFold / wrapF in TY1.
     erewrite wellFormedMendlerAlgebra in TY1 => //.
   }
   {
-    rewrite <- (wrap__F_unwrap__F (proj1_sig e) (proj2_sig e)) in TO.
-    rewrite / typeOf / mendlerFold / wrap__F /= in TO.
+    rewrite <- (wrapF_unwrapF (proj1_sig e) (proj2_sig e)) in TO.
+    rewrite / typeOf / mendlerFold / wrapF /= in TO.
     rewrite / programAlgebra'.
     erewrite <- wellFormedMendlerAlgebra.
-    rewrite /= / unwrap__UP'.
+    rewrite /= / unwrapUP'.
     erewrite Fusion.
     {
       eapply TO.
@@ -202,7 +202,7 @@ Definition SoundnessStatement
            (recEval   : UniversalPropertyF E -> EvalResult   V)
            (recTypeOf : UniversalPropertyF E -> TypeOfResult T)
            (e : Fix E)
-           (RFUP_e : Fold__UP' e)
+           (RFUP_e : FoldUP' e)
   : Prop
   :=
     forall Gamma (tau : TypeFix T),

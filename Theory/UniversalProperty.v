@@ -27,15 +27,15 @@ the direct direction follows from the overloaded definition of [fold] and
 
 Holds by definition of [mendlerFold] and [wrapFix].
  *)
-Lemma MendlerFold__UP (* cf. [Universal_Property] *)
+Lemma MendlerFoldUP (* cf. [Universal_Property] *)
       F A
       (alg : MendlerAlgebra F A) (h : Fix F -> A)
   : h = mendlerFold alg ->
-    forall e, h (wrap__F e) = alg (Fix F) h e.
+    forall e, h (wrapF e) = alg (Fix F) h e.
 Proof.
   intros P.
   rewrite P.
-  unfold wrap__F, mendlerFold.
+  unfold wrapF, mendlerFold.
   reflexivity.
 Qed.
 
@@ -44,13 +44,13 @@ Qed.
 
 To be proven for each value of type [Fix F].
  *)
-Class MendlerFold__UP' (* cf. [Universal_Property'] *)
+Class MendlerFoldUP' (* cf. [Universal_Property'] *)
       {F} `{Functor F} (e : Fix F)
   :=
     {
-      mendlerFold__UP' (* cf.  *)
+      mendlerFoldUP' (* cf.  *)
       : forall A (f : MendlerAlgebra F A) (h : Fix F -> A),
-        (forall e', h (wrap__F e') = f _ h e') ->
+        (forall e', h (wrapF e') = f _ h e') ->
         h e = mendlerFold f e;
     }.
 
@@ -59,11 +59,11 @@ Class MendlerFold__UP' (* cf. [Universal_Property'] *)
 
 Holds by definition of [fold] and [wrapFix].
  *)
-Lemma Fold__UP
+Lemma FoldUP
            F `{Functor F}
            A (alg : Algebra F A) (h : Fix F -> A)
   : h = fold alg ->
-    forall e, h (wrap__F e) = alg (fmap h e).
+    forall e, h (wrapF e) = alg (fmap h e).
 Proof.
   intros P e.
   rewrite P.
@@ -75,47 +75,47 @@ Qed.
 
 To be proven for each value of type [Fix F].
  *)
-Class Fold__UP' (* cf. [Universal_Property'_fold] *)
+Class FoldUP' (* cf. [Universal_Property'_fold] *)
       {F} {FF : Functor F} (e : Fix F)
   :=
     {
-      fold__UP' (* cf. [E_fUP'] *)
+      foldUP' (* cf. [E_fUP'] *)
       : forall A (alg : Algebra F A) (h : Fix F -> A),
-        (forall e, h (wrap__F e) = alg (fmap h e)) ->
+        (forall e, h (wrapF e) = alg (fmap h e)) ->
         h e = fold alg e;
     }.
 
-Lemma fold_wrap__F_Identity
+Lemma fold_wrapF_Identity
       {F : Set -> Set} `{FF : Functor F} `{FunctorLaws F}
       (e : Fix F)
-      {RFUP : Fold__UP' e}
-  : fold wrap__F e = e.
+      {UP'__e : FoldUP' e}
+  : fold wrapF e = e.
 Proof.
   apply sym_eq.
   replace e with (id e) at 1 by reflexivity.
-  apply fold__UP'; intros e'.
+  apply foldUP'; intros e'.
   rewrite fmapId.
   reflexivity.
 Qed.
 
 (**
 A [WellFormedValue] for a functor [V] is a value of type [Fix V] s.t. it has
-been properly constructed, and as such, satisfies [Fold__UP'].
+been properly constructed, and as such, satisfies [FoldUP'].
  *)
 Definition WellFormedValue
            V `{FunctorLaws V}
-  := { e : Fix V | Fold__UP' e }.
+  := { e : Fix V | FoldUP' e }.
 
-Definition wrap__UP' (* cf. [in_t_UP'] *)
+Definition wrapUP' (* cf. [in_t_UP'] *)
            {F} `{FunctorLaws F}
            (v : F (WellFormedValue F))
   : WellFormedValue F.
-  apply (exist _ (wrap__F (fmap (F := F) (@proj1_sig _ _) v))).
+  apply (exist _ (wrapF (fmap (F := F) (@proj1_sig _ _) v))).
   constructor.
   intros A alg rec EQ.
   rewrite EQ.
   unfold fold, mendlerFold.
-  unfold wrap__F.
+  unfold wrapF.
   repeat rewrite fmapFusion.
   f_equal.
   f_equal.
@@ -123,48 +123,48 @@ Definition wrap__UP' (* cf. [in_t_UP'] *)
   apply functional_extensionality.
   intros [e' E'].
   simpl.
-  apply fold__UP'.
+  apply foldUP'.
   assumption.
 Defined.
 
-Definition unwrap__UP' (* cf. [out_t_UP'] *)
+Definition unwrapUP' (* cf. [out_t_UP'] *)
            {F} `{FunctorLaws F}
            (v : Fix F)
   : F (WellFormedValue F)
-  := fold (fmap wrap__UP') v.
+  := fold (fmap wrapUP') v.
 
-Lemma unwrap__UP'_wrap__F
+Lemma unwrapUP'_wrapF
       {E} `{FunctorLaws E}
   : forall (e : E (Fix E)),
-    unwrap__UP' (wrap__F e) = fmap (fun e => wrap__UP' (unwrap__UP' e)) e.
+    unwrapUP' (wrapF e) = fmap (fun e => wrapUP' (unwrapUP' e)) e.
 Proof.
   move => e.
-  rewrite {1} / unwrap__UP'.
-  setoid_rewrite Fold__UP => //.
+  rewrite {1} / unwrapUP'.
+  setoid_rewrite FoldUP => //.
   rewrite fmapFusion //.
 Qed.
 
-Lemma fmap_unwrap__UP'
+Lemma fmap_unwrapUP'
       {E} `{FunctorLaws E}
   : forall (e : Fix E),
-    Fold__UP' e ->
-    fmap (@proj1_sig _ _) (unwrap__UP' e) = unwrap__F e.
+    FoldUP' e ->
+    fmap (@proj1_sig _ _) (unwrapUP' e) = unwrapF e.
 Proof.
   move => e UP__e.
-  rewrite / unwrap__F.
-  apply (fold__UP' _ _ (fun e => fmap (@proj1_sig _ _) (unwrap__UP' e))).
+  rewrite / unwrapF.
+  apply (foldUP' _ _ (fun e => fmap (@proj1_sig _ _) (unwrapUP' e))).
   move => e'.
   rewrite fmapFusion / Extras.compose.
-  rewrite unwrap__UP'_wrap__F.
+  rewrite unwrapUP'_wrapF.
   rewrite fmapFusion //.
 Qed.
 
-Lemma fmap_wrap__F
+Lemma fmap_wrapF
       {E} `{FunctorLaws E}
   :
-    (fun (R : Set) (rec : R -> E (Fix E)) (e : E R) => fmap wrap__F (fmap rec e))
+    (fun (R : Set) (rec : R -> E (Fix E)) (e : E R) => fmap wrapF (fmap rec e))
     =
-    (fun (R : Set) (rec : R -> E (Fix E)) (e : E R) => fmap (fun r => wrap__F (rec r)) e).
+    (fun (R : Set) (rec : R -> E (Fix E)) (e : E R) => fmap (fun r => wrapF (rec r)) e).
 Proof.
   eapply functional_extensionality_dep => R.
   eapply functional_extensionality_dep => rec.
@@ -172,46 +172,46 @@ Proof.
   rewrite fmapFusion //.
 Qed.
 
-Lemma unwrap__F_wrap__F
+Lemma unwrapF_wrapF
    {E} `{FunctorLaws E}
   : forall (e : E (Fix E)),
-    unwrap__F (wrap__F e) = fmap (fun e => wrap__F (unwrap__F e)) e.
+    unwrapF (wrapF e) = fmap (fun e => wrapF (unwrapF e)) e.
 Proof.
   move => e.
-  rewrite / unwrap__F /=.
-  erewrite (MendlerFold__UP _ _ (fun R rec fp => fmap (fun r => wrap__F (rec r)) fp)) => //.
+  rewrite / unwrapF /=.
+  erewrite (MendlerFoldUP _ _ (fun R rec fp => fmap (fun r => wrapF (rec r)) fp)) => //.
   rewrite / fold / mendlerFold.
   eapply functional_extensionality.
   move => e'.
-  rewrite fmap_wrap__F //.
+  rewrite fmap_wrapF //.
 Qed.
 
-Lemma wrap__F_unwrap__F
+Lemma wrapF_unwrapF
       {E} `{FunctorLaws E}
   : forall (e : Fix E),
-    Fold__UP' e ->
-    wrap__F (unwrap__F e) = e.
+    FoldUP' e ->
+    wrapF (unwrapF e) = e.
 Proof.
   move => e UP__e.
-  rewrite <- fold_wrap__F_Identity => //.
-  apply (fold__UP' _ _ (fun e => wrap__F (unwrap__F e))).
+  rewrite <- fold_wrapF_Identity => //.
+  apply (foldUP' _ _ (fun e => wrapF (unwrapF e))).
   move => e'.
-  rewrite unwrap__F_wrap__F //.
+  rewrite unwrapF_wrapF //.
 Qed.
 
-Theorem wrap__UP'_unwrap__UP' (* cf. [in_out_UP'_inverse] *)
+Theorem wrapUP'_unwrapUP' (* cf. [in_out_UP'_inverse] *)
         {E} `{FunctorLaws E}
   : forall (e : Fix E),
-    Fold__UP' e ->
-    proj1_sig (wrap__UP' (unwrap__UP' e)) = e.
+    FoldUP' e ->
+    proj1_sig (wrapUP' (unwrapUP' e)) = e.
 Proof.
   move => e UP__e /=.
-  rewrite fmap_unwrap__UP'.
-  rewrite wrap__F_unwrap__F //.
+  rewrite fmap_unwrapUP'.
+  rewrite wrapF_unwrapF //.
 Qed.
 
 (**
-This could be called [inject__UP'], but we will use it a lot, so it gets to be
+This could be called [injectUP'], but we will use it a lot, so it gets to be
 [inject].
  *)
 Definition inject (* cf. [inject'] *)
@@ -219,9 +219,9 @@ Definition inject (* cf. [inject'] *)
            `{S : SubFunctor F G}
            (fexp : F (WellFormedValue G))
   : WellFormedValue G
-  := wrap__UP' (inj fexp).
+  := wrapUP' (inj fexp).
 
-Fixpoint boundedFix__UP'
+Fixpoint boundedFixUP'
          {A} {F} `{FunctorLaws F}
          (n : nat)
          (fM : MixinAlgebra F (WellFormedValue F) A)
@@ -231,19 +231,19 @@ Fixpoint boundedFix__UP'
   :=
   match n with
   | 0   => default
-  | S n => fM (boundedFix__UP' n fM default) (unwrap__UP' (proj1_sig e))
+  | S n => fM (boundedFixUP' n fM default) (unwrapUP' (proj1_sig e))
   end.
 
 Definition UniversalPropertyP (* cf. [UP'_P] *)
            {F} `{FunctorLaws F}
-           (P : forall e : Fix F, Fold__UP' e -> Prop)
+           (P : forall e : Fix F, FoldUP' e -> Prop)
            (e : Fix F)
   : Prop
   := sig (P e).
 
 Definition UniversalPropertyP2 (* cf. [UP'_P2] *)
            {F G} `{FunctorLaws F} `{FunctorLaws G}
-           (P : forall e : Fix F * Fix G, Fold__UP' (fst e) /\ Fold__UP' (snd e) -> Prop)
+           (P : forall e : Fix F * Fix G, FoldUP' (fst e) /\ FoldUP' (snd e) -> Prop)
            (e : Fix F * Fix G)
   : Prop
   := sig (P e).
@@ -251,10 +251,10 @@ Definition UniversalPropertyP2 (* cf. [UP'_P2] *)
 Definition UniversalPropertyF (* cf. [UP'_F] *)
            F `{FunctorLaws F}
   : Set
-  := sig (Fold__UP' (F := F)).
+  := sig (FoldUP' (F := F)).
 
 (**
-This could be called [project__UP'], but we will almost always use it so let's
+This could be called [projectUP'], but we will almost always use it so let's
 just call it [project].
  *)
 Definition project
@@ -262,9 +262,9 @@ Definition project
            `{S : SubFunctor F G}
            (g : Fix G)
   : option (F (WellFormedValue G))
-  := prj (unwrap__UP' g).
+  := prj (unwrapUP' g).
 
-Definition project__F
+Definition projectF
            {F G}
            `{S : SubFunctor F G}
            (g : WellFormedValue G)

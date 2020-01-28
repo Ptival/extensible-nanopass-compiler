@@ -1,41 +1,43 @@
-From Coq Require Import ssreflect.
-From Coq Require Import String.
+From Coq Require Import
+     ssreflect
+     String
+.
 
-From ExtensibleCompiler.Passes Require Import RemoveUnaryIfs.
+From ExtensibleCompiler Require Import
 
-From ExtensibleCompiler.Semantics.Dynamic Require Import Bool.
-From ExtensibleCompiler.Semantics.Dynamic Require Import If1.
-From ExtensibleCompiler.Semantics.Dynamic Require Import If2.
-From ExtensibleCompiler.Semantics.Dynamic Require Import Unit.
+     Passes.RemoveUnaryIfs
 
-From ExtensibleCompiler.Semantics.Static Require Import Bool.
-From ExtensibleCompiler.Semantics.Static Require Import If1.
-From ExtensibleCompiler.Semantics.Static Require Import If2.
-From ExtensibleCompiler.Semantics.Static Require Import Unit.
+     Semantics.All.Bool
+     Semantics.All.If1
+     Semantics.All.If2
+     Semantics.All.Lambda
+     Semantics.All.Unit
 
-From ExtensibleCompiler.Syntax.Terms Require Import Bool.
-From ExtensibleCompiler.Syntax.Terms Require Import If1.
-From ExtensibleCompiler.Syntax.Terms Require Import If2.
-From ExtensibleCompiler.Syntax.Terms Require Import Stuck.
-From ExtensibleCompiler.Syntax.Terms Require Import Unit.
+     Syntax.Terms.Bool
+     Syntax.Terms.If1
+     Syntax.Terms.If2
+     Syntax.Terms.Stuck
+     Syntax.Terms.Unit
 
-From ExtensibleCompiler.Syntax.Types Require Import BoolType.
-From ExtensibleCompiler.Syntax.Types Require Import UnitType.
+     Syntax.Types.BoolType
+     Syntax.Types.UnitType
 
-From ExtensibleCompiler.Theory Require Import Algebra.
-From ExtensibleCompiler.Theory Require Import Environment.
-From ExtensibleCompiler.Theory Require Import Eval.
-From ExtensibleCompiler.Theory Require Import Functor.
-From ExtensibleCompiler.Theory Require Import IndexedAlgebra.
-From ExtensibleCompiler.Theory Require Import IndexedFunctor.
-From ExtensibleCompiler.Theory Require Import IndexedSum1.
-From ExtensibleCompiler.Theory Require Import ProgramAlgebra.
-From ExtensibleCompiler.Theory Require Import ProofAlgebra.
-From ExtensibleCompiler.Theory Require Import SubFunctor.
-From ExtensibleCompiler.Theory Require Import Sum1.
-From ExtensibleCompiler.Theory Require Import Types.
-From ExtensibleCompiler.Theory Require Import TypeSoundness.
-From ExtensibleCompiler.Theory Require Import UniversalProperty.
+     Theory.Algebra
+     Theory.Environment
+     Theory.Eval
+     Theory.Functor
+     Theory.IndexedAlgebra
+     Theory.IndexedFunctor
+     Theory.IndexedSum1
+     Theory.ProgramAlgebra
+     Theory.ProofAlgebra
+     Theory.SubFunctor
+     Theory.Sum1
+     Theory.Types
+     Theory.TypeSoundness
+     Theory.UniversalProperty
+
+.
 
 Local Open Scope Sum1_scope.
 Local Open Scope SubFunctor_scope.
