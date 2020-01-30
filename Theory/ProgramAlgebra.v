@@ -139,11 +139,11 @@ Qed.
 
 Global Instance
        WellFormedProgramAlgebraLeft
-       {Label F G T A}
+       {Label F G H T A}
        `{FAlg : ProgramAlgebra Label F T A}
        `{GAlg : ProgramAlgebra Label G T A}
        {S : SubFunctor F G}
-       {H} `{HAlg : ProgramAlgebra Label H T A}
+       `{HAlg : ProgramAlgebra Label H T A}
        {WFFG : WellFormedProgramAlgebra FAlg GAlg}
   : WellFormedProgramAlgebra FAlg (ProgramAlgebraSum1 Label G H).
 Proof.
@@ -158,10 +158,10 @@ Qed.
 
 Global Instance
        WellFormedProgramAlgebraRight
-       {Label F G T A}
+       {Label F G H T A}
        `{FAlg : ProgramAlgebra Label F T A}
        `{GAlg : ProgramAlgebra Label G T A}
-       {H} `{HAlg : ProgramAlgebra Label H T A}
+       `{HAlg : ProgramAlgebra Label H T A}
        {FH : SubFunctor F H}
        {WFFH : WellFormedProgramAlgebra FAlg HAlg}
   : WellFormedProgramAlgebra FAlg (ProgramAlgebraSum1 Label G H).

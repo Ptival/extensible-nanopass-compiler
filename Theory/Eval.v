@@ -152,13 +152,13 @@ Class WellFormedMendlerEval
     }.
 
 Global Instance WellFormedMendlerEvalLeft
-       F G A
+       F G H A
        `{FunctorLaws F} `{FunctorLaws G} `{FunctorLaws A}
        `{MFA : ! MendlerEval F A}
        `{MGA : ! MendlerEval G A}
        `{S : ! SubFunctor F G}
        `(WF : ! WellFormedMendlerEval F G A)
-       H `{FunctorLaws H}
+       `{FunctorLaws H}
        `(HA : ! MendlerEval H A)
   : WellFormedMendlerEval F (G + H) A.
 Proof.

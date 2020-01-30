@@ -25,6 +25,8 @@ Class SubFunctor (F G : Set -> Set)
         prj (inj fa) = Some fa;
   }.
 
+(* For Coq 8.10+: *)
+(* Declare Scope SubFunctor_scope. *)
 Delimit Scope SubFunctor_scope with SubFunctor.
 
 Notation "L 'supports' F" := (SubFunctor F L) (at level 50) : SubFunctor_scope.
@@ -38,28 +40,32 @@ Local Open Scope SubFunctor_scope.
  *)
 
 Global Instance SubFunctorRefl {F}
-       `{FunctorLaws F} : SubFunctor F F :=
-  {|
-    inj := fun _ fa => fa;
-    prj := fun _ fa => Some fa;
-  |}.
+       `{FunctorLaws F} : SubFunctor F F.
 Proof.
+  refine (
+      {|
+        inj := fun _ fa => fa;
+        prj := fun _ fa => Some fa;
+      |}
+    ).
   - move => ??? [] //.
   - move => ?? //.
 Defined.
 
 Global Instance SubFunctorLeft {F G H}
        `{S : SubFunctor F G} `{FunctorLaws H}
-  : SubFunctor F (G + H) :=
-  {|
-    inj := fun _ fa => inl1 (inj fa);
-    prj := fun _ gh =>
-             match gh with
-             | inl1 ga => prj ga
-             | inr1 _  => None
-             end;
-  |}.
+  : SubFunctor F (G + H).
 Proof.
+  refine (
+      {|
+        inj := fun _ fa => inl1 (inj fa);
+        prj := fun _ gh =>
+                 match gh with
+                 | inl1 ga => prj ga
+                 | inr1 _  => None
+                 end;
+      |}
+    ).
   {
     move => ? [] => // ?? EQ.
     rewrite (inj_prj _ _ EQ) //.
@@ -72,16 +78,18 @@ Defined.
 
 Global Instance SubFunctorRight {F G H}
        `{S : SubFunctor F H} `{FunctorLaws G}
-  : SubFunctor F (G + H) :=
-  {|
-    inj := fun _ fa => inr1 (inj fa);
-    prj := fun _ gh =>
-             match gh with
-             | inl1 _  => None
-             | inr1 ha => prj ha
-             end;
-  |}.
+  : SubFunctor F (G + H).
 Proof.
+  refine (
+      {|
+        inj := fun _ fa => inr1 (inj fa);
+        prj := fun _ gh =>
+                 match gh with
+                 | inl1 _  => None
+                 | inr1 ha => prj ha
+                 end;
+      |}
+    ).
   {
     move => ? [] => // ?? EQ.
     rewrite (inj_prj _ _ EQ) //.
