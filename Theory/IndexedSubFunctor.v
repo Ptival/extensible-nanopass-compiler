@@ -27,14 +27,14 @@ Definition
   {I} {F G : I-indexedPropFunctor} `{IndexedFunctor I F} `{IndexedFunctor I G} `{F <= G} {i}
   (fexp : F (IndexedFix G) i)
   : IndexedFix G i
-  := iWrapFix i (iInj fexp).
+  := iWrapF i (iInj fexp).
 
 Definition
   iProject
   {I} {F G : I-indexedPropFunctor} `{IndexedFunctor I F} `{IndexedFunctor I G} `{F <= G} {i}
   (g : IndexedFix G i)
   : F (IndexedFix G) i \/ True
-  := iPrj (iUnwrapFix i g).
+  := iPrj (iUnwrapF i g).
 
 Global Instance IndexedSubFunctorRefl
        {I} {F} `{IndexedFunctor I F} : IndexedSubFunctor F F :=

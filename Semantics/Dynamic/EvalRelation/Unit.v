@@ -13,6 +13,7 @@ From ExtensibleCompiler.Syntax.Types Require Import
 
 From ExtensibleCompiler.Theory Require Import
      Functor
+     IndexedFunctor
      SubFunctor
      UniversalProperty
 .
@@ -41,5 +42,13 @@ Section Unit.
     :=
     | UnitValue : EvalRelation__Unit EvalRelation__E (unit, unit)
   .
+
+  Global Instance IndexedFunctor_EvalRelation__Unit
+    : IndexedFunctor (WellFormedValue E * WellFormedValue V) EvalRelation__Unit.
+  Proof.
+    constructor.
+    move => A B i IH [].
+    - econstructor 1; apply IH => //.
+  Qed.
 
 End Unit.

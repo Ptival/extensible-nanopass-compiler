@@ -116,10 +116,42 @@ Class WellFormedSubFunctor F G
         fmap f (inj fa) = inj (fmap f fa)
     }.
 
-Global Instance WellFormedSubFunctorRefl
+Global Instance WellFormedSubFunctor_Refl
        {F} `{FunctorLaws F}
   : WellFormedSubFunctor F F :=
   {|
     wellFormedSubFunctor :=
       fun A B f fa => eq_refl;
   |}.
+
+Global Instance WellFormedSubFunctor_Left
+       {F G H}
+       `{FunctorLaws F} `{FunctorLaws G} `{FunctorLaws H}
+       `{S : ! SubFunctor F G}
+       `{! WellFormedSubFunctor F G}
+  : WellFormedSubFunctor F (G + H).
+Proof.
+  refine (
+      {|
+        wellFormedSubFunctor :=
+          fun A B f fa => _;
+      |}
+    ).
+  rewrite /= wellFormedSubFunctor //.
+Defined.
+
+Global Instance WellFormedSubFunctor_Right
+       {F G H}
+       `{FunctorLaws F} `{FunctorLaws G} `{FunctorLaws H}
+       `{S : ! SubFunctor F H}
+       `{! WellFormedSubFunctor F H}
+  : WellFormedSubFunctor F (G + H).
+Proof.
+  refine (
+      {|
+        wellFormedSubFunctor :=
+          fun A B f fa => _;
+      |}
+    ).
+  rewrite /= wellFormedSubFunctor //.
+Defined.

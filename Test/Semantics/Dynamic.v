@@ -127,25 +127,6 @@ Definition WellTyped__E
   : (TypedExpr T V)-indexedPropFunctor
   := (WellTyped__Bool).
 
-(* Algebra to turn the extensible results into concrete results *)
-
-Theorem Soundness__EvalE
-  : forall (e : WellFormedValue E) Gamma (tau : TypeFix T),
-    typeOf (proj1_sig e) = Some tau ->
-    WellTyped WellTyped__E tau (eval (proj1_sig e) Gamma).
-Proof.
-  eapply Soundness => //.
-  typeclasses eauto.
-  typeclasses eauto.
-Admitted.
-
-
-
-
-
-
-
-
 Definition SourceExpr := Bool + If1 + Unit.
 Definition TargetExpr := Bool + If2 + Unit.
 Definition Value := Bool + Stuck + Unit.
@@ -158,14 +139,74 @@ Definition EvalRelation__Target
   : (WellFormedValue TargetExpr * WellFormedValue Value)-indexedPropFunctor
   := (EvalRelation__Bool + EvalRelation__If2 + EvalRelation__Unit)%IndexedSum1.
 
-Definition removeUnaryIfs
+Definition removeUnaryIfs'
            (e : WellFormedValue SourceExpr)
   : WellFormedValue TargetExpr
   := removeUnaryIfs (L := SourceExpr) (V := TargetExpr) (proj1_sig e).
 
 Theorem test
-  : removeUnaryIfs (if1 (boolean true) unit) = if2 (boolean true) unit unit.
-Proof. reflexivity. Qed.
+  : removeUnaryIfs' (if1 (boolean true) unit) = if2 (boolean true) unit unit.
+Proof.
+  reflexivity.
+Qed.
+
+Variant ForRemoveUnaryIfsCorrectness := .
+
+Definition AbstractCorrectnessStatement
+           {S T V}
+           `{FunctorLaws S} `{FunctorLaws T} `{FunctorLaws V}
+           (EvalRelation__Source : (WellFormedValue S * WellFormedValue V)-indexedPropFunctor)
+           (EvalRelation__Target : (WellFormedValue T * WellFormedValue V)-indexedPropFunctor)
+           `{removeUnaryIfs__S : forall {R}, MixinAlgebra S R (WellFormedValue T)}
+           (recRemoveUnaryIfs : WellFormedValue S -> WellFormedValue T)
+           (ev : Fix S * Fix V)
+           (UP'__ev : FoldUP' (fst ev) /\ FoldUP' (snd ev))
+  : Prop
+  := IndexedFix EvalRelation__Source
+                ( exist _ (fst ev) (proj1 UP'__ev),
+                  exist _ (snd ev) (proj2 UP'__ev)
+                ) ->
+     IndexedFix EvalRelation__Target
+                ( removeUnaryIfs__S recRemoveUnaryIfs (unwrapUP' (fst ev)),
+                  wrapUP' (unwrapUP' (snd ev))
+                ).
+
+Definition Correctness__ProofAlgebra
+           {S T V}
+           `{FunctorLaws S} `{FunctorLaws T} `{FunctorLaws V}
+           (EvalRelation__Source : (WellFormedValue S * WellFormedValue V)-indexedPropFunctor)
+           (EvalRelation__Target : (WellFormedValue T * WellFormedValue V)-indexedPropFunctor)
+           `{RemoveUnaryIfs__S : forall {R}, ProgramAlgebra ForRemoveUnaryIfs S R (WellFormedValue T)}
+  := forall recRemoveUnaryIfs,
+    ProofAlgebra ForRemoveUnaryIfsCorrectness
+                 SourceExpr
+                 (sig (UniversalPropertyP2
+                         (AbstractCorrectnessStatement
+                            (removeUnaryIfs__S := fun _ => programAlgebra' RemoveUnaryIfs__S)
+                            EvalRelation__Source
+                            EvalRelation__Target
+                            recRemoveUnaryIfs
+                         )
+                      )).
+
+Lemma Correctness
+      {S T V}
+      `{FunctorLaws S} `{FunctorLaws T} `{FunctorLaws V}
+      (EvalRelation__Source : (WellFormedValue S * WellFormedValue V)-indexedPropFunctor)
+      (EvalRelation__Target : (WellFormedValue T * WellFormedValue V)-indexedPropFunctor)
+      `{RemoveUnaryIfs__S : forall {R}, ProgramAlgebra ForRemoveUnaryIfs S R (WellFormedValue T)}
+      (correctness__ProofAlgebra : Correctness__ProofAlgebra EvalRelation__Source EvalRelation__Target)
+      (WF_eval_Soundness_alg_F :
+         forall recRemoveUnaryIfs,
+           WellFormedProofAlgebra2 (correctness__ProofAlgebra recRemoveUnaryIfs)
+      )
+  : forall (ev : WellFormedValue SourceExpr * WellFormedValue Value),
+    IndexedFix EvalRelation__Source
+               ( _, _
+               ) ->
+    IndexedFix EvalRelation__Target
+               ( removeUnaryIfs _, _
+               ).
 
 Theorem removeUnaryIfsCorrectness
   : forall e v,
@@ -173,10 +214,88 @@ Theorem removeUnaryIfsCorrectness
     IndexedFix EvalRelation__Target (removeUnaryIfs e, v).
 Proof.
   move => e v S.
-  pose proof (@iUnwrapFix) as U.
-  specialize (U _ EvalRelation__Source).
 
-  (* TODO: IndexedFunctor instances *)
 
-  admit.
-Admitted.
+  pose proof @Induction2.
+
+
+  apply (Induction2 ().
+
+  apply iWrapFix.
+  case : (iUnwrapFix (e, v) S) => [ [ | ] |  ].
+
+  {
+    (* for some reason we need the @ to help type class resolution... *)
+    elim / @EvalInversionClear__Bool => b [] <- <- .
+    left.
+    left.
+    apply Bool.BoolValue.
+  }
+
+  {
+    elim / @EvalInversionClear__If1.
+
+    {
+      move => c t t' E__c E__t [] <- <- .
+      left.
+      right.
+      apply If2True.
+
+      {
+        apply iWrapFix.
+        case : (iUnwrapFix (c, boolean true) E__c) => [ [ | ] | ].
+
+        {
+          elim / @EvalInversionClear__Bool => b.
+          rewrite [@boolean]lock.
+          move => [].
+          unlock.
+          move => <- [] EQ.
+
+          (* can't find a nicer way of making this inversion happen *)
+          pose proof (wrapF_inversion' (E := Value) (boolean b) (boolean true) EQ) as EQ'.
+          move : EQ EQ' => _ [] ->.
+
+          left.
+          left.
+          apply Bool.BoolValue.
+        }
+
+        {
+          elim / @EvalInversionClear__If1.
+
+          {
+            move =>
+          }
+
+          admit.
+        }
+        {
+          admit.
+        }
+      }
+      {
+        admit.
+      }
+    }
+    {
+      case : (iUnwrapFix (c, boolean false) H) => [ [E | E] | E ].
+      {
+        inversion E.
+        left.
+        right.
+        constructor.
+        {
+          apply iWrapFix.
+
+        }
+      }
+      admit.
+    }
+  }
+  {
+    inversion_clear E.
+    right.
+    constructor.
+  }
+Qed.

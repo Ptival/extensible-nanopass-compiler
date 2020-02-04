@@ -73,6 +73,7 @@ Theory/Eval.v
 Theory/Functor.v
 Theory/IndexedAlgebra.v
 Theory/IndexedFunctor.v
+Theory/IndexedProofAlgebra.v
 Theory/IndexedSubFunctor.v
 Theory/IndexedSum1.v
 Theory/ProgramAlgebra.v

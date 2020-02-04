@@ -16,20 +16,20 @@ Local Open Scope SubFunctor_scope.
 
 The universal property of folds is as follows:
 
-  [h = fold alg   <->   h . wrapFix = alg h]
+  [h = fold alg   <->   h . wrapF = alg h]
 
 In an initial algebra setting, there is a unique implementation of [fold], so
 the property can be checked once and for all.  In a Church encoding setting,
 each term carries its fold, and with it, it should carry a proof.  Fortunately,
 the direct direction follows from the overloaded definition of [fold] and
-[wrapFix], independent of the choice of term of [Fix F].
+[wrapF], independent of the choice of term of [Fix F].
 
 *)
 
 (**
-[h = fold alg -> h . wrapFix = alg h]
+[h = fold alg -> h . wrapF = alg h]
 
-Holds by definition of [mendlerFold] and [wrapFix].
+Holds by definition of [mendlerFold] and [wrapF].
  *)
 Lemma MendlerFoldUP (* cf. [Universal_Property] *)
       F A
@@ -44,7 +44,7 @@ Proof.
 Qed.
 
 (**
-[h . wrapFix = alg h -> h = fold alg]
+[h . wrapF = alg h -> h = fold alg]
 
 To be proven for each value of type [Fix F].
  *)
@@ -59,9 +59,9 @@ Class MendlerFoldUP' (* cf. [Universal_Property'] *)
     }.
 
 (**
-[h = fold alg -> h . wrapFix = alg h]
+[h = fold alg -> h . wrapF = alg h]
 
-Holds by definition of [fold] and [wrapFix].
+Holds by definition of [fold] and [wrapF].
  *)
 Lemma FoldUP
            F `{Functor F}
@@ -75,7 +75,7 @@ Proof.
 Qed.
 
 (**
-[h . wrapFix = alg h -> h = fold alg]
+[h . wrapF = alg h -> h = fold alg]
 
 To be proven for each value of type [Fix F].
  *)
@@ -203,6 +203,31 @@ Proof.
   rewrite unwrapF_wrapF //.
 Qed.
 
+Lemma wrapF_fold_fmap_wrapF
+   {E} `{FunctorLaws E}
+  : (fun e : sig FoldUP' =>
+         wrapF (fold (fmap wrapF) (proj1_sig e))) =
+    @proj1_sig _ _.
+Proof.
+  apply : functional_extensionality.
+  move => x.
+  setoid_rewrite wrapF_unwrapF => //.
+  move : x => [] //.
+Qed.
+
+Lemma unwrapF_wrapF_fmap
+   {E} `{FunctorLaws E}
+  : forall (e : E (sig (FoldUP' (F := E)))),
+    unwrapF (wrapF (fmap (@proj1_sig _ _) e)) = fmap (@proj1_sig _ _) e.
+Proof.
+  move => e.
+  rewrite / unwrapF.
+  erewrite FoldUP => //.
+  rewrite fmapFusion.
+  rewrite fmapFusion.
+  setoid_rewrite wrapF_fold_fmap_wrapF => //.
+Qed.
+
 Theorem wrapUP'_unwrapUP' (* cf. [in_out_UP'_inverse] *)
         {E} `{FunctorLaws E}
   : forall (e : Fix E),
@@ -213,6 +238,30 @@ Proof.
   rewrite fmap_unwrapUP'.
   rewrite wrapF_unwrapF //.
 Qed.
+
+(**
+Proof that [wrapF] is injective, as long as the subterms have the universal
+property.
+ *)
+Lemma wrapF_inversion (* cf. [in_t_UP'_inject] *)
+      {E} `{FunctorLaws E}
+  : forall (e e' : E (sig FoldUP')),
+      wrapF (fmap (@proj1_sig _ _) e) = wrapF (fmap (@proj1_sig _ _) e') ->
+      fmap (@proj1_sig _ _) e = fmap (@proj1_sig _ _) e'.
+Proof.
+  move => e e' / (f_equal unwrapF).
+  do 2 rewrite unwrapF_wrapF_fmap.
+  rewrite //.
+Qed.
+
+Definition wrapF_inversion'
+           {E} `{FunctorLaws E}
+  := fun (a b : WellFormedValue E) EQ =>
+  wrapF_inversion
+    (E := E)
+    (unwrapUP' (proj1_sig a))
+    (unwrapUP' (proj1_sig b))
+    EQ.
 
 (**
 This could be called [injectUP'], but we will use it a lot, so it gets to be

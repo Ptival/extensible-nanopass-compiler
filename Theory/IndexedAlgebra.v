@@ -29,7 +29,7 @@ Definition
   := fun e => e A f.
 
 Definition
-  iWrapFix
+  iWrapF
   {I} {F : I-indexedPropFunctor} i (unwrapped : F (IndexedFix F) i)
   : IndexedFix F i
   := fun A f
@@ -43,7 +43,7 @@ Definition
   := iMendlerFold (fun i' r rec fa => f i' (indexedFmap i' rec fa)) i e.
 
 Definition
-  iUnwrapFix
+  iUnwrapF
   {I} {F : I-indexedPropFunctor} `{IndexedFunctor I F}
   : forall (i : I), IndexedFix F i -> F (IndexedFix F) i
-  := ifold (fun i => indexedFmap i iWrapFix).
+  := ifold (fun i => indexedFmap i iWrapF).
