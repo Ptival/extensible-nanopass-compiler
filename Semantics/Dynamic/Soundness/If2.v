@@ -131,11 +131,11 @@ Section If2.
 
          `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
          `{! forall {R}, WellFormedProgramAlgebra Eval__If2 Eval__E (T := R)}
-         (recEval   : UniversalPropertyF E -> EvalResult   V)
+         (recEval   : WellFormedValue E -> EvalResult   V)
 
          `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
          `{! forall {R}, WellFormedProgramAlgebra TypeOf__If2 TypeOf__E (T := R)}
-         (recTypeOf : UniversalPropertyF E -> TypeOfResult T)
+         (recTypeOf : WellFormedValue E -> TypeOfResult T)
 
     : ProofAlgebra
         ForSoundness If2
@@ -143,14 +143,14 @@ Section If2.
                 (AbstractSoundnessStatement' WT recEval recTypeOf))).
   Proof.
     constructor.
-    apply Induction2Algebra__If2.
+    apply Induction2__If2.
     rewrite / AbstractSoundnessStatement' / AbstractSoundnessStatement.
     rewrite / UniversalPropertyP2 /=.
     move => c t e H__c H__t H__e.
     (* )[[UP'__c1 UP'__c2] IH__c] [[UP'__t1 UP'__t2] IH__t] [[UP'__e1 UP'__e2] IH__e] /=. *)
     constructor.
     {
-      apply conj; apply (proj2_sig (if2 _ _ _)).
+      apply conj; exact (proj2_sig (if2 _ _ _)).
     }
     {
       move => Gamma.

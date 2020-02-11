@@ -42,7 +42,7 @@ Section Unit.
   .
 
   Definition unit
-    : UniversalPropertyF E
+    : WellFormedValue E
     := inject MkUnit.
 
   Definition unitF

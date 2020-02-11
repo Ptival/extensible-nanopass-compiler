@@ -10,11 +10,11 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-(** [TypeFix] is just an alias for [UniversalPropertyF], but it makes it so that
+(** [TypeFix] is just an alias for [WellFormedValue], but it makes it so that
     code that depends on wrapping types can use this, in case we ever need to
     change what type of fixed point to use.  *)
 Definition TypeFix T `{FunctorLaws T}
-  := UniversalPropertyF T.
+  := WellFormedValue T.
 
 Definition TypeOfResult
            T `{FunctorLaws T}

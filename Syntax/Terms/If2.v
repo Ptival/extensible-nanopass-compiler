@@ -40,15 +40,21 @@ Qed.
 
 Definition if2
            {E} `{FunctorLaws E} `{E supports If2}
-           (condition thenBranch elseBranch : UniversalPropertyF E)
-  : UniversalPropertyF E
+           (condition thenBranch elseBranch : WellFormedValue E)
+  : WellFormedValue E
   := inject (MkIf2 condition thenBranch elseBranch).
+
+Definition if2F'
+           {E} `{FunctorLaws E} `{E supports If2}
+           (condition thenBranch elseBranch : WellFormedValue E)
+  : Fix E
+  := proj1_sig (if2 condition thenBranch elseBranch).
 
 Definition if2F
            {E} `{FunctorLaws E} `{E supports If2}
-           (condition thenBranch elseBranch : UniversalPropertyF E)
+           (condition thenBranch elseBranch : Fix E)
   : Fix E
-  := proj1_sig (if2 condition thenBranch elseBranch).
+  := wrapF (inj (MkIf2 condition thenBranch elseBranch)).
 
 Definition if2_Fix_UPF
            {E} `{FunctorLaws E} `{E supports If2}
@@ -56,29 +62,29 @@ Definition if2_Fix_UPF
            {H_condition  : FoldUP' condition}
            {H_thenBranch : FoldUP' thenBranch}
            {H_elseBranch : FoldUP' elseBranch}
-  : UniversalPropertyF E
+  : WellFormedValue E
   := if2
        (exist _ _ H_condition)
        (exist _ _ H_thenBranch)
        (exist _ _ H_elseBranch).
 
-Definition if2_Fix_Fix
-           {E} `{FunctorLaws E} `{E supports If2}
-           (condition thenBranch elseBranch : Fix E)
-           {H_condition  : FoldUP' condition}
-           {H_thenBranch : FoldUP' thenBranch}
-           {H_elseBranch : FoldUP' elseBranch}
-  : Fix E
-  := proj1_sig (if2_Fix_UPF condition thenBranch elseBranch).
+(* Definition if2_Fix_Fix *)
+(*            {E} `{FunctorLaws E} `{E supports If2} *)
+(*            (condition thenBranch elseBranch : Fix E) *)
+(*            {H_condition  : FoldUP' condition} *)
+(*            {H_thenBranch : FoldUP' thenBranch} *)
+(*            {H_elseBranch : FoldUP' elseBranch} *)
+(*   : Fix E *)
+(*   := proj1_sig (if2_Fix_UPF condition thenBranch elseBranch). *)
 
-Definition if2_UPP_UPF
+Definition if2_UPP_WF
            {E} `{FunctorLaws E} `{E supports If2}
            {condition thenBranch elseBranch : Fix E}
            {P}
            (H_condition  : UniversalPropertyP P condition)
            (H_thenBranch : UniversalPropertyP P thenBranch)
            (H_elseBranch : UniversalPropertyP P elseBranch)
-  : UniversalPropertyF E
+  : WellFormedValue E
   := if2_Fix_UPF condition thenBranch elseBranch
        (H_condition  := proj1_sig H_condition)
        (H_thenBranch := proj1_sig H_thenBranch)
@@ -92,7 +98,7 @@ Definition if2_UPP_Fix
            (H_thenBranch : UniversalPropertyP P thenBranch)
            (H_elseBranch : UniversalPropertyP P elseBranch)
   : Fix E
-  := proj1_sig (if2_UPP_UPF H_condition H_thenBranch H_elseBranch).
+  := proj1_sig (if2_UPP_WF H_condition H_thenBranch H_elseBranch).
 
 (* Definition if2_UP_Fix *)
 (*            {E} `{FunctorLaws E} `{E supports If2} *)
@@ -107,14 +113,27 @@ Definition if2_UPP_Fix
 (*                   (exist _ _ H_elseBranch) *)
 (*                ). *)
 
+(**
+The definition of [Induction__If2] uses a very verbose induction hypothesis, whose
+conclusion is about [if2_UPP_Fix], because it proves useful in practice.
+
+We could replace the conclusion with:
+[UniversalPropertyP P (if2F c t e)]
+
+but then, we need to show that:
+[FoldUP' c -> FoldUP' t -> FoldUP' e -> FoldUP' (if2F c t e)]
+
+whereas with the current presentation, this immediately follows as [proj2_sig
+(if2 c t e)], since [if2_UPP_Fix] is equal to [proj1_sig (if2 c t e)].
+ *)
 Definition Induction__If2
            {F} `{FunctorLaws F} `{S : F supports If2}
            (P : forall (e : Fix F), FoldUP' e -> Prop)
            (Hif2 : forall (c t e : Fix F)
-                     (H_c : UniversalPropertyP P c)
-                     (H_t : UniversalPropertyP P t)
-                     (H_e : UniversalPropertyP P e),
-               UniversalPropertyP P (if2_UPP_Fix H_c H_t H_e))
+                     (IH__c : UniversalPropertyP P c)
+                     (IH__t : UniversalPropertyP P t)
+                     (IH__e : UniversalPropertyP P e),
+               UniversalPropertyP P (if2_UPP_Fix IH__c IH__t IH__e))
   : Algebra If2 (sig (UniversalPropertyP P))
   := fun e =>
        match e with
@@ -127,27 +146,27 @@ introduce a copy of [Functor If2] and make a mess... *)
 
 Variant ForInduction :=.
 
-Global Instance If2ProofAlgebra
+Global Instance ProofAlgebra__If2
        {F} `{FunctorLaws F} `{S : ! F supports If2}
        `(P : forall (e : Fix F), FoldUP' e -> Prop)
-       `(H_if2 : forall c t e
-                   (H_c : UniversalPropertyP P c)
-                   (H_t : UniversalPropertyP P t)
-                   (H_e : UniversalPropertyP P e),
-            UniversalPropertyP P (if2_UPP_Fix H_c H_t H_e))
+       `(H__if2 : forall c t e
+                   (IH__c : UniversalPropertyP P c)
+                   (IH__t : UniversalPropertyP P t)
+                   (IH__e : UniversalPropertyP P e),
+            UniversalPropertyP P (if2_UPP_Fix IH__c IH__t IH__e))
   : ProofAlgebra ForInduction If2 (sig (UniversalPropertyP P))
-  := {| proofAlgebra := Induction__If2 P H_if2; |}.
+  := {| proofAlgebra := Induction__If2 P H__if2; |}.
 
-Global Instance If2ProofAlgebraWellFormed
+Global Instance WellFormedProofAlgebra__If2
        F `{FunctorLaws F} `{! F supports If2} `{! WellFormedSubFunctor If2 F}
        `(P : forall (e : Fix F), FoldUP' e -> Prop)
-       `(H_if2 : forall c t e
-                   (IH_c : UniversalPropertyP P c)
-                   (IH_t : UniversalPropertyP P t)
-                   (IH_e : UniversalPropertyP P e),
-            UniversalPropertyP P (if2_Fix_Fix c t e)
+       `(H__if2 : forall c t e
+                   (IH__c : UniversalPropertyP P c)
+                   (IH__t : UniversalPropertyP P t)
+                   (IH__e : UniversalPropertyP P e),
+            UniversalPropertyP P (if2_UPP_Fix IH__c IH__t IH__e)
         )
-  : WellFormedProofAlgebra (If2ProofAlgebra P H_if2).
+  : WellFormedProofAlgebra (ProofAlgebra__If2 P H__if2).
 Proof.
   constructor.
   rewrite /= / Induction__If2.
@@ -171,7 +190,7 @@ Section Two.
     `{! F supports If2}
   .
 
-  Definition Induction2Algebra__If2
+  Definition Induction2__If2
              (P : forall (e : Fix E * Fix F), FoldUP' (fst e) /\ FoldUP' (snd e) -> Prop)
              (H__if2  : forall c t e
                         (H__c : UniversalPropertyP2 P c)
@@ -180,12 +199,12 @@ Section Two.
                ,
                  UniversalPropertyP2
                    P
-                   (if2F
+                   (if2F'
                       (exist _ _ (proj1 (proj1_sig H__c)))
                       (exist _ _ (proj1 (proj1_sig H__t)))
                       (exist _ _ (proj1 (proj1_sig H__e)))
                     ,
-                    if2F
+                    if2F'
                       (exist _ _ (proj2 (proj1_sig H__c)))
                       (exist _ _ (proj2 (proj1_sig H__t)))
                       (exist _ _ (proj2 (proj1_sig H__e)))

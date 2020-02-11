@@ -42,8 +42,8 @@ Section If2.
     : (TypedExpr T E)-indexedProp
     :=
     | WellTyped__if2 : forall t e condition thenBranch elseBranch,
-        proj1_sig e = if2F condition thenBranch elseBranch ->
-        WT {| type := boolType';  expr := condition; |} ->
+        proj1_sig e = if2F' condition thenBranch elseBranch ->
+        WT {| type := boolType';  expr := condition;  |} ->
         WT {| type := t;          expr := thenBranch; |} ->
         WT {| type := t;          expr := elseBranch; |} ->
         WellTyped__If2 WT {| type := t; expr := e; |}

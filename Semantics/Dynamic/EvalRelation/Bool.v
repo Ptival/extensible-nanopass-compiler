@@ -7,6 +7,7 @@ From ExtensibleCompiler.Syntax.Terms Require Import
 .
 
 From ExtensibleCompiler.Theory Require Import
+     Algebra
      Functor
      IndexedAlgebra
      IndexedFunctor
@@ -63,14 +64,14 @@ Section Bool.
   .
 
   Inductive EvalRelation__Bool
-            (EvalRelation__E : (WellFormedValue E * WellFormedValue V) -> Prop)
-    : (WellFormedValue E * WellFormedValue V) -> Prop
+            (EvalRelation__E : (Fix E * Fix V) -> Prop)
+    : (Fix E * Fix V) -> Prop
     :=
-    | BoolValue : forall (b : bool), EvalRelation__Bool EvalRelation__E (boolean b, boolean b)
+    | BoolValue : forall (b : bool), EvalRelation__Bool EvalRelation__E (booleanF b, booleanF b)
   .
 
   Global Instance IndexedFunctor_EvalRelation__Bool
-    : IndexedFunctor (WellFormedValue E * WellFormedValue V) EvalRelation__Bool.
+    : IndexedFunctor (Fix E * Fix V) EvalRelation__Bool.
   Proof.
     constructor.
     move => A B i IH [] b.
@@ -84,11 +85,11 @@ Sadly I can't find the incantation to make Coq generate this via [Derive
 Inversion], so manually written...
    *)
   Definition EvalInversion__Bool
-             (EvalRelation__E : WellFormedValue E * WellFormedValue V -> Prop)
-             (ev : WellFormedValue E * WellFormedValue V)
-             (P : (WellFormedValue E * WellFormedValue V)-indexedPropFunctor)
+             (EvalRelation__E : Fix E * Fix V -> Prop)
+             (ev : Fix E * Fix V)
+             (P : (Fix E * Fix V)-indexedPropFunctor)
              (IH : forall b : bool,
-                 P EvalRelation__E (boolean b, boolean b)
+                 P EvalRelation__E (booleanF b, booleanF b)
              )
              (ER : EvalRelation__Bool EvalRelation__E ev)
     : P EvalRelation__E ev
@@ -96,30 +97,30 @@ Inversion], so manually written...
       match ER in (EvalRelation__Bool _ p) return (p = ev -> P EvalRelation__E ev) with
       | BoolValue _ b =>
         fun EQ =>
-          eq_ind (boolean b, boolean b) (fun p => P EvalRelation__E p) (IH b) ev EQ
+          eq_ind (booleanF b, booleanF b) (fun p => P EvalRelation__E p) (IH b) ev EQ
       end eq_refl.
 
   Definition EvalInversionClear__Bool
-             (EvalRelation__E : WellFormedValue E * WellFormedValue V -> Prop)
-             (ev : WellFormedValue E * WellFormedValue V)
-             (P : (WellFormedValue E * WellFormedValue V)-indexedPropFunctor)
+             (EvalRelation__E : Fix E * Fix V -> Prop)
+             (ev : Fix E * Fix V)
+             (P : (Fix E * Fix V)-indexedPropFunctor)
              (IH : forall b : bool,
-                 (boolean b, boolean b) = ev ->
-                 P EvalRelation__E (boolean b, boolean b))
+                 (booleanF b, booleanF b) = ev ->
+                 P EvalRelation__E (booleanF b, booleanF b))
              (ER : EvalRelation__Bool EvalRelation__E ev)
     : P EvalRelation__E ev
     :=
       match ER in (EvalRelation__Bool _ p) return (p = ev -> P EvalRelation__E ev) with
       | BoolValue _ b =>
         fun EQ =>
-          eq_ind (boolean b, boolean b) (fun p => P EvalRelation__E p) (IH b EQ) ev EQ
+          eq_ind (booleanF b, booleanF b) (fun p => P EvalRelation__E p) (IH b EQ) ev EQ
       end eq_refl.
 
   (* not sure if this is useful *)
   Global Instance EvalRelationAlg__Bool
          {A} `{FunctorLaws A}
          `{SA : ! SubFunctor Bool A}
-         {EvalRelation__A : (WellFormedValue E * WellFormedValue V)-indexedPropFunctor}
+         {EvalRelation__A : (Fix E * Fix V)-indexedPropFunctor}
          `{! IndexedFunctor _ EvalRelation__A}
          `{SE : ! IndexedSubFunctor EvalRelation__Bool EvalRelation__A}
     : IndexedProofAlgebra ForEvalRelation EvalRelation__Bool (IndexedFix EvalRelation__A).

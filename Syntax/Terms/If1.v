@@ -41,10 +41,15 @@ Qed.
 
 Definition if1
            {E} `{FunctorLaws E} `{E supports If1} c t
-  : UniversalPropertyF E
+  : WellFormedValue E
   := inject (MkIf1 c t).
 
-Definition if1__F
+Definition if1F
+           {E} `{FunctorLaws E} `{E supports If1} (c t : Fix E)
+  : Fix E
+  := wrapF (inj (MkIf1 c t)).
+
+Definition if1F'
            {E} `{FunctorLaws E} `{E supports If1} c t
   : Fix E
   := proj1_sig (if1 c t).

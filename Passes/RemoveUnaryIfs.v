@@ -51,4 +51,5 @@ Definition removeUnaryIfs
            {L V}
            `{FunctorLaws L} `{FunctorLaws V}
            {removeUnaryIfs__L : forall T, ProgramAlgebra ForRemoveUnaryIfs L T (WellFormedValue V)}
+  : Fix L -> WellFormedValue V
   := mendlerFold (fun _ => @programAlgebra _ _ _ _ _ _ (removeUnaryIfs__L _)).

@@ -24,8 +24,8 @@ Record TypedExpr (* cf. WFValue_i *)
   : Set
   := MkTypedValue (* cf. mk_WFValue_i *)
        {
-         type : UniversalPropertyF T;
-         expr : UniversalPropertyF E;
+         type : WellFormedValue T;
+         expr : WellFormedValue E;
        }.
 Arguments MkTypedValue {T E _ _ _ _}.
 
@@ -57,8 +57,8 @@ Definition AbstractSoundnessStatement (* cf. eval_alg_Soundness_P *)
            (WT : (TypedExpr T V)-indexedPropFunctor)
            `{eval__E   : forall {R}, MixinAlgebra E R (EvalResult   V)}
            `{typeOf__F : forall {R}, MixinAlgebra F R (TypeOfResult T)}
-           (recEval   : UniversalPropertyF E -> EvalResult   V)
-           (recTypeOf : UniversalPropertyF F -> TypeOfResult T)
+           (recEval   : WellFormedValue E -> EvalResult   V)
+           (recTypeOf : WellFormedValue F -> TypeOfResult T)
            (e : Fix E * Fix F)
            (RFUP_e : FoldUP' (fst e) /\ FoldUP' (snd e))
   : Prop
@@ -67,13 +67,13 @@ Definition AbstractSoundnessStatement (* cf. eval_alg_Soundness_P *)
 
       (* Commenting those out temporarily to see where they are needed! *)
 
-      (* recEvalProj : forall (e : UniversalPropertyF L),
+      (* recEvalProj : forall (e : WellFormedValue L),
           recEval e
           =
           recEval (reverseFoldWrapFix (reverseFoldUnwrapFix (proj1_sig e)))
       *)
 
-      (* recTypeOfProj : forall (e : UniversalPropertyF L'),
+      (* recTypeOfProj : forall (e : WellFormedValue L'),
           recTypeOf e
           =
           recTypeOf (reverseFoldWrapFix (reverseFoldUnwrapFix (proj1_sig e)))
@@ -82,7 +82,7 @@ Definition AbstractSoundnessStatement (* cf. eval_alg_Soundness_P *)
       Gamma
 
       (IH : forall (Gamma : Environment (ValueFix V))
-              (a : UniversalPropertyF E * UniversalPropertyF F),
+              (a : WellFormedValue E * WellFormedValue F),
           (forall (tau : TypeFix T),
               typeOf__F recTypeOf (unwrapUP' (proj1_sig (snd a))) = Some tau ->
               WellTyped WT tau (eval__E recEval (unwrapUP' (proj1_sig (fst a))) Gamma)
@@ -184,8 +184,8 @@ Definition AbstractSoundnessStatement'
            (WT : (TypedExpr T V)-indexedPropFunctor)
            `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
            `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
-           (recEval   : UniversalPropertyF E -> EvalResult   V)
-           (recTypeOf : UniversalPropertyF E -> TypeOfResult T)
+           (recEval   : WellFormedValue E -> EvalResult   V)
+           (recTypeOf : WellFormedValue E -> TypeOfResult T)
   :=
     (AbstractSoundnessStatement
        WT
@@ -203,8 +203,8 @@ Definition SoundnessStatement
            (WT : (TypedExpr T V)-indexedPropFunctor)
            `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
            `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
-           (recEval   : UniversalPropertyF E -> EvalResult   V)
-           (recTypeOf : UniversalPropertyF E -> TypeOfResult T)
+           (recEval   : WellFormedValue E -> EvalResult   V)
+           (recTypeOf : WellFormedValue E -> TypeOfResult T)
            (e : Fix E)
            (RFUP_e : FoldUP' e)
   : Prop

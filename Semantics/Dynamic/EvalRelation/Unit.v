@@ -12,6 +12,7 @@ From ExtensibleCompiler.Syntax.Types Require Import
 .
 
 From ExtensibleCompiler.Theory Require Import
+     Algebra
      Functor
      IndexedFunctor
      SubFunctor
@@ -37,14 +38,14 @@ Section Unit.
   .
 
   Inductive EvalRelation__Unit
-            (EvalRelation__E : (WellFormedValue E * WellFormedValue V) -> Prop)
-    : (WellFormedValue E * WellFormedValue V) -> Prop
+            (EvalRelation__E : (Fix E * Fix V) -> Prop)
+    : (Fix E * Fix V) -> Prop
     :=
-    | UnitValue : EvalRelation__Unit EvalRelation__E (unit, unit)
+    | UnitValue : EvalRelation__Unit EvalRelation__E (unitF, unitF)
   .
 
   Global Instance IndexedFunctor_EvalRelation__Unit
-    : IndexedFunctor (WellFormedValue E * WellFormedValue V) EvalRelation__Unit.
+    : IndexedFunctor (Fix E * Fix V) EvalRelation__Unit.
   Proof.
     constructor.
     move => A B i IH [].

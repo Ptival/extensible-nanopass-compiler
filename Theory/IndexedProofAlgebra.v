@@ -45,8 +45,6 @@ Global Instance
       ;
     |}.
 
-Set Typeclasses Debug.
-
 Class WellFormedIndexedProofAlgebra (* cf. [iWF_Ind] *)
       {Label I F G}
       `{IndexedFunctor I F} `{IndexedFunctor I G}

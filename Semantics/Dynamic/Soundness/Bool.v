@@ -55,11 +55,11 @@ Section Bool.
 
          `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
          `{! forall {R}, WellFormedProgramAlgebra Eval__Bool Eval__E (T := R)}
-         (recEval   : UniversalPropertyF E -> EvalResult   V)
+         (recEval   : WellFormedValue E -> EvalResult   V)
 
          `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
          `{! forall {R}, WellFormedProgramAlgebra TypeOf__Bool TypeOf__E (T := R)}
-         (recTypeOf : UniversalPropertyF E -> TypeOfResult T)
+         (recTypeOf : WellFormedValue E -> TypeOfResult T)
 
     : ProofAlgebra
         ForSoundness Bool

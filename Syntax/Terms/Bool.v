@@ -42,7 +42,7 @@ Section Bool.
 
   Definition boolean
              (b : bool)
-    : UniversalPropertyF E
+    : WellFormedValue E
     := inject (MkBool b).
 
   Definition booleanF

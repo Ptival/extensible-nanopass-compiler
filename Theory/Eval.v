@@ -11,12 +11,12 @@ From ExtensibleCompiler.Theory Require Import
 Local Open Scope SubFunctor_scope.
 Local Open Scope Sum1_scope.
 
-(** [ValueFix] is just an alias for [UniversalPropertyF], but it makes it so that
+(** [ValueFix] is just an alias for [WellFormedValue], but it makes it so that
     code that depends on wrapping values can use this, in case we ever need to
     change what type of fixed point to use.  *)
 Definition ValueFix
            V `{FunctorLaws V}
-  := UniversalPropertyF V.
+  := WellFormedValue V.
 
 Definition EvalResult
            V `{FunctorLaws V}

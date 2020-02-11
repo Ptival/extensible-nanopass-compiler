@@ -48,7 +48,7 @@ Definition closure
            {L V} `{F : forall V, Functor (L V)} `{FL : forall V, FunctorLaws (L V)}
            `{(L V) supports (Closure L)}
            c e
-  : UniversalPropertyF (L V)
+  : WellFormedValue (L V)
   := inject (MkClosure c e).
 
 Definition closureF

@@ -56,19 +56,19 @@ Local Open Scope SubFunctor_scope.
 (*          `{Eval__C   : forall {R}, ProgramAlgebra ForEval   C R (EvalResult   V)} *)
 (*          `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)} *)
 (*          `{! forall {R}, WellFormedProgramAlgebra Eval__C Eval__E (T := R)} *)
-(*          (recEval   : UniversalPropertyF E -> EvalResult   V) *)
+(*          (recEval   : WellFormedValue E -> EvalResult   V) *)
 
 (*          `{TypeOf__C : forall {R}, ProgramAlgebra ForTypeOf C R (TypeOfResult T)} *)
 (*          `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)} *)
 (*          `{! forall {R}, WellFormedProgramAlgebra TypeOf__C TypeOf__E (T := R)} *)
-(*          (recTypeOf : UniversalPropertyF E -> TypeOfResult T) *)
+(*          (recTypeOf : WellFormedValue E -> TypeOfResult T) *)
 
 (*          Gamma (ctor : C (WellFormedValue E)) *)
 
 (*     : *)
 (*       (forall *)
 (*           (Gamma' : Environment.Environment (ValueFix V)) *)
-(*           (a : UniversalPropertyF E * UniversalPropertyF E), *)
+(*           (a : WellFormedValue E * WellFormedValue E), *)
 (*           (forall tau : TypeFix T, *)
 (*               programAlgebra' TypeOf__E recTypeOf (unwrapUP' (proj1_sig (snd a))) = *)
 (*               Some tau -> *)
@@ -130,11 +130,11 @@ Section Unit.
 
          `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
          `{! forall {R}, WellFormedProgramAlgebra Eval__Unit Eval__E (T := R)}
-         (recEval   : UniversalPropertyF E -> EvalResult   V)
+         (recEval   : WellFormedValue E -> EvalResult   V)
 
          `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
          `{! forall {R}, WellFormedProgramAlgebra TypeOf__Unit TypeOf__E (T := R)}
-         (recTypeOf : UniversalPropertyF E -> TypeOfResult T)
+         (recTypeOf : WellFormedValue E -> TypeOfResult T)
 
     : ProofAlgebra
         ForSoundness Unit

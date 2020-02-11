@@ -10,6 +10,7 @@ From ExtensibleCompiler.Syntax.Terms Require Import
 .
 
 From ExtensibleCompiler.Theory Require Import
+     Algebra
      Functor
      IndexedFunctor
      SubFunctor
@@ -39,20 +40,20 @@ captures how [If1] evaluates in a larger language [E].
   .
 
   Inductive EvalRelation__If1
-            (EvalRelation__E : (WellFormedValue E * WellFormedValue V) -> Prop)
-    : (WellFormedValue E * WellFormedValue V) -> Prop
+            (EvalRelation__E : (Fix E * Fix V) -> Prop)
+    : (Fix E * Fix V) -> Prop
     :=
     | If1True : forall c t t',
-        EvalRelation__E (c, boolean true) ->
+        EvalRelation__E (c, booleanF true) ->
         EvalRelation__E (t, t') ->
-        EvalRelation__If1 EvalRelation__E (if1 c t, t')
+        EvalRelation__If1 EvalRelation__E (if1F c t, t')
     | If1False : forall c t,
-        EvalRelation__E (c, boolean false) ->
-        EvalRelation__If1 EvalRelation__E (if1 c t, unit)
+        EvalRelation__E (c, booleanF false) ->
+        EvalRelation__If1 EvalRelation__E (if1F c t, unitF)
   .
 
   Global Instance IndexedFunctor_EvalRelation__If1
-    : IndexedFunctor (WellFormedValue E * WellFormedValue V) EvalRelation__If1.
+    : IndexedFunctor (Fix E * Fix V) EvalRelation__If1.
   Proof.
     constructor.
     move => A B i IH [].
@@ -61,28 +62,28 @@ captures how [If1] evaluates in a larger language [E].
   Qed.
 
   Definition EvalInversionClear__If1
-             (EvalRelation__E : WellFormedValue E * WellFormedValue V -> Prop)
-             (ev : WellFormedValue E * WellFormedValue V)
-             (P : (WellFormedValue E * WellFormedValue V)-indexedPropFunctor)
+             (EvalRelation__E : Fix E * Fix V -> Prop)
+             (ev : Fix E * Fix V)
+             (P : (Fix E * Fix V)-indexedPropFunctor)
              (IH__True : forall c t t',
-                 EvalRelation__E (c, boolean true) ->
+                 EvalRelation__E (c, booleanF true) ->
                  EvalRelation__E (t, t') ->
-                 (if1 c t, t') = ev ->
-                 P EvalRelation__E (if1 c t, t')
+                 (if1F c t, t') = ev ->
+                 P EvalRelation__E (if1F c t, t')
              )
              (IH__False : forall c t,
-                 EvalRelation__E (c, boolean false) ->
-                 (if1 c t, unit) = ev ->
-                 P EvalRelation__E (if1 c t, unit)
+                 EvalRelation__E (c, booleanF false) ->
+                 (if1F c t, unitF) = ev ->
+                 P EvalRelation__E (if1F c t, unitF)
              )
              (ER : EvalRelation__If1 EvalRelation__E ev)
     : P EvalRelation__E ev
     :=
       match ER in (EvalRelation__If1 _ p) return (p = ev -> P EvalRelation__E ev) with
       | If1True _ c t t' E__c E__t =>
-        fun EQ => eq_ind (if1 c t, t') (P EvalRelation__E) (IH__True c t t' E__c E__t EQ) ev EQ
+        fun EQ => eq_ind (if1F c t, t') (P EvalRelation__E) (IH__True c t t' E__c E__t EQ) ev EQ
       | If1False _ c t E__c =>
-        fun EQ => eq_ind (if1 c t, unit) (P EvalRelation__E) (IH__False c t E__c EQ) ev EQ
+        fun EQ => eq_ind (if1F c t, unitF) (P EvalRelation__E) (IH__False c t E__c EQ) ev EQ
       end eq_refl.
 
 End If1.

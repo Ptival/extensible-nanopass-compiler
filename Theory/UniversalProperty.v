@@ -106,7 +106,7 @@ Qed.
 A [WellFormedValue] for a functor [V] is a value of type [Fix V] s.t. it has
 been properly constructed, and as such, satisfies [FoldUP'].
  *)
-Definition WellFormedValue
+Definition WellFormedValue (* cf. [UP'_F] *)
            V `{FunctorLaws V}
   := { e : Fix V | FoldUP' e }.
 
@@ -300,11 +300,6 @@ Definition UniversalPropertyP2 (* cf. [UP'_P2] *)
            (e : Fix F * Fix G)
   : Prop
   := sig (P e).
-
-Definition UniversalPropertyF (* cf. [UP'_F] *)
-           F `{FunctorLaws F}
-  : Set
-  := sig (FoldUP' (F := F)).
 
 (**
 This could be called [projectUP'], but we will almost always use it so let's

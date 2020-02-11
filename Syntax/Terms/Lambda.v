@@ -55,7 +55,7 @@ Definition app
            `{FunctorLaws T} `{FunctorLaws E}
            `{E supports (Lambda T B)}
            g a
-  : UniversalPropertyF E
+  : WellFormedValue E
   := inject (App g a).
 
 Definition lam
@@ -63,7 +63,7 @@ Definition lam
            `{FunctorLaws T} `{FunctorLaws E}
            `{E supports (Lambda T B)}
            t b
-  : UniversalPropertyF E
+  : WellFormedValue E
   := inject (Lam t b).
 
 Definition var
@@ -71,5 +71,5 @@ Definition var
            `{FunctorLaws T} `{FunctorLaws E}
             `{E supports (Lambda T B)}
            v
-  : UniversalPropertyF E
+  : WellFormedValue E
   := inject (Var v).

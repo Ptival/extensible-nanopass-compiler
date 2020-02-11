@@ -32,7 +32,7 @@ Qed.
 Definition stuck
            {E} `{FunctorLaws E} `{E supports Stuck}
            (reason : string)
-  : UniversalPropertyF E
+  : WellFormedValue E
   := inject (MkStuck reason).
 
 Definition stuck_Fix
