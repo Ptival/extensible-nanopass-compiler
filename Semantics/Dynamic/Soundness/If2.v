@@ -68,7 +68,7 @@ Section If2.
         (WTV : (TypedExpr T V)-indexedPropFunctor)
         `(IndexedFunctor (TypedExpr T V) WTV)
         `((WellTypedValue__Bool <= WTV)%IndexedSubFunctor)
-        `((WellTyped__Stuck <= WTV)%IndexedSubFunctor)
+        `((WellTypedValue__Stuck <= WTV)%IndexedSubFunctor)
 
         `{Eval__E : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
         `{! forall {R}, WellFormedProgramAlgebra Eval__If2 Eval__E (T := R)}
@@ -148,7 +148,7 @@ Section If2.
         }
       }
       {
-        apply (iInject (F := WellTyped__Stuck)).
+        apply (iInject (F := WellTypedValue__Stuck)).
         econstructor.
         reflexivity.
       }
@@ -159,9 +159,8 @@ Section If2.
 
          (WTV : (TypedExpr T V)-indexedPropFunctor)
          `(IndexedFunctor (TypedExpr T V) WTV)
-         (* `(IndexedFunctor (TypedExpr T V) WellTyped__If2) *)
          `((WellTypedValue__Bool  <= WTV)%IndexedSubFunctor)
-         `((WellTyped__Stuck <= WTV)%IndexedSubFunctor)
+         `((WellTypedValue__Stuck <= WTV)%IndexedSubFunctor)
 
          `{Eval__E : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
          `{WF__Eval__E : ! forall {R}, WellFormedProgramAlgebra Eval__If2 Eval__E (T := R)}
@@ -178,6 +177,7 @@ Section If2.
 
         `{! IndexedProofAlgebra ForWellTypedValueProjection__Bool WTV
             (WellTypedValueProjectionStatement__Bool WTV)}
+
         `{! IndexedProofAlgebra ForWellTypedProj1Type WTV
             (PropertyStatement__WellTypedProj1Type WTV)
          }
@@ -191,8 +191,8 @@ Section If2.
     apply Induction2__If2.
     rewrite / AbstractSoundnessStatement' / AbstractSoundnessStatement.
     rewrite / UniversalPropertyP2 /=.
-    move => c t e [? H__c] [? H__t] [? H__e].
-    (* )[[UP'__c1 UP'__c2] IH__c] [[UP'__t1 UP'__t2] IH__t] [[UP'__e1 UP'__e2] IH__e] /=. *)
+    move => [c1 c2] [t1 t2] [e1 e2] /=.
+    move => [[UP'__c1 UP'__c2] IH__c] [[UP'__t1 UP'__t2] IH__t] [[UP'__e1 UP'__e2] IH__e].
     constructor.
     {
       apply conj; exact (proj2_sig (if2 _ _ _)).
@@ -206,32 +206,43 @@ Section If2.
       repeat rewrite wellFormedSubFunctor => //=.
       rewrite / programAlgebra'.
       repeat rewrite wellFormedProgramAlgebra.
-      move => IH tau TY.
-
+      move => IH tau.
       eapply Soundness__if2 => //.
+
+      (* condition *)
       {
-        move => tau__c R.
+        move => ?.
+        apply (IH Gamma (exist _ _ UP'__c1, _)) => /=.
+        {
+          move => A B.
+          apply (IH__c Gamma IH).
+          now rewrite <- (wrapUP'_unwrapUP' c2).
+        }
+      }
 
-      (*   have := (H__c Gamma). *)
-      (* } *)
-      (* apply (iInject (F := WellTypedValue__If2)). *)
-      (* econstructor. *)
-      (* { *)
-      (*   rewrite / if2F' / if2 / inject /=. *)
-      (*   rewrite wrapUP'_unwrapUP'. *)
+      (* then branch *)
+      {
+        move => ?.
+        apply (IH Gamma (exist _ _ UP'__t1, _)) => /=.
+        {
+          move => A B.
+          apply (IH__t Gamma IH).
+          now rewrite <- (wrapUP'_unwrapUP' t2).
+        }
+      }
 
-      (* econstructor. *)
-      (* move : TY. *)
-      (* rewrite {1} / programAlgebra. *)
-      (* move : (IH__e Gamma). *)
-      (* constructor. *)
-      (* rewrite / projectF /=. *)
-      (* econstructor => //. *)
-      (* move : c H__c TY => [a b] H__ab TY /=. *)
-      (* move : TY => /=. *)
-      (* move => [] <- //. *)
+      (* else branch *)
+      {
+        move => ?.
+        apply (IH Gamma (exist _ _ UP'__e1, _)) => /=.
+        {
+          move => A B.
+          apply (IH__e Gamma IH).
+          now rewrite <- (wrapUP'_unwrapUP' e2).
+        }
+      }
 
-
-  Admitted.
+    }
+  Qed.
 
 End If2.

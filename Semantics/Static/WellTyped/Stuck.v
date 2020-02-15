@@ -43,17 +43,17 @@ Section Stuck.
 
   .
 
-  Inductive WellTyped__Stuck
+  Inductive WellTypedValue__Stuck
             (WT : (TypedExpr T V)-indexedProp)
     : (TypedExpr T V)-indexedProp
     :=
-    | WellTyped__stuck : forall t e reason,
+    | WellTypedValue__stuck : forall t e reason,
         proj1_sig e = stuckF reason ->
-        WellTyped__Stuck WT {| type := t; expr := e |}
+        WellTypedValue__Stuck WT {| type := t; expr := e |}
   .
 
-  Global Instance IndexedFunctor_WellTyped__Stuck
-    : IndexedFunctor (TypedExpr T V) WellTyped__Stuck.
+  Global Instance IndexedFunctor_WellTypedValue__Stuck
+    : IndexedFunctor (TypedExpr T V) WellTypedValue__Stuck.
   Proof.
     constructor.
     move => A B i IH [] [t UP__t] [e UP__e] /= => r Eq__t.

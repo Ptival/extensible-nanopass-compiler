@@ -35,10 +35,9 @@ Arguments expr {T E _ _ _ _}.
 (**
 In MTC, this is parameterized by some indexed relation.  In practice I don't
 think I am using it yet, so leaving it hardcoded until it becomes necessary.
-*)
+ *)
 
-Definition WellTyped
-           {T E}
+Definition WellTyped {T E}
            `{FunctorLaws T} `{FunctorLaws E}
            (WT : (TypedExpr T E)-indexedPropFunctor)
            t e
@@ -51,13 +50,13 @@ This is the most abstract statement of the type soundness of evaluation.
 Instead of explicitly calling recursively [evalL] and [typeOfL], this is
 abstracted over the operation to run recursively, namely [recEval] and
 [recTypeOf].
-
  *)
 
 Definition AbstractSoundnessStatement (* cf. eval_alg_Soundness_P *)
            {T E F V}
            `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws F} `{FunctorLaws V}
            (WT : (TypedExpr T V)-indexedPropFunctor)
+           (*WellFormedEnvironment : Environment (ValueFix V) -> Prop*)
            `{eval__E   : forall {R}, MixinAlgebra E R (EvalResult   V)}
            `{typeOf__F : forall {R}, MixinAlgebra F R (TypeOfResult T)}
            (recEval   : WellFormedValue E -> EvalResult   V)
@@ -70,21 +69,22 @@ Definition AbstractSoundnessStatement (* cf. eval_alg_Soundness_P *)
 
       (* Commenting those out temporarily to see where they are needed! *)
 
-      (* recEvalProj : forall (e : WellFormedValue L),
-          recEval e
-          =
-          recEval (reverseFoldWrapFix (reverseFoldUnwrapFix (proj1_sig e)))
-      *)
+      (* recEvalProj : forall (e : WellFormedValue L), *)
+      (*           recEval e *)
+      (*           = *)
+      (*           recEval (reverseFoldWrapFix (reverseFoldUnwrapFix (proj1_sig e))) *)
+      (*       *)
 
-      (* recTypeOfProj : forall (e : WellFormedValue L'),
-          recTypeOf e
-          =
-          recTypeOf (reverseFoldWrapFix (reverseFoldUnwrapFix (proj1_sig e)))
-      *)
+      (* recTypeOfProj : forall (e : WellFormedValue L'), *)
+      (*           recTypeOf e *)
+      (*           = *)
+      (*           recTypeOf (reverseFoldWrapFix (reverseFoldUnwrapFix (proj1_sig e))) *)
+      (*       *)
 
       Gamma
 
       (IH : forall (Gamma : Environment (ValueFix V))
+              (*WF__Gamma : WellFormedEnvironment Gamma*)
               (a : WellFormedValue E * WellFormedValue F),
           (forall (tau : TypeFix T),
               typeOf__F recTypeOf (unwrapUP' (proj1_sig (snd a))) = Some tau ->
@@ -109,15 +109,15 @@ Definition Soundness__ProofAlgebra
            `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
   := forall recEval recTypeOf,
     ProofAlgebra ForSoundness
-      E
-      (sig
-         (UniversalPropertyP2
-            (AbstractSoundnessStatement
-               (eval__E   := fun _ => programAlgebra' Eval__E)
-               (typeOf__F := fun _ => programAlgebra' TypeOf__E)
-               WT
-               recEval recTypeOf
-      ))).
+                 E
+                 (sig
+                    (UniversalPropertyP2
+                       (AbstractSoundnessStatement
+                          (eval__E   := fun _ => programAlgebra' Eval__E)
+                          (typeOf__F := fun _ => programAlgebra' TypeOf__E)
+                          WT
+                          recEval recTypeOf
+                 ))).
 
 Lemma Soundness
       {T E V}
@@ -177,10 +177,10 @@ Proof.
   }
 Qed.
 
-(*
-A more concise version of [AbstractSoundnessStatement], to be used in client
-files.
- *)
+(* *)
+(* A more concise version of [AbstractSoundnessStatement], to be used in client *)
+(* files. *)
+(*  *)
 Definition AbstractSoundnessStatement'
            {T E V}
            `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
@@ -197,9 +197,9 @@ Definition AbstractSoundnessStatement'
        recEval recTypeOf
     ).
 
-(*
-A nicer version of [AbstractSoundnessStatement], to be used in client files.
- *)
+(* *)
+(* A nicer version of [AbstractSoundnessStatement], to be used in client files. *)
+(*  *)
 Definition SoundnessStatement
            {T E V}
            `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
@@ -216,35 +216,35 @@ Definition SoundnessStatement
       typeOf e = Some tau ->
       WellTyped WT tau (eval e Gamma).
 
-(**
-The [WellTyped] predicates are indexed by a [TypedExpr], which is a pair of a
-[WellFormed] type and a [WellFormed] expression.  Recall that [WellFormed] is
-a dependent pair of an extensible term, and a proof that it satisfies the
-universal property of folds.
+(** *)
+(* The [WellTyped] predicates are indexed by a [TypedExpr], which is a pair of a *)
+(* [WellFormed] type and a [WellFormed] expression.  Recall that [WellFormed] is *)
+(* a dependent pair of an extensible term, and a proof that it satisfies the *)
+(* universal property of folds. *)
 
-Unfortunately, we do not have an automatic means of proof irrelevance with
-respect to that proof.  This means that if we have a [TypedExpr] like:
+(* Unfortunately, we do not have an automatic means of proof irrelevance with *)
+(* respect to that proof.  This means that if we have a [TypedExpr] like: *)
 
-[{| type := exist tau1 UP'__tau1; expr := exist e1 UP'__e1 |}]
+(* [{| type := exist tau1 UP'__tau1; expr := exist e1 UP'__e1 |}] *)
 
-and we are trying to prove:
+(* and we are trying to prove: *)
 
-[{| type := exist tau2 UP'__tau2; expr := exist e2 UP'__e2 |}]
+(* [{| type := exist tau2 UP'__tau2; expr := exist e2 UP'__e2 |}] *)
 
-it does not suffice to show that [tau1 = tau2] and [e1 = e2], as the [TypedExpr]
-are not convertible unless [UP'__tau1 = UP'__tau2] and [UP'__e1 = UP'__e2] .
+(* it does not suffice to show that [tau1 = tau2] and [e1 = e2], as the [TypedExpr] *)
+(* are not convertible unless [UP'__tau1 = UP'__tau2] and [UP'__e1 = UP'__e2] . *)
 
-[WellTypedProj1Type] is an extensible property of [WellTyped] properties,
-capturing those that are well-formed in the sense that they are preserved as
-long as the first projection of their type is preserved.
+(* [WellTypedProj1Type] is an extensible property of [WellTyped] properties, *)
+(* capturing those that are well-formed in the sense that they are preserved as *)
+(* long as the first projection of their type is preserved. *)
 
-[WellTypedProj1Expr] is an extensible property of [WellTyped] properties,
-capturing those that are well-formed in the sense that they are preserved as
-long as the first projection of their expression is preserved.
+(* [WellTypedProj1Expr] is an extensible property of [WellTyped] properties, *)
+(* capturing those that are well-formed in the sense that they are preserved as *)
+(* long as the first projection of their expression is preserved. *)
 
-All [WellTyped] properties will satisfy both of these properties, so that we can
-combine them to move [WellTyped]-ness across equal types or expressions.
- *)
+(* All [WellTyped] properties will satisfy both of these properties, so that we can *)
+(* combine them to move [WellTyped]-ness across equal types or expressions. *)
+(*  *)
 
 Definition PropertyStatement__WellTypedProj1Type
            {T E V}
