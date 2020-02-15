@@ -10,8 +10,8 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
-Local Open Scope Sum1_scope.
+Local Open Scope SubFunctor.
+Local Open Scope Sum1.
 
 (**
 

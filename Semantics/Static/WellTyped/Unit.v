@@ -26,7 +26,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Section Unit.
 
@@ -56,7 +56,7 @@ Section Unit.
     | WellTyped__unit : forall t e,
         proj1_sig e = unitF ->
         proj1_sig t = unitType ->
-        WellTyped__Unit WT {| type := t; expr := e; |}
+        WellTyped__Unit WT {| type := t; expr := e |}
   .
 
   Global Instance IndexedFunctor_WellTyped__Unit

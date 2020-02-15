@@ -28,7 +28,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Section Bool.
 
@@ -51,7 +51,7 @@ Section Bool.
 
          (WT : (TypedExpr T V)-indexedPropFunctor)
          `(IndexedFunctor (TypedExpr T V) WT)
-         `((WellTyped__Bool <= WT)%IndexedSubFunctor)
+         `((WellTypedValue__Bool <= WT)%IndexedSubFunctor)
 
          `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
          `{! forall {R}, WellFormedProgramAlgebra Eval__Bool Eval__E (T := R)}
@@ -84,7 +84,7 @@ Section Bool.
       rewrite wellFormedProgramAlgebra.
       rewrite wellFormedProgramAlgebra.
       move => IH tau TY.
-      apply (iInject (F := WellTyped__Bool)) => /=.
+      apply (iInject (F := WellTypedValue__Bool)) => /=.
       econstructor => //.
       move : TY => /=.
       move => [] <- //.
@@ -101,7 +101,7 @@ Definition Soundness__Bool'
            {T}
            `{FunctorLaws T}
            `{! T supports BoolType}
-  : Soundness__ProofAlgebra (T := T) (E := Bool) (V := V) WellTyped__Bool.
+  : Soundness__ProofAlgebra (T := T) (E := Bool) (V := V) WellTypedValue__Bool.
 Proof.
   move => recEval recTypeOf.
   apply : Soundness__Bool.

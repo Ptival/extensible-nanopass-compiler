@@ -15,7 +15,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Inductive Closure
           L
@@ -29,7 +29,7 @@ Arguments MkClosure {L F FL E}.
 Global Instance Functor__Closure
        {L} `{F : forall V, Functor (L V)} `{FL : forall V, FunctorLaws (L V)}
   : Functor (Closure L)
-  := {| fmap := fun A B f '(MkClosure c e) => MkClosure c (map f e); |}.
+  := {| fmap := fun A B f '(MkClosure c e) => MkClosure c (map f e) |}.
 
 Global Instance FunctorLaws__Closure
        {L} `{F : forall V, Functor (L V)} `{FL : forall V, FunctorLaws (L V)}

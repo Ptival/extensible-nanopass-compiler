@@ -16,7 +16,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Section Unit.
 
@@ -33,7 +33,7 @@ Section Unit.
 
   Global Instance Eval__Unit
     : forall {R}, ProgramAlgebra ForEval Unit R (EvalResult V)
-    := fun _ => {| programAlgebra := eval__Unit; |}.
+    := fun _ => {| programAlgebra := eval__Unit |}.
 
   Definition Eval__Unit'
     : forall R, ProgramAlgebra ForEval Unit R (EvalResult V)

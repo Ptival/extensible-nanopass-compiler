@@ -18,7 +18,7 @@ From ExtensibleCompiler.Theory Require Import
      Types
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Section Bool.
 
@@ -35,7 +35,7 @@ Section Bool.
 
   Global Instance TypeOf__Bool
     : forall {R}, ProgramAlgebra ForTypeOf Bool R (TypeOfResult T)
-    := fun _ => {| programAlgebra := typeOf__Bool; |}.
+    := fun _ => {| programAlgebra := typeOf__Bool |}.
 
   Global Instance TypeOf__Bool'
     : forall R, ProgramAlgebra ForTypeOf Bool R (TypeOfResult T)

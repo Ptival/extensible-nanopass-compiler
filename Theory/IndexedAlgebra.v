@@ -5,7 +5,7 @@ From ExtensibleCompiler.Theory Require Import
      IndexedSum1
 .
 
-Local Open Scope IndexedSum1_scope.
+Local Open Scope IndexedSum1.
 
 Definition IndexedAlgebra
            {I} (F : I-indexedPropFunctor) (A : I-indexedProp)

@@ -45,8 +45,8 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope Sum1_scope.
-Local Open Scope SubFunctor_scope.
+Local Open Scope Sum1.
+Local Open Scope SubFunctor.
 
 (* Create a type language [T] *)
 Definition T := (BoolType + UnitType).
@@ -125,7 +125,7 @@ evaluation.
 
 Definition WellTyped__E
   : (TypedExpr T V)-indexedPropFunctor
-  := (WellTyped__Bool).
+  := (WellTypedValue__Bool).
 
 (* Definition SourceExpr := Bool + If1 + Unit. *)
 (* Definition TargetExpr := Bool + If2 + Unit. *)
@@ -152,13 +152,14 @@ Definition WellTyped__E
 
 Variant ForRemoveUnaryIfsCorrectness := .
 
-Delimit Scope Prod1_scope with Prod1.
-Open Scope Prod1_scope.
+Declare Scope Prod1.
+Delimit Scope Prod1 with Prod1.
+Open Scope Prod1.
 
 Variant Prod1 (F G : Set -> Set) (A : Set) : Set :=
 | prod1 : F A -> G A -> (F * G)%Sum1 A
 where
-"F * G" := (Prod1 F G) : Prod1_scope.
+"F * G" := (Prod1 F G) : Prod1.
 
 Arguments prod1 {F G A}.
 

@@ -2,14 +2,15 @@ From ExtensibleCompiler.Theory Require Import
      Functor
 .
 
-Delimit Scope Sum1_scope with Sum1.
-Open Scope Sum1_scope.
+Declare Scope Sum1.
+Delimit Scope Sum1 with Sum1.
+Open Scope Sum1.
 
 Variant Sum1 (F G : Set -> Set) (A : Set) : Set :=
 | inl1 : F A -> (F + G)%Sum1 A
 | inr1 : G A -> (F + G)%Sum1 A
 where
-"F + G" := (Sum1 F G) : Sum1_scope.
+"F + G" := (Sum1 F G) : Sum1.
 
 Arguments inl1 {F G A}.
 Arguments inr1 {F G A}.
@@ -64,4 +65,4 @@ Definition sum1Dispatch {A} {L R : Set -> Set} {O} (fl : L A -> O) (fr : R A -> 
   | inr1 r => fr r
   end.
 
-Notation "f || g" := (sum1Dispatch f g) : Sum1_scope.
+Notation "f || g" := (sum1Dispatch f g) : Sum1.

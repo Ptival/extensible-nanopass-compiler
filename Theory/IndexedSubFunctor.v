@@ -4,7 +4,7 @@ From ExtensibleCompiler.Theory Require Import
      IndexedSum1
 .
 
-Local Open Scope IndexedSum1_scope.
+Local Open Scope IndexedSum1.
 
 Class IndexedSubFunctor
       {I} (F G : I-indexedPropFunctor)
@@ -16,11 +16,10 @@ Class IndexedSubFunctor
       iPrj : forall {A i}, G A i -> F A i \/ True;
     }.
 
-(* For Coq 8.10+: *)
-(* Declare Scope IndexedSubFunctor_scope. *)
-Delimit Scope IndexedSubFunctor_scope with IndexedSubFunctor.
-Notation "F '<=' G" := (IndexedSubFunctor F G) : IndexedSubFunctor_scope.
-Local Open Scope IndexedSubFunctor_scope.
+Declare Scope IndexedSubFunctor.
+Delimit Scope IndexedSubFunctor with IndexedSubFunctor.
+Notation "F '<=' G" := (IndexedSubFunctor F G) : IndexedSubFunctor.
+Local Open Scope IndexedSubFunctor.
 
 Definition
   iInject

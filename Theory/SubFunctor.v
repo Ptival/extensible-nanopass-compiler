@@ -8,7 +8,7 @@ From ExtensibleCompiler.Theory Require Import
      Sum1
 .
 
-Local Open Scope Sum1_scope.
+Local Open Scope Sum1.
 
 (** While we technically don't need the [FunctorLaws] constraints, it's
 convenient to put them here so that they are implicitly inserted everywhere. *)
@@ -18,20 +18,19 @@ Class SubFunctor (F G : Set -> Set)
   {
     inj : forall {A}, F A -> G A;
     prj : forall {A}, G A -> option (F A);
-    inj_prj : forall {A} (ga : G A) (fa : F A),
+    inj_prj : forall {A} {ga : G A} {fa : F A},
         prj ga = Some fa ->
         ga = inj fa;
     prj_inj : forall {A} (fa : F A),
         prj (inj fa) = Some fa;
   }.
 
-(* For Coq 8.10+: *)
-(* Declare Scope SubFunctor_scope. *)
-Delimit Scope SubFunctor_scope with SubFunctor.
+Declare Scope SubFunctor.
+Delimit Scope SubFunctor with SubFunctor.
 
-Notation "L 'supports' F" := (SubFunctor F L) (at level 50) : SubFunctor_scope.
+Notation "L 'supports' F" := (SubFunctor F L) (at level 50) : SubFunctor.
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 (**
    Sadly notations prevent implicit insertion.
@@ -68,7 +67,7 @@ Proof.
     ).
   {
     move => ? [] => // ?? EQ.
-    rewrite (inj_prj _ _ EQ) //.
+    rewrite (inj_prj EQ) //.
   }
   {
     move => ??.
@@ -92,7 +91,7 @@ Proof.
     ).
   {
     move => ? [] => // ?? EQ.
-    rewrite (inj_prj _ _ EQ) //.
+    rewrite (inj_prj EQ) //.
   }
   {
     move => ??.

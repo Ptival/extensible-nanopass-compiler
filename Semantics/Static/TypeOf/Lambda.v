@@ -13,7 +13,7 @@ From ExtensibleCompiler Require Import
      Theory.UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Section Lambda.
 
@@ -50,7 +50,7 @@ Section Lambda.
 
   Global Instance TypeOf__Lambda
     : forall {R}, ProgramAlgebra ForTypeOf (Lambda T (TypeOfResult T)) R (TypeOfResult T)
-    := fun _ => {| programAlgebra := typeOf__Lambda; |}.
+    := fun _ => {| programAlgebra := typeOf__Lambda |}.
 
   Definition TypeOf__Lambda'
     : forall R, ProgramAlgebra ForTypeOf (Lambda T (TypeOfResult T)) R (TypeOfResult T)

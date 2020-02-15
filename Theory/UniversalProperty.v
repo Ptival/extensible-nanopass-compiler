@@ -10,7 +10,7 @@ From ExtensibleCompiler.Theory Require Import
      SubFunctor
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 (**
 
@@ -274,6 +274,13 @@ Definition inject (* cf. [inject'] *)
   : WellFormedValue G
   := wrapUP' (inj fexp).
 
+Definition injectF (* cf. [inject] *)
+           {F G}
+           `{S : SubFunctor F G}
+           (fexp : F (WellFormedValue G))
+  : Fix G
+  := proj1_sig (inject fexp).
+
 Fixpoint boundedFixUP'
          {A} {F} `{FunctorLaws F}
          (n : nat)
@@ -318,3 +325,18 @@ Definition projectF
            (g : WellFormedValue G)
   : option (F (Fix G))
   := option_map (fmap (proj1_sig (A := Fix G) (P := _))) (project (proj1_sig g)).
+
+Theorem project_inject
+        {F G}
+        `{SubFunctor F G}
+        (g : Fix G)
+        (f : F (sig FoldUP'))
+  : FoldUP' g ->
+    project g = Some f -> g = injectF f.
+Proof.
+  move => UP'__g P.
+  move : P (inj_prj P) => _ P.
+  rewrite / injectF / inject.
+  rewrite <- P.
+  now rewrite wrapUP'_unwrapUP'.
+Qed.

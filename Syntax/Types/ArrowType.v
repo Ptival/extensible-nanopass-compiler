@@ -13,7 +13,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Inductive ArrowType (A : Set) : Set :=
 | MkArrowType (domain : A) (codomain : A)
@@ -22,7 +22,7 @@ Arguments MkArrowType {A}.
 
 Global Instance Functor__ArrowType
   : Functor ArrowType
-  := {| fmap := fun A B f '(MkArrowType d c) => MkArrowType (f d) (f c); |}.
+  := {| fmap := fun A B f '(MkArrowType d c) => MkArrowType (f d) (f c) |}.
 
 Global Instance FunctorLaws__ArrowType
   : FunctorLaws ArrowType.

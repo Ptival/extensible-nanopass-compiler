@@ -22,7 +22,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Inductive If1 (A : Set) : Set :=
 | MkIf1 (condition : A) (thenBranch : A)
@@ -30,7 +30,7 @@ Inductive If1 (A : Set) : Set :=
 Arguments MkIf1 {A}.
 
 Global Instance Functor_If1 : Functor If1
-  := {| fmap := fun A B f '(MkIf1 c t) => MkIf1 (f c) (f t); |}.
+  := {| fmap := fun A B f '(MkIf1 c t) => MkIf1 (f c) (f t) |}.
 
 Global Instance FunctorLaws_If1 : FunctorLaws If1.
 Proof.

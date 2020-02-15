@@ -9,6 +9,7 @@ From ExtensibleCompiler.Theory Require Import
      Functor
      IndexedAlgebra
      IndexedFunctor
+     IndexedProofAlgebra
      IndexedSubFunctor
      ProofAlgebra
      ProgramAlgebra
@@ -17,7 +18,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Record TypedExpr (* cf. WFValue_i *)
        T E `{FunctorLaws T} `{FunctorLaws E}
@@ -28,6 +29,8 @@ Record TypedExpr (* cf. WFValue_i *)
          expr : WellFormedValue E;
        }.
 Arguments MkTypedValue {T E _ _ _ _}.
+Arguments type {T E _ _ _ _}.
+Arguments expr {T E _ _ _ _}.
 
 (**
 In MTC, this is parameterized by some indexed relation.  In practice I don't
@@ -40,7 +43,7 @@ Definition WellTyped
            (WT : (TypedExpr T E)-indexedPropFunctor)
            t e
   : Prop
-  := IndexedFix WT {| type := t; expr := e; |}.
+  := IndexedFix WT {| type := t; expr := e |}.
 
 (**
 This is the most abstract statement of the type soundness of evaluation.
@@ -212,3 +215,79 @@ Definition SoundnessStatement
     forall Gamma (tau : TypeFix T),
       typeOf e = Some tau ->
       WellTyped WT tau (eval e Gamma).
+
+(**
+The [WellTyped] predicates are indexed by a [TypedExpr], which is a pair of a
+[WellFormed] type and a [WellFormed] expression.  Recall that [WellFormed] is
+a dependent pair of an extensible term, and a proof that it satisfies the
+universal property of folds.
+
+Unfortunately, we do not have an automatic means of proof irrelevance with
+respect to that proof.  This means that if we have a [TypedExpr] like:
+
+[{| type := exist tau1 UP'__tau1; expr := exist e1 UP'__e1 |}]
+
+and we are trying to prove:
+
+[{| type := exist tau2 UP'__tau2; expr := exist e2 UP'__e2 |}]
+
+it does not suffice to show that [tau1 = tau2] and [e1 = e2], as the [TypedExpr]
+are not convertible unless [UP'__tau1 = UP'__tau2] and [UP'__e1 = UP'__e2] .
+
+[WellTypedProj1Type] is an extensible property of [WellTyped] properties,
+capturing those that are well-formed in the sense that they are preserved as
+long as the first projection of their type is preserved.
+
+[WellTypedProj1Expr] is an extensible property of [WellTyped] properties,
+capturing those that are well-formed in the sense that they are preserved as
+long as the first projection of their expression is preserved.
+
+All [WellTyped] properties will satisfy both of these properties, so that we can
+combine them to move [WellTyped]-ness across equal types or expressions.
+ *)
+
+Definition PropertyStatement__WellTypedProj1Type
+           {T E V}
+           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           (WT : (TypedExpr T V)-indexedPropFunctor)
+           (te : TypedExpr T V)
+  := forall tau' UP',
+    tau' = proj1_sig (type te) ->
+    WellTyped WT (exist _ tau' UP') (expr te).
+
+Variant ForWellTypedProj1Type := .
+
+Definition wellTypedProj1Type
+           {T E V}
+           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           (WT : (TypedExpr T V)-indexedPropFunctor)
+           `{! IndexedFunctor (TypedExpr T V) WT}
+           `{A : ! IndexedProofAlgebra
+                   ForWellTypedProj1Type
+                   WT
+                   (PropertyStatement__WellTypedProj1Type WT)
+            }
+  := ifold (indexedProofAlgebra' A).
+
+Definition PropertyStatement__WellTypedProj1Expr
+           {T E V}
+           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           (WT : (TypedExpr T V)-indexedPropFunctor)
+           (te : TypedExpr T V)
+  := forall e' UP',
+    e' = proj1_sig (expr te) ->
+    WellTyped WT (type te) (exist _ e' UP').
+
+Variant ForWellTypedProj1Expr := .
+
+Definition wellTypedProj1Expr
+           {T E V}
+           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           (WT : (TypedExpr T V)-indexedPropFunctor)
+           `{! IndexedFunctor (TypedExpr T V) WT}
+           `{A : ! IndexedProofAlgebra
+                   ForWellTypedProj1Expr
+                   WT
+                   (PropertyStatement__WellTypedProj1Expr WT)
+            }
+  := ifold (indexedProofAlgebra' A).

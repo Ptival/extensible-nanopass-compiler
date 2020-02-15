@@ -16,7 +16,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Section Bool.
 
@@ -27,12 +27,12 @@ Section Bool.
   .
 
   Definition eval__Bool
-    : forall {T}, MixinAlgebra Bool T (EvalResult V)
+    : forall T, MixinAlgebra Bool T (EvalResult V)
     := fun _ rec '(MkBool b) env => boolean b.
 
   Global Instance Eval__Bool
     : forall {T}, ProgramAlgebra ForEval Bool T (EvalResult V)
-    := fun _ => {| programAlgebra := eval__Bool; |}.
+    := fun _ => {| programAlgebra := eval__Bool _ |}.
 
   Global Instance WF_Eval__Bool
     : WellFormedMendlerAlgebra (fun _ => Eval__Bool).

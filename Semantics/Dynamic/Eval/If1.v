@@ -19,7 +19,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Section If1.
 
@@ -38,7 +38,7 @@ placeholder, for when the condition does not evaluate to a boolean value.
   .
 
   Definition eval__If1
-    : forall {T}, MixinAlgebra If1 T (EvalResult V)
+    : forall T, MixinAlgebra If1 T (EvalResult V)
     := fun _ rec '(MkIf1 condition thenBranch) env =>
          match projectF (rec condition env) with
          | Some (MkBool b) =>
@@ -50,7 +50,7 @@ placeholder, for when the condition does not evaluate to a boolean value.
 
   Global Instance Eval__If1
     : forall {T}, ProgramAlgebra ForEval If1 T (EvalResult V)
-    := fun T => {| programAlgebra := eval__If1; |}.
+    := fun T => {| programAlgebra := eval__If1 _ |}.
 
   (* Copy of [Eval__If1] for when you need to pass [T] explicitly *)
   Definition Eval__If1'

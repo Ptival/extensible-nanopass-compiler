@@ -18,7 +18,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Section Lambda.
 
@@ -55,6 +55,6 @@ Section Lambda.
 
   Global Instance Eval__Lambda
     : ProgramAlgebra ForEval (Lambda T nat) (ValueFix (E nat)) (EvalResult (E nat))
-    := {| programAlgebra := eval__Lambda; |}.
+    := {| programAlgebra := eval__Lambda |}.
 
 End Lambda.

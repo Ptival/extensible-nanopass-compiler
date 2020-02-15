@@ -24,7 +24,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 (* Create an expression language that supports [Bool], [If2], and [Unit] *)
 Definition E := (Bool + If2 + Unit).

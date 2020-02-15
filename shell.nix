@@ -1,13 +1,13 @@
-{ nixpkgs ? import <nixpkgs> {}
+# Waiting for upstream merge for coqPackages_8_11.coq-ext-lib
+{ nixpkgs ? import ~/personal/nixpkgs {}
 }:
 with nixpkgs;
 let
-  coq = coq_8_9;
-  coqPackages = coqPackages_8_9;
+  coqPackages = coqPackages_8_11;
 in
 mkShell {
   buildInputs = [
-    coq
+    coqPackages.coq
     coqPackages.coq-ext-lib
   ];
   COQBIN = "";

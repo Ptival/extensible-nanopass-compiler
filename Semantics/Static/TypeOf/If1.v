@@ -13,7 +13,7 @@ From ExtensibleCompiler Require Import
      Theory.Types
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Section If1.
 
@@ -25,7 +25,7 @@ Section If1.
   .
 
   Definition typeOf__If1
-    : forall {R}, MixinAlgebra If1 R (TypeOfResult T)
+    : forall R, MixinAlgebra If1 R (TypeOfResult T)
     := fun _ rec '(MkIf1 c t) =>
          match rec c with
          | Some cType =>
@@ -44,7 +44,7 @@ Section If1.
 
   Global Instance TypeOf__If1
     : forall {R}, ProgramAlgebra ForTypeOf If1 R (TypeOfResult T)
-    := fun _ => {| programAlgebra := typeOf__If1; |}.
+    := fun _ => {| programAlgebra := typeOf__If1 _ |}.
 
   Global Instance TypeOf__If1'
     : forall R, ProgramAlgebra ForTypeOf If1 R (TypeOfResult T)

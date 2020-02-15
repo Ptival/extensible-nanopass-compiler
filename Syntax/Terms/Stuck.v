@@ -10,7 +10,7 @@ From ExtensibleCompiler.Theory Require Import
      SubFunctor
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Inductive Stuck (A: Set) : Set :=
 | MkStuck (reason : string)
@@ -29,14 +29,22 @@ Proof.
   - move => ????? [] //.
 Qed.
 
-Definition stuck
-           {E} `{FunctorLaws E} `{E supports Stuck}
-           (reason : string)
-  : WellFormedValue E
-  := inject (MkStuck reason).
+Section Stuck.
 
-Definition stuck_Fix
-           {E} `{FunctorLaws E} `{E supports Stuck}
-           (reason : string)
-  : Fix E
-  := proj1_sig (stuck reason).
+  Context
+    {E}
+    `{FunctorLaws E}
+    `{! E supports Stuck}
+    .
+
+    Definition stuck
+               (reason : string)
+      : WellFormedValue E
+      := inject (MkStuck reason).
+
+    Definition stuckF
+               (reason : string)
+      : Fix E
+      := proj1_sig (stuck reason).
+
+End Stuck.

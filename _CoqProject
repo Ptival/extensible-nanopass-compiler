@@ -2,6 +2,8 @@
 
 -Q . ExtensibleCompiler
 
+Hacks/TypeClassResolutionForHave.v
+
 Passes/RemoveUnaryIfs.v
 
 Semantics/All/Bool.v
@@ -50,6 +52,7 @@ Semantics/Static/WellTyped/Bool.v
 # Semantics/Static/WellTyped/If1.v
 Semantics/Static/WellTyped/If2.v
 # Semantics/Static/WellTyped/Lambda.v
+Semantics/Static/WellTyped/Stuck.v
 Semantics/Static/WellTyped/Unit.v
 
 Syntax/Terms/Bool.v

@@ -13,7 +13,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Inductive Bool (A: Set) : Set :=
 | MkBool (boolean : bool)
@@ -49,6 +49,14 @@ Section Bool.
              (b : bool)
     : Fix E
     := proj1_sig (boolean b).
+
+  Definition isBoolean
+    : Fix E -> option bool
+    := fun typ =>
+         match project typ with
+         | Some (MkBool b) => Some b
+         | None            => None
+         end.
 
   Definition InductionAlgebra_Bool
              (P : forall (e : Fix E), FoldUP' e -> Prop)

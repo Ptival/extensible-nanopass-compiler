@@ -3,14 +3,14 @@ From ExtensibleCompiler.Theory Require Import
 .
 
 (* For Coq 8.10+: *)
-(* Declare Scope IndexedSum1_scope. *)
-Delimit Scope IndexedSum1_scope with IndexedSum1.
-Open Scope IndexedSum1_scope.
+(* Declare Scope IndexedSum1. *)
+Delimit Scope IndexedSum1 with IndexedSum1.
+Open Scope IndexedSum1.
 
 Variant IndexedSum1 I (F G : I-indexedPropFunctor) (A : I-indexedProp) (i : I) : Prop :=
 | iinl1 : F A i -> (F + G)%IndexedSum1 A i
 | iinr1 : G A i -> (F + G)%IndexedSum1 A i
-where "F + G" := (IndexedSum1 _ F G) : IndexedSum1_scope.
+where "F + G" := (IndexedSum1 _ F G) : IndexedSum1.
 Arguments iinl1 {I F G A i}.
 Arguments iinr1 {I F G A i}.
 
@@ -35,4 +35,4 @@ Definition indexedSum1Dispatch
   | iinr1 r => fr r
   end.
 
-Notation "f || g" := (indexedSum1Dispatch f g) : IndexedSum1_scope.
+Notation "f || g" := (indexedSum1Dispatch f g) : IndexedSum1.

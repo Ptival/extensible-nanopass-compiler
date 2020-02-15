@@ -14,7 +14,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Inductive BoolType (A : Set) : Set :=
 | MkBoolType : BoolType A
@@ -23,7 +23,7 @@ Arguments MkBoolType {A}.
 
 Global Instance Functor_BoolType
   : Functor BoolType
-  := {| fmap := fun A B f 'MkBoolType => MkBoolType; |}.
+  := {| fmap := fun A B f 'MkBoolType => MkBoolType |}.
 
 Global Instance FunctorLaws_BoolType
   : FunctorLaws BoolType.
@@ -63,12 +63,12 @@ Section BoolType.
          end.
 
   Definition typeEquality__BoolType
-    : forall {R}, MixinAlgebra BoolType R (TypeEqualityResult T)
+    : forall R, MixinAlgebra BoolType R (TypeEqualityResult T)
     := fun _ rec '(MkBoolType) => fun t => isBoolType (proj1_sig t).
 
   Global Instance TypeEquality__BoolType
     : forall {R}, ProgramAlgebra ForTypeEquality BoolType R (TypeEqualityResult T)
-    := fun _ => {| programAlgebra := typeEquality__BoolType |}.
+    := fun _ => {| programAlgebra := typeEquality__BoolType _ |}.
 
   Global Instance TypeEqualityCorrectness__BoolType
          `{PA : forall {R}, ProgramAlgebra ForTypeEquality T R (TypeEqualityResult T)}
@@ -94,7 +94,7 @@ Section BoolType.
     move : P.
     rewrite / project.
     move => P.
-    move : P (inj_prj _ _ P) => _.
+    move : P (inj_prj P) => _.
     rewrite / boolType / boolType' /=.
     rewrite wellFormedSubFunctor /=.
     move => P.

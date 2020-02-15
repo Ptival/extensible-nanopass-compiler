@@ -19,7 +19,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Section UnitType.
 
@@ -31,12 +31,12 @@ Section UnitType.
   .
 
   Definition typeOf__UnitType
-  : forall {R}, MixinAlgebra Unit R (TypeOfResult T)
+  : forall R, MixinAlgebra Unit R (TypeOfResult T)
     := fun _ rec '(Unit) => Some unitType'.
 
   Global Instance TypeOf__Unit
     : forall {R}, ProgramAlgebra ForTypeOf Unit R (TypeOfResult T)
-    := fun _ => {| programAlgebra := typeOf__UnitType; |}.
+    := fun _ => {| programAlgebra := typeOf__UnitType _ |}.
 
   Definition TypeOf__Unit'
     : forall R, ProgramAlgebra ForTypeOf Unit R (TypeOfResult T)

@@ -2,6 +2,9 @@
 *.conf
 *.glob
 *.vo
+*.vok
+*.vos
+.Makefile.coq.d
 /.coqdeps.d
 /.envrc
 /Makefile.coq

@@ -21,7 +21,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Inductive If2 (A : Set) : Set :=
 | MkIf2 (condition : A) (thenBranch : A) (elseBranch : A)
@@ -29,7 +29,7 @@ Inductive If2 (A : Set) : Set :=
 Arguments MkIf2 {A}.
 
 Global Instance Functor_If2 : Functor If2 :=
-  {| fmap := fun A B f '(MkIf2 c t e) => MkIf2 (f c) (f t) (f e); |}.
+  {| fmap := fun A B f '(MkIf2 c t e) => MkIf2 (f c) (f t) (f e) |}.
 
 Global Instance FunctorLaws_If2 : FunctorLaws If2.
 Proof.
@@ -155,7 +155,7 @@ Global Instance ProofAlgebra__If2
                    (IH__e : UniversalPropertyP P e),
             UniversalPropertyP P (if2_UPP_Fix IH__c IH__t IH__e))
   : ProofAlgebra ForInduction If2 (sig (UniversalPropertyP P))
-  := {| proofAlgebra := Induction__If2 P H__if2; |}.
+  := {| proofAlgebra := Induction__If2 P H__if2 |}.
 
 Global Instance WellFormedProofAlgebra__If2
        F `{FunctorLaws F} `{! F supports If2} `{! WellFormedSubFunctor If2 F}

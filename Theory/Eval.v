@@ -8,8 +8,8 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
-Local Open Scope Sum1_scope.
+Local Open Scope SubFunctor.
+Local Open Scope Sum1.
 
 (** [ValueFix] is just an alias for [WellFormedValue], but it makes it so that
     code that depends on wrapping values can use this, in case we ever need to

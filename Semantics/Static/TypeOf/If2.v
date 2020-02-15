@@ -19,7 +19,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Section If2.
 
@@ -33,7 +33,7 @@ Section If2.
   .
 
   Definition typeOf__If2
-    : forall {R}, MixinAlgebra If2 R (TypeOfResult T)
+    : forall R, MixinAlgebra If2 R (TypeOfResult T)
     := fun _ rec '(MkIf2 c t e) =>
          match rec c with
          | Some cType =>
@@ -52,7 +52,7 @@ Section If2.
 
   Global Instance TypeOf__If2
     : forall {R}, ProgramAlgebra ForTypeOf If2 R (TypeOfResult T)
-    := fun _ => {| programAlgebra := typeOf__If2; |}.
+    := fun _ => {| programAlgebra := typeOf__If2 _ |}.
 
   Definition TypeOf__If2'
     : forall R, ProgramAlgebra ForTypeOf If2 R (TypeOfResult T)

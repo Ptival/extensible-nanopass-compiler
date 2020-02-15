@@ -18,7 +18,7 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
-Local Open Scope SubFunctor_scope.
+Local Open Scope SubFunctor.
 
 Section If2.
 
@@ -30,10 +30,10 @@ Section If2.
   .
 
   Definition eval__If2
-    : forall {T}, MixinAlgebra If2 T (EvalResult V)
+    : forall T, MixinAlgebra If2 T (EvalResult V)
     := fun _ rec '(MkIf2 condition thenBranch elseBranch) env =>
-         match projectF (rec condition env) with
-         | Some (MkBool b) =>
+         match isBoolean (proj1_sig (rec condition env)) with
+         | Some b =>
            if b
            then rec thenBranch env
            else rec elseBranch env
@@ -42,7 +42,7 @@ Section If2.
 
   Global Instance Eval__If2
     : forall {T}, ProgramAlgebra ForEval If2 T (EvalResult V)
-    := fun _ => {| programAlgebra := eval__If2; |}.
+    := fun _ => {| programAlgebra := eval__If2 _ |}.
 
   Definition Eval__If2'
     : forall T, ProgramAlgebra ForEval If2 T (EvalResult V)
