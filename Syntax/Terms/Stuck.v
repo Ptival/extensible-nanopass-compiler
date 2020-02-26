@@ -17,30 +17,29 @@ Inductive Stuck (A: Set) : Set :=
 .
 Arguments MkStuck {A}.
 
-Global Instance Functor_Stuck : Functor Stuck :=
-  {|
-    fmap := fun A B f '(MkStuck reason) => MkStuck reason;
-  |}.
-
-Global Instance FunctorLaws_Stuck : FunctorLaws Stuck.
+Global Instance Functor__Stuck
+  : Functor Stuck.
 Proof.
-  constructor.
+  refine
+    {|
+      fmap := fun A B f '(MkStuck reason) => MkStuck reason;
+    |}.
   - move => ? [] //.
   - move => ????? [] //.
-Qed.
+Defined.
 
 Section Stuck.
 
   Context
     {E}
-    `{FunctorLaws E}
-    `{! E supports Stuck}
+    `{Functor E}
+    `{E supports Stuck}
     .
 
     Definition stuck
                (reason : string)
       : WellFormedValue E
-      := inject (MkStuck reason).
+      := injectUP' (MkStuck reason).
 
     Definition stuckF
                (reason : string)

@@ -28,92 +28,93 @@ Inductive If2 (A : Set) : Set :=
 .
 Arguments MkIf2 {A}.
 
-Global Instance Functor_If2 : Functor If2 :=
-  {| fmap := fun A B f '(MkIf2 c t e) => MkIf2 (f c) (f t) (f e) |}.
-
-Global Instance FunctorLaws_If2 : FunctorLaws If2.
+Global Instance Functor__If2
+  : Functor If2.
 Proof.
-  constructor.
+  refine {| fmap := fun A B f '(MkIf2 c t e) => MkIf2 (f c) (f t) (f e) |}.
   - move => ? [] //.
   - move => ????? [] //.
-Qed.
+Defined.
 
-Definition if2
-           {E} `{FunctorLaws E} `{E supports If2}
-           (condition thenBranch elseBranch : WellFormedValue E)
-  : WellFormedValue E
-  := inject (MkIf2 condition thenBranch elseBranch).
+Section If2.
 
-Definition if2F'
-           {E} `{FunctorLaws E} `{E supports If2}
-           (condition thenBranch elseBranch : WellFormedValue E)
-  : Fix E
-  := proj1_sig (if2 condition thenBranch elseBranch).
+  Context
+    {E}
+    `{Functor E}
+    `{E supports If2}
+  .
 
-Definition if2F
-           {E} `{FunctorLaws E} `{E supports If2}
-           (condition thenBranch elseBranch : Fix E)
-  : Fix E
-  := wrapF (inj (MkIf2 condition thenBranch elseBranch)).
+  Definition if2 condition thenBranch elseBranch
+    : WellFormedValue E
+    := injectUP' (MkIf2 condition thenBranch elseBranch).
 
-Definition if2_Fix_UPF
-           {E} `{FunctorLaws E} `{E supports If2}
-           (condition thenBranch elseBranch : Fix E)
-           {H_condition  : FoldUP' condition}
-           {H_thenBranch : FoldUP' thenBranch}
-           {H_elseBranch : FoldUP' elseBranch}
-  : WellFormedValue E
-  := if2
-       (exist _ _ H_condition)
-       (exist _ _ H_thenBranch)
-       (exist _ _ H_elseBranch).
+  Definition if2F'
+             (condition thenBranch elseBranch : WellFormedValue E)
+    : Fix E
+    := proj1_sig (if2 condition thenBranch elseBranch).
 
-(* Definition if2_Fix_Fix *)
-(*            {E} `{FunctorLaws E} `{E supports If2} *)
-(*            (condition thenBranch elseBranch : Fix E) *)
-(*            {H_condition  : FoldUP' condition} *)
-(*            {H_thenBranch : FoldUP' thenBranch} *)
-(*            {H_elseBranch : FoldUP' elseBranch} *)
-(*   : Fix E *)
-(*   := proj1_sig (if2_Fix_UPF condition thenBranch elseBranch). *)
+  Definition if2F
+             (condition thenBranch elseBranch : Fix E)
+    : Fix E
+    := wrapF (inject (MkIf2 condition thenBranch elseBranch)).
 
-Definition if2_UPP_WF
-           {E} `{FunctorLaws E} `{E supports If2}
-           {condition thenBranch elseBranch : Fix E}
-           {P}
-           (H_condition  : UniversalPropertyP P condition)
-           (H_thenBranch : UniversalPropertyP P thenBranch)
-           (H_elseBranch : UniversalPropertyP P elseBranch)
-  : WellFormedValue E
-  := if2_Fix_UPF condition thenBranch elseBranch
-       (H_condition  := proj1_sig H_condition)
-       (H_thenBranch := proj1_sig H_thenBranch)
-       (H_elseBranch := proj1_sig H_elseBranch).
+  (* FIXME: get rid of all these *)
 
-Definition if2_UPP_Fix
-           {E} `{FunctorLaws E} `{E supports If2}
-           {condition thenBranch elseBranch : Fix E}
-           {P}
-           (H_condition  : UniversalPropertyP P condition)
-           (H_thenBranch : UniversalPropertyP P thenBranch)
-           (H_elseBranch : UniversalPropertyP P elseBranch)
-  : Fix E
-  := proj1_sig (if2_UPP_WF H_condition H_thenBranch H_elseBranch).
+  Definition if2_Fix_UPF
+             (condition thenBranch elseBranch : Fix E)
+             {IH__condition  : FoldUP' condition}
+             {IH__thenBranch : FoldUP' thenBranch}
+             {IH__elseBranch : FoldUP' elseBranch}
+    : WellFormedValue E
+    := if2
+         (exist _ _ IH__condition)
+         (exist _ _ IH__thenBranch)
+         (exist _ _ IH__elseBranch).
 
-(* Definition if2_UP_Fix *)
-(*            {E} `{FunctorLaws E} `{E supports If2} *)
-(*            {condition thenBranch elseBranch : Fix E} *)
-(*            (H_condition  : FoldUP' condition) *)
-(*            (H_thenBranch : FoldUP' thenBranch) *)
-(*            (H_elseBranch : FoldUP' elseBranch) *)
-(*   : Fix E *)
-(*   := proj1_sig (if2 *)
-(*                   (exist _ _ H_condition) *)
-(*                   (exist _ _ H_thenBranch) *)
-(*                   (exist _ _ H_elseBranch) *)
-(*                ). *)
+  (* Definition if2_Fix_Fix *)
+  (*            {E} `{Functor E} `{E supports If2} *)
+  (*            (condition thenBranch elseBranch : Fix E) *)
+  (*            {H_condition  : FoldUP' condition} *)
+  (*            {H_thenBranch : FoldUP' thenBranch} *)
+  (*            {H_elseBranch : FoldUP' elseBranch} *)
+  (*   : Fix E *)
+  (*   := proj1_sig (if2_Fix_UPF condition thenBranch elseBranch). *)
 
-(**
+  Definition if2_UPP_WF
+             {condition thenBranch elseBranch : Fix E}
+             {P}
+             (IH__condition  : UniversalPropertyP P condition)
+             (IH__thenBranch : UniversalPropertyP P thenBranch)
+             (IH__elseBranch : UniversalPropertyP P elseBranch)
+    : WellFormedValue E
+    := if2_Fix_UPF condition thenBranch elseBranch
+                   (IH__condition  := proj1_sig IH__condition)
+                   (IH__thenBranch := proj1_sig IH__thenBranch)
+                   (IH__elseBranch := proj1_sig IH__elseBranch).
+
+  Definition if2_UPP_Fix
+             {condition thenBranch elseBranch : Fix E}
+             {P}
+             (IH__condition  : UniversalPropertyP P condition)
+             (IH__thenBranch : UniversalPropertyP P thenBranch)
+             (IH__elseBranch : UniversalPropertyP P elseBranch)
+    : Fix E
+    := proj1_sig (if2_UPP_WF IH__condition IH__thenBranch IH__elseBranch).
+
+  (* Definition if2_UP_Fix *)
+  (*            {E} `{Functor E} `{E supports If2} *)
+  (*            {condition thenBranch elseBranch : Fix E} *)
+  (*            (H_condition  : FoldUP' condition) *)
+  (*            (H_thenBranch : FoldUP' thenBranch) *)
+  (*            (H_elseBranch : FoldUP' elseBranch) *)
+  (*   : Fix E *)
+  (*   := proj1_sig (if2 *)
+  (*                   (exist _ _ H_condition) *)
+  (*                   (exist _ _ H_thenBranch) *)
+  (*                   (exist _ _ H_elseBranch) *)
+  (*                ). *)
+
+  (**
 The definition of [Induction__If2] uses a very verbose induction hypothesis, whose
 conclusion is about [if2_UPP_Fix], because it proves useful in practice.
 
@@ -125,68 +126,68 @@ but then, we need to show that:
 
 whereas with the current presentation, this immediately follows as [proj2_sig
 (if2 c t e)], since [if2_UPP_Fix] is equal to [proj1_sig (if2 c t e)].
- *)
-Definition Induction__If2
-           {F} `{FunctorLaws F} `{S : F supports If2}
-           (P : forall (e : Fix F), FoldUP' e -> Prop)
-           (Hif2 : forall (c t e : Fix F)
-                     (IH__c : UniversalPropertyP P c)
-                     (IH__t : UniversalPropertyP P t)
-                     (IH__e : UniversalPropertyP P e),
-               UniversalPropertyP P (if2_UPP_Fix IH__c IH__t IH__e))
-  : Algebra If2 (sig (UniversalPropertyP P))
-  := fun e =>
-       match e with
-       | MkIf2 c t e =>
-         exist _ _ (Hif2 _ _ _ (proj2_sig c) (proj2_sig t) (proj2_sig e))
-       end.
+   *)
+  Definition Induction__If2
+             (P : forall (e : Fix E), FoldUP' e -> Prop)
+             (IH__if2 : forall (c t e : Fix E)
+                        (IH__c : UniversalPropertyP P c)
+                        (IH__t : UniversalPropertyP P t)
+                        (IH__e : UniversalPropertyP P e),
+                 UniversalPropertyP P (if2_UPP_Fix IH__c IH__t IH__e))
+    : Algebra If2 (sig (UniversalPropertyP P))
+    := fun e =>
+         match e with
+         | MkIf2 c t e =>
+           exist _ _ (IH__if2 _ _ _ (proj2_sig c) (proj2_sig t) (proj2_sig e))
+         end.
 
-(** NOTE: we don't let [SubFunctor] introduce implicitly because it would
+  (** NOTE: we don't let [SubFunctor] introduce implicitly because it would
 introduce a copy of [Functor If2] and make a mess... *)
 
-Variant ForInduction :=.
+  Variant ForInduction :=.
 
-Global Instance ProofAlgebra__If2
-       {F} `{FunctorLaws F} `{S : ! F supports If2}
-       `(P : forall (e : Fix F), FoldUP' e -> Prop)
-       `(H__if2 : forall c t e
+  Global Instance ProofAlgebra__If2
+         `{P : forall (e : Fix E), FoldUP' e -> Prop}
+         `{H__if2 : forall c t e
                    (IH__c : UniversalPropertyP P c)
                    (IH__t : UniversalPropertyP P t)
                    (IH__e : UniversalPropertyP P e),
-            UniversalPropertyP P (if2_UPP_Fix IH__c IH__t IH__e))
-  : ProofAlgebra ForInduction If2 (sig (UniversalPropertyP P))
-  := {| proofAlgebra := Induction__If2 P H__if2 |}.
+             UniversalPropertyP P (if2_UPP_Fix IH__c IH__t IH__e)}
+    : ProofAlgebra ForInduction If2 (sig (UniversalPropertyP P))
+    := {| proofAlgebra := Induction__If2 P H__if2 |}.
 
-Global Instance WellFormedProofAlgebra__If2
-       F `{FunctorLaws F} `{! F supports If2} `{! WellFormedSubFunctor If2 F}
-       `(P : forall (e : Fix F), FoldUP' e -> Prop)
-       `(H__if2 : forall c t e
-                   (IH__c : UniversalPropertyP P c)
-                   (IH__t : UniversalPropertyP P t)
-                   (IH__e : UniversalPropertyP P e),
-            UniversalPropertyP P (if2_UPP_Fix IH__c IH__t IH__e)
-        )
-  : WellFormedProofAlgebra (ProofAlgebra__If2 P H__if2).
-Proof.
-  constructor.
-  rewrite /= / Induction__If2.
-  move => [] c t e /=.
-  rewrite / if2_UPP_Fix / if2 / if2 / inject /=.
-  erewrite wellFormedSubFunctor => /=.
-  reflexivity.
-Qed.
+  Definition WellFormedProofAlgebra__If2
+             `{P : forall (e : Fix E), FoldUP' e -> Prop}
+             `{H__if2 : forall c t e
+                       (IH__c : UniversalPropertyP P c)
+                       (IH__t : UniversalPropertyP P t)
+                       (IH__e : UniversalPropertyP P e),
+                       UniversalPropertyP P (if2_UPP_Fix IH__c IH__t IH__e)}
+    : @WellFormedProofAlgebra
+        ForInduction E If2 (UniversalPropertyP P)
+        _ _ _ (ProofAlgebra__If2 (H__if2 := H__if2)).
+  Proof.
+    constructor.
+    rewrite /= / Induction__If2.
+    move => [] c t e /=.
+    rewrite / if2_UPP_Fix / if2 / if2 / inject /=.
+    erewrite wellFormedSubFunctor => /=.
+    reflexivity.
+  Qed.
 
-Section Two.
+End If2.
+
+Section If2.
 
   Context
     {E}
-    `{FunctorLaws E}
+    `{Functor E}
     `{! E supports If2}
   .
 
   Context
     {F}
-    `{FunctorLaws F}
+    `{Functor F}
     `{! F supports If2}
   .
 
@@ -222,4 +223,4 @@ Section Two.
               (proj2_sig e)
            ).
 
-End Two.
+End If2.

@@ -29,11 +29,11 @@ captures how [If1] evaluates in a larger language [E].
   Context
 
     {E}
-    `{FunctorLaws E}
+    `{Functor E}
     `{! E supports If1}
 
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Bool}
     `{! V supports Unit}
 

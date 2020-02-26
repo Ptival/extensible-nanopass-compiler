@@ -2,21 +2,16 @@ From Coq Require Import
      ssreflect
 .
 
-From ExtensibleCompiler.Syntax.Terms Require Import
-     Unit
-.
-
-From ExtensibleCompiler.Syntax.Types Require Import
-     UnitType
-.
-
-From ExtensibleCompiler.Theory Require Import
-     Algebra
-     Functor
-     ProgramAlgebra
-     SubFunctor
-     Types
-     UniversalProperty
+From ExtensibleCompiler Require Import
+     Semantics.Static.TypeOf
+     Syntax.Terms.Unit
+     Syntax.Types.UnitType
+     Theory.Algebra
+     Theory.Functor
+     Theory.ProgramAlgebra
+     Theory.SubFunctor
+     Theory.Types
+     Theory.UniversalProperty
 .
 
 Local Open Scope SubFunctor.
@@ -25,9 +20,8 @@ Section UnitType.
 
   Context
     {T}
-    `{FunctorLaws T}
+    `{Functor T}
     `{! T supports UnitType}
-    `{! WellFormedSubFunctor UnitType T}
   .
 
   Definition typeOf__UnitType
@@ -38,12 +32,8 @@ Section UnitType.
     : forall {R}, ProgramAlgebra ForTypeOf Unit R (TypeOfResult T)
     := fun _ => {| programAlgebra := typeOf__UnitType _ |}.
 
-  Definition TypeOf__Unit'
-    : forall R, ProgramAlgebra ForTypeOf Unit R (TypeOfResult T)
-    := fun _ => TypeOf__Unit.
-
-  Global Instance WellFormedMendlerAlgebra_TypeOf__Unit
-    : WellFormedMendlerAlgebra TypeOf__Unit'.
+  Global Instance WellFormedProgramAlgebra__TypeOf__Unit
+    : WellFormedProgramAlgebra ForTypeOf Unit (TypeOfResult T).
   Proof.
     constructor.
     move => T' T'' f rec [] //.

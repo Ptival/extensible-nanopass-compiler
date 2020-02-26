@@ -18,19 +18,30 @@ From ExtensibleCompiler.Theory Require Import
      UniversalProperty
 .
 
+From ExtensibleCompiler.Semantics.Static Require Import
+     TypeOf
+.
+
 Local Open Scope SubFunctor.
 
 Record TypedExpr (* cf. WFValue_i *)
-       T E `{FunctorLaws T} `{FunctorLaws E}
+       T E
+       `{Functor T} `{Functor E}
   : Set
-  := MkTypedValue (* cf. mk_WFValue_i *)
+  := MkTypedExpr (* cf. mk_WFValue_i *)
        {
          type : WellFormedValue T;
          expr : WellFormedValue E;
        }.
-Arguments MkTypedValue {T E _ _ _ _}.
-Arguments type {T E _ _ _ _}.
-Arguments expr {T E _ _ _ _}.
+Arguments type {T E _ _} _.
+Arguments expr {T E _ _} _.
+
+(**
+We will try and use [TypedValue] when we mean for the expression to only be a
+value, though the type system does not guarantee it and this is just an alias.
+ *)
+Definition TypedValue := TypedExpr.
+Arguments TypedValue T E {_ _}.
 
 (**
 In MTC, this is parameterized by some indexed relation.  In practice I don't
@@ -38,7 +49,7 @@ think I am using it yet, so leaving it hardcoded until it becomes necessary.
  *)
 
 Definition WellTyped {T E}
-           `{FunctorLaws T} `{FunctorLaws E}
+           `{Functor T} `{Functor E}
            (WT : (TypedExpr T E)-indexedPropFunctor)
            t e
   : Prop
@@ -54,7 +65,7 @@ abstracted over the operation to run recursively, namely [recEval] and
 
 Definition AbstractSoundnessStatement (* cf. eval_alg_Soundness_P *)
            {T E F V}
-           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws F} `{FunctorLaws V}
+           `{Functor T} `{Functor E} `{Functor F} `{Functor V}
            (WT : (TypedExpr T V)-indexedPropFunctor)
            (*WellFormedEnvironment : Environment (ValueFix V) -> Prop*)
            `{eval__E   : forall {R}, MixinAlgebra E R (EvalResult   V)}
@@ -103,7 +114,7 @@ Variant ForSoundness := .
 
 Definition Soundness__ProofAlgebra
            {T E V}
-           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           `{Functor T} `{Functor E} `{Functor V}
            (WT : (TypedExpr T V)-indexedPropFunctor)
            `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
            `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
@@ -121,12 +132,12 @@ Definition Soundness__ProofAlgebra
 
 Lemma Soundness
       {T E V}
-      `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+      `{Functor T} `{Functor E} `{Functor V}
       (WT : (TypedExpr T V)-indexedPropFunctor)
-      `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
-      `{WFEval__E : ! WellFormedMendlerAlgebra (@Eval__E)}
-      `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
-      `{WFTypeOf__E : ! WellFormedMendlerAlgebra (@TypeOf__E)}
+      `{forall {R}, ProgramAlgebra      ForEval   E R (EvalResult   V)}
+      `{! WellFormedProgramAlgebra ForEval   E   (EvalResult   V)}
+      `{forall {R}, ProgramAlgebra      ForTypeOf E R (TypeOfResult T)}
+      `{! WellFormedProgramAlgebra ForTypeOf E   (TypeOfResult T)}
       (soundness__ProofAlgebra : Soundness__ProofAlgebra WT)
       (WF_eval_Soundness_alg_F :
          forall recEval recTypeOf,
@@ -139,7 +150,15 @@ Proof.
   move => e Gamma tau TO.
   rewrite <- (wrapUP'_unwrapUP' (proj1_sig e) (proj2_sig e)).
   rewrite /= / eval / mendlerFold / wrapF.
-  rewrite wellFormedMendlerAlgebra / mendlerFold.
+  rewrite wellFormedProgramAlgebra / mendlerFold.
+
+  pose proof (
+      Induction2
+        (PA := soundness__ProofAlgebra (fun e => eval (proj1_sig e)) (fun e => typeOf (proj1_sig e)))
+        _
+        (proj2_sig e)
+    ).
+
   elim (
       Induction2
         (PA := soundness__ProofAlgebra (fun e => eval (proj1_sig e)) (fun e => typeOf (proj1_sig e)))
@@ -151,20 +170,20 @@ Proof.
   (* Missing: one premise *)
   move => Gamma' a IH tau1 TY1.
   rewrite / eval / mendlerFold /= / wrapF.
-  rewrite wellFormedMendlerAlgebra.
+  rewrite wellFormedProgramAlgebra.
   rewrite / mendlerFold.
   apply : IH.
   {
     rewrite <- (wrapUP'_unwrapUP' (proj1_sig (snd a)) (proj2_sig (snd a))) in TY1.
     rewrite /= in TY1.
     rewrite / typeOf / mendlerFold / wrapF in TY1.
-    erewrite wellFormedMendlerAlgebra in TY1 => //.
+    erewrite wellFormedProgramAlgebra in TY1 => //.
   }
   {
     rewrite <- (wrapF_unwrapF (proj1_sig e) (proj2_sig e)) in TO.
     rewrite / typeOf / mendlerFold / wrapF /= in TO.
     rewrite / programAlgebra'.
-    erewrite <- wellFormedMendlerAlgebra.
+    erewrite <- wellFormedProgramAlgebra.
     rewrite /= / unwrapUP'.
     erewrite Fusion.
     {
@@ -177,13 +196,13 @@ Proof.
   }
 Qed.
 
-(* *)
-(* A more concise version of [AbstractSoundnessStatement], to be used in client *)
-(* files. *)
-(*  *)
+(**
+A more concise version of [AbstractSoundnessStatement], to be used in client
+files.
+ *)
 Definition AbstractSoundnessStatement'
            {T E V}
-           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           `{Functor T} `{Functor E} `{Functor V}
            (WT : (TypedExpr T V)-indexedPropFunctor)
            `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
            `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
@@ -197,12 +216,12 @@ Definition AbstractSoundnessStatement'
        recEval recTypeOf
     ).
 
-(* *)
-(* A nicer version of [AbstractSoundnessStatement], to be used in client files. *)
-(*  *)
+(**
+A nicer version of [AbstractSoundnessStatement], to be used in client files.
+ *)
 Definition SoundnessStatement
            {T E V}
-           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           `{Functor T} `{Functor E} `{Functor V}
            (WT : (TypedExpr T V)-indexedPropFunctor)
            `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
            `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
@@ -216,39 +235,39 @@ Definition SoundnessStatement
       typeOf e = Some tau ->
       WellTyped WT tau (eval e Gamma).
 
-(** *)
-(* The [WellTyped] predicates are indexed by a [TypedExpr], which is a pair of a *)
-(* [WellFormed] type and a [WellFormed] expression.  Recall that [WellFormed] is *)
-(* a dependent pair of an extensible term, and a proof that it satisfies the *)
-(* universal property of folds. *)
+(**
+The [WellTyped] predicates are indexed by a [TypedExpr], which is a pair of a
+[WellFormed] type and a [WellFormed] expression.  Recall that [WellFormed] is a
+dependent pair of an extensible term, and a proof that it satisfies the
+universal property of folds.
 
-(* Unfortunately, we do not have an automatic means of proof irrelevance with *)
-(* respect to that proof.  This means that if we have a [TypedExpr] like: *)
+Unfortunately, we do not have an automatic means of proof irrelevance with
+respect to that proof.  This means that if we have a [TypedExpr] like:
 
-(* [{| type := exist tau1 UP'__tau1; expr := exist e1 UP'__e1 |}] *)
+[{| type := exist tau1 UP'__tau1; expr := exist e1 UP'__e1 |}]
 
-(* and we are trying to prove: *)
+and we are trying to prove:
 
-(* [{| type := exist tau2 UP'__tau2; expr := exist e2 UP'__e2 |}] *)
+[{| type := exist tau2 UP'__tau2; expr := exist e2 UP'__e2 |}]
 
-(* it does not suffice to show that [tau1 = tau2] and [e1 = e2], as the [TypedExpr] *)
-(* are not convertible unless [UP'__tau1 = UP'__tau2] and [UP'__e1 = UP'__e2] . *)
+it does not suffice to show that [tau1 = tau2] and [e1 = e2], as the [TypedExpr]
+are not convertible unless [UP'__tau1 = UP'__tau2] and [UP'__e1 = UP'__e2] .
 
-(* [WellTypedProj1Type] is an extensible property of [WellTyped] properties, *)
-(* capturing those that are well-formed in the sense that they are preserved as *)
-(* long as the first projection of their type is preserved. *)
+[WellTypedProj1Type] is an extensible property of [WellTyped] properties,
+capturing those that are well-formed in the sense that they are preserved as
+long as the first projection of their type is preserved.
 
-(* [WellTypedProj1Expr] is an extensible property of [WellTyped] properties, *)
-(* capturing those that are well-formed in the sense that they are preserved as *)
-(* long as the first projection of their expression is preserved. *)
+[WellTypedProj1Expr] is an extensible property of [WellTyped] properties,
+capturing those that are well-formed in the sense that they are preserved as
+long as the first projection of their expression is preserved.
 
-(* All [WellTyped] properties will satisfy both of these properties, so that we can *)
-(* combine them to move [WellTyped]-ness across equal types or expressions. *)
-(*  *)
+All [WellTyped] properties will satisfy both of these properties, so that we can
+combine them to move [WellTyped]-ness across equal types or expressions.
+ *)
 
 Definition PropertyStatement__WellTypedProj1Type
-           {T E V}
-           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           {T V}
+           `{Functor T} `{Functor V}
            (WT : (TypedExpr T V)-indexedPropFunctor)
            (te : TypedExpr T V)
   := forall tau' UP',
@@ -258,8 +277,8 @@ Definition PropertyStatement__WellTypedProj1Type
 Variant ForWellTypedProj1Type := .
 
 Definition wellTypedProj1Type
-           {T E V}
-           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           {T V}
+           `{Functor T} `{Functor V}
            (WT : (TypedExpr T V)-indexedPropFunctor)
            `{! IndexedFunctor (TypedExpr T V) WT}
            `{A : ! IndexedProofAlgebra
@@ -270,8 +289,8 @@ Definition wellTypedProj1Type
   := ifold (indexedProofAlgebra' A).
 
 Definition PropertyStatement__WellTypedProj1Expr
-           {T E V}
-           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           {T V}
+           `{Functor T} `{Functor V}
            (WT : (TypedExpr T V)-indexedPropFunctor)
            (te : TypedExpr T V)
   := forall e' UP',
@@ -281,8 +300,8 @@ Definition PropertyStatement__WellTypedProj1Expr
 Variant ForWellTypedProj1Expr := .
 
 Definition wellTypedProj1Expr
-           {T E V}
-           `{FunctorLaws T} `{FunctorLaws E} `{FunctorLaws V}
+           {T V}
+           `{Functor T} `{Functor V}
            (WT : (TypedExpr T V)-indexedPropFunctor)
            `{! IndexedFunctor (TypedExpr T V) WT}
            `{A : ! IndexedProofAlgebra

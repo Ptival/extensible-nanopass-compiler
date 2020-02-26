@@ -26,54 +26,42 @@ Inductive UnitType (A : Set) : Set :=
 Arguments MkUnitType {A}.
 
 Global Instance Functor__UnitType
-  : Functor UnitType
-  :=
+  : Functor UnitType.
+Proof.
+  refine
     {|
       fmap := fun A B f 'MkUnitType => MkUnitType;
     |}.
+  - move => ? [] //.
+  - move => ????? [] //.
+Defined.
 
-Global Instance FunctorLaws__UnitType
-  : FunctorLaws UnitType.
-Proof.
-  apply Build_FunctorLaws.
-  {
-    move => ? [] //.
-  }
-  {
-    move => ????? [] //.
-  }
-Qed.
+Section UnitType.
 
-Definition unitType'
-           {T} `{FunctorLaws T} `{T supports UnitType}
-  : TypeFix T
-  := inject MkUnitType.
+  Context
+    {T}
+    `{Functor T}
+    `{T supports UnitType}
+  .
 
-Definition unitType
-           {T} `{FunctorLaws T} `{T supports UnitType}
-  : Fix T
-  := proj1_sig unitType'.
+  Definition unitType'
+    : TypeFix T
+    := injectUP' MkUnitType.
 
-Global Instance FoldUP'__unitType
-           {T} `{FunctorLaws T} `{T supports UnitType}
-  : FoldUP' unitType
-  := proj2_sig unitType'.
+  Definition unitType
+    : Fix T
+    := proj1_sig unitType'.
 
-Definition isUnitType
-           {T} `{FunctorLaws T} `{T supports UnitType}
-  : Fix T -> bool
-  := fun typ =>
-       match project typ with
-       | Some MkUnitType => true
-       | None            => false
-       end.
+  Global Instance FoldUP'__unitType
+    : FoldUP' unitType
+    := proj2_sig unitType'.
 
-Definition typeEquality__UnitType
-           T `{FunctorLaws T} `{T supports UnitType}
-  : forall {R}, MixinAlgebra UnitType R (TypeEqualityResult T)
-  := fun _ _ '(MkUnitType) => fun t => isUnitType (proj1_sig t).
+  Definition isUnitType
+    : Fix T -> bool
+    := fun typ =>
+         match projectUP' typ with
+         | Some MkUnitType => true
+         | None            => false
+         end.
 
-Global Instance TypeEquality__UnitType
-       T `{FunctorLaws T} `{T supports UnitType}
-  : forall {R}, ProgramAlgebra ForTypeEquality UnitType R (TypeEqualityResult T)
-  := fun _ => {| programAlgebra := typeEquality__UnitType T |}.
+End UnitType.

@@ -26,14 +26,12 @@ Section Unit.
   Context
 
     {E}
-    `{FunctorLaws E}
+    `{Functor E}
     `{! E supports Unit}
-    `{!WellFormedSubFunctor Unit E}
 
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Unit}
-    `{! WellFormedSubFunctor Unit V}
 
   .
 

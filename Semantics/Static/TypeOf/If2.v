@@ -2,8 +2,14 @@ From Coq Require Import
      ssreflect
 .
 
-From ExtensibleCompiler.Syntax.Terms Require Import
-     If2
+From ExtensibleCompiler.Semantics Require Import
+     Static.TypeEquality
+     Static.TypeOf
+.
+
+From ExtensibleCompiler.Syntax Require Import
+     Terms.If2
+     Types.BoolType
 .
 
 From ExtensibleCompiler.Syntax.Types Require Import
@@ -25,11 +31,11 @@ Section If2.
 
   Context
     {T}
-    `{FunctorLaws T}
+    `{Functor T}
     `{! T supports BoolType}
-    `{! WellFormedSubFunctor BoolType T}
 
-    {typeEqualityForT : forall R, ProgramAlgebra ForTypeEquality T R (TypeEqualityResult T)}
+    {TypeEquality__T : forall R,
+        ProgramAlgebra ForTypeEquality T R (TypeEqualityResult T)}
   .
 
   Definition typeOf__If2
@@ -54,12 +60,8 @@ Section If2.
     : forall {R}, ProgramAlgebra ForTypeOf If2 R (TypeOfResult T)
     := fun _ => {| programAlgebra := typeOf__If2 _ |}.
 
-  Definition TypeOf__If2'
-    : forall R, ProgramAlgebra ForTypeOf If2 R (TypeOfResult T)
-    := fun _ => TypeOf__If2.
-
-  Global Instance WellFormedMendlerAlgebra_TypeOf__If2
-    : WellFormedMendlerAlgebra TypeOf__If2'.
+  Global Instance WellFormedProgramAlgebra_TypeOf__If2
+    : WellFormedProgramAlgebra ForTypeOf If2 (TypeOfResult T).
   Proof.
     constructor.
     move => T' T'' f rec [] //.

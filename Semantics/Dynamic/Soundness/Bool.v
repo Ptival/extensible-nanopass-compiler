@@ -4,6 +4,7 @@ From Coq Require Import
 
 From ExtensibleCompiler.Semantics Require Import
      Dynamic.Eval.Bool
+     Static.TypeOf
      Static.TypeOf.Bool
      Static.WellTyped.Bool
 .
@@ -34,40 +35,45 @@ Section Bool.
 
   Context
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Bool}
 
     {E}
-    `{FunctorLaws E}
+    `{Functor E}
     `{! E supports Bool}
-    `{! WellFormedSubFunctor Bool E}
 
     {T}
-    `{FunctorLaws T}
+    `{Functor T}
     `{! T supports BoolType}
   .
 
   Global Instance Soundness__Bool
 
-         (WT : (TypedExpr T V)-indexedPropFunctor)
-         `(IndexedFunctor (TypedExpr T V) WT)
-         `((WellTypedValue__Bool <= WT)%IndexedSubFunctor)
+         (WTV : (TypedExpr T V)-indexedPropFunctor)
+         `(IndexedFunctor (TypedExpr T V) WTV)
+         `((WellTypedValue__Bool <= WTV)%IndexedSubFunctor)
 
-         `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
-         `{! forall {R}, WellFormedProgramAlgebra Eval__Bool Eval__E (T := R)}
+         `{! forall {R}, ProgramAlgebra
+                      ForEval E      R (EvalResult V)}
+         `{! forall {R}, WellFormedCompoundProgramAlgebra
+                      ForEval E Bool R (EvalResult V)}
+
          (recEval   : WellFormedValue E -> EvalResult   V)
 
-         `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
-         `{! forall {R}, WellFormedProgramAlgebra TypeOf__Bool TypeOf__E (T := R)}
+         `{! forall {R}, ProgramAlgebra
+                      ForTypeOf E      R (TypeOfResult T)}
+         `{! forall {R}, WellFormedCompoundProgramAlgebra
+                      ForTypeOf E Bool R (TypeOfResult T)}
+
          (recTypeOf : WellFormedValue E -> TypeOfResult T)
 
     : ProofAlgebra
         ForSoundness Bool
         (sig (UniversalPropertyP2
-                (AbstractSoundnessStatement' WT recEval recTypeOf))).
+                (AbstractSoundnessStatement' WTV recEval recTypeOf))).
   Proof.
     constructor.
-    apply Induction2Algebra_Bool => b.
+    apply Induction2Algebra__Bool => b.
     rewrite / AbstractSoundnessStatement' / AbstractSoundnessStatement.
     rewrite / UniversalPropertyP2 /=.
     constructor.
@@ -81,28 +87,14 @@ Section Bool.
       rewrite fmapFusion / Extras.compose /=.
       rewrite wellFormedSubFunctor => //=.
       rewrite / programAlgebra'.
-      rewrite wellFormedProgramAlgebra.
-      rewrite wellFormedProgramAlgebra.
+      rewrite wellFormedCompoundProgramAlgebra.
+      rewrite wellFormedCompoundProgramAlgebra.
       move => IH tau TY.
       apply (iInject (F := WellTypedValue__Bool)) => /=.
       econstructor => //.
       move : TY => /=.
       move => [] <- //.
     }
-  Qed.
+  Defined.
 
 End Bool.
-
-(* small sanity check *)
-Definition Soundness__Bool'
-           {V}
-           `{FunctorLaws V}
-           `{! V supports Bool}
-           {T}
-           `{FunctorLaws T}
-           `{! T supports BoolType}
-  : Soundness__ProofAlgebra (T := T) (E := Bool) (V := V) WellTypedValue__Bool.
-Proof.
-  move => recEval recTypeOf.
-  apply : Soundness__Bool.
-Qed.

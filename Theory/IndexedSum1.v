@@ -2,8 +2,7 @@ From ExtensibleCompiler.Theory Require Import
      IndexedFunctor
 .
 
-(* For Coq 8.10+: *)
-(* Declare Scope IndexedSum1. *)
+Declare Scope IndexedSum1.
 Delimit Scope IndexedSum1 with IndexedSum1.
 Open Scope IndexedSum1.
 

@@ -22,25 +22,20 @@ Section Unit.
 
   Context
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Unit}
-    `{! WellFormedSubFunctor Unit V}
   .
 
   Definition eval__Unit
-    : forall {R}, MixinAlgebra Unit R (EvalResult V)
+    : forall R, MixinAlgebra Unit R (EvalResult V)
     := fun _ rec '(MkUnit) env => unit.
 
   Global Instance Eval__Unit
     : forall {R}, ProgramAlgebra ForEval Unit R (EvalResult V)
-    := fun _ => {| programAlgebra := eval__Unit |}.
-
-  Definition Eval__Unit'
-    : forall R, ProgramAlgebra ForEval Unit R (EvalResult V)
-    := fun _ => Eval__Unit.
+    := fun _ => {| programAlgebra := eval__Unit _ |}.
 
   Global Instance WF_Eval__Bool
-    : WellFormedMendlerAlgebra Eval__Unit'.
+    : WellFormedProgramAlgebra ForEval Unit (EvalResult V).
   Proof.
     constructor.
     move => ???? [] //.

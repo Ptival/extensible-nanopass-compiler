@@ -53,12 +53,11 @@ Section Bool.
   Context
 
     {E}
-    `{FunctorLaws E}
+    `{Functor E}
     `{! E supports Bool}
-    `{! WellFormedSubFunctor Bool E}
 
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Bool}
 
   .
@@ -118,7 +117,7 @@ Inversion], so manually written...
 
   (* not sure if this is useful *)
   Global Instance EvalRelationAlg__Bool
-         {A} `{FunctorLaws A}
+         {A} `{Functor A}
          `{SA : ! SubFunctor Bool A}
          {EvalRelation__A : (Fix E * Fix V)-indexedPropFunctor}
          `{! IndexedFunctor _ EvalRelation__A}

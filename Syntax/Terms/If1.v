@@ -29,34 +29,39 @@ Inductive If1 (A : Set) : Set :=
 .
 Arguments MkIf1 {A}.
 
-Global Instance Functor_If1 : Functor If1
-  := {| fmap := fun A B f '(MkIf1 c t) => MkIf1 (f c) (f t) |}.
-
-Global Instance FunctorLaws_If1 : FunctorLaws If1.
+Global Instance Functor__If1
+  : Functor If1.
 Proof.
-  constructor.
+  refine {| fmap := fun A B f '(MkIf1 c t) => MkIf1 (f c) (f t) |}.
   - move => ? [] //.
   - move => ????? [] //.
-Qed.
+Defined.
 
-Definition if1
-           {E} `{FunctorLaws E} `{E supports If1} c t
-  : WellFormedValue E
-  := inject (MkIf1 c t).
+Section If1.
 
-Definition if1F
-           {E} `{FunctorLaws E} `{E supports If1} (c t : Fix E)
-  : Fix E
-  := wrapF (inj (MkIf1 c t)).
+  Context
+    {E}
+    `{Functor E}
+    `{E supports If1}
+  .
 
-Definition if1F'
-           {E} `{FunctorLaws E} `{E supports If1} c t
-  : Fix E
-  := proj1_sig (if1 c t).
+  Definition if1 c t
+    : WellFormedValue E
+    := injectUP' (MkIf1 c t).
 
-(* Definition If1Induction *)
-(*            (P : forall e, Fix If1 -> Prop) *)
-(*            (H : forall c t, P (if1 c t)) *)
-(*   : Algebra If1 { e | P e } *)
-(*   := fun '(If1 (exist _ c _) (exist _ t _)) => *)
-(*        exist _ (if1 c t) (H c t). *)
+  Definition if1F c t
+    : Fix E
+    := wrapF (inject (MkIf1 c t)).
+
+  Definition if1F' c t
+    : Fix E
+    := proj1_sig (if1 c t).
+
+  (* Definition If1Induction *)
+  (*            (P : forall e, Fix If1 -> Prop) *)
+  (*            (H : forall c t, P (if1 c t)) *)
+  (*   : Algebra If1 { e | P e } *)
+  (*   := fun '(If1 (exist _ c _) (exist _ t _)) => *)
+  (*        exist _ (if1 c t) (H c t). *)
+
+End If1.

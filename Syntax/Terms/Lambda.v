@@ -16,21 +16,23 @@ From ExtensibleCompiler.Theory Require Import
 Local Open Scope SubFunctor.
 
 Inductive Lambda
-          T `{FunctorLaws T}
+          T `{Functor T}
           (B E : Set)
   : Set :=
 | App (function : E) (argument : E)
 | Lam (type : TypeFix T) (lambda : B -> E)
 | Var (variable : B)
 .
-Arguments App {T _ _ B E}.
-Arguments Lam {T _ _ B E}.
-Arguments Var {T _ _ B E}.
+Arguments App {T _ B E}.
+Arguments Lam {T _ B E}.
+Arguments Var {T _ B E}.
 
 Global Instance Functor__Lambda
-       {T B} `{FunctorLaws T}
-  : Functor (Lambda T B)
-  := {|
+       {T B} `{Functor T}
+  : Functor (Lambda T B).
+Proof.
+  refine
+    {|
       fmap :=
         fun A B f v =>
           match v with
@@ -40,36 +42,30 @@ Global Instance Functor__Lambda
           end
       ;
     |}.
-
-Global Instance FunctorLaws__Lambda
-       {T B} `{FunctorLaws T}
-  : FunctorLaws (Lambda T B).
-Proof.
-  constructor.
   - move => ? [] //.
   - move => ????? [] //.
-Qed.
+Defined.
 
 Definition app
            {T B E}
-           `{FunctorLaws T} `{FunctorLaws E}
+           `{Functor T} `{Functor E}
            `{E supports (Lambda T B)}
            g a
   : WellFormedValue E
-  := inject (App g a).
+  := injectUP' (App g a).
 
 Definition lam
            {T B E}
-           `{FunctorLaws T} `{FunctorLaws E}
+           `{Functor T} `{Functor E}
            `{E supports (Lambda T B)}
            t b
   : WellFormedValue E
-  := inject (Lam t b).
+  := injectUP' (Lam t b).
 
 Definition var
            {T B E}
-           `{FunctorLaws T} `{FunctorLaws E}
+           `{Functor T} `{Functor E}
             `{E supports (Lambda T B)}
            v
   : WellFormedValue E
-  := inject (Var v).
+  := injectUP' (Var v).

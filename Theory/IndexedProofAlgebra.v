@@ -14,26 +14,26 @@ Local Open Scope SubFunctor.
 Local Open Scope Sum1.
 
 Class IndexedProofAlgebra (* cf. [iPAlgebra] *)
-      (Label : Set) {I} F `{IndexedFunctor I F} A :=
+      (Tag : Set) {I} F `{IndexedFunctor I F} A :=
   {
     indexedProofAlgebra (* cf. [ip_algebra] *)
     : IndexedAlgebra F A;
   }.
 
 Definition indexedProofAlgebra'
-           {Label I F A}
+           {Tag I F A}
            `{IndexedFunctor I F}
-           (PA : IndexedProofAlgebra Label F A)
+           (PA : IndexedProofAlgebra Tag F A)
   : IndexedAlgebra F A
   := indexedProofAlgebra (IndexedProofAlgebra := PA).
 
 Global Instance
-       IndexedProofAlgebraSum1
-       {Label I} F G {A}
+       IndexedProofAlgebra__Sum1
+       {Tag I} F G {A}
        `{IndexedFunctor I F} `{IndexedFunctor I G}
-       {FAlg : IndexedProofAlgebra Label F A}
-       {GAlg : IndexedProofAlgebra Label G A}
-  : IndexedProofAlgebra Label (F + G) A
+       {FAlg : IndexedProofAlgebra Tag F A}
+       {GAlg : IndexedProofAlgebra Tag G A}
+  : IndexedProofAlgebra Tag (F + G) A
   :=
     {|
       indexedProofAlgebra :=
@@ -46,11 +46,11 @@ Global Instance
     |}.
 
 Class WellFormedIndexedProofAlgebra (* cf. [iWF_Ind] *)
-      {Label I F G}
+      {Tag I F G}
       `{IndexedFunctor I F} `{IndexedFunctor I G}
       `{S : ! IndexedSubFunctor F G}
       {P : forall i, IndexedFix G i -> Prop}
-      `(PA : ! IndexedProofAlgebra Label F (fun i => sig (P i)))
+      `(PA : ! IndexedProofAlgebra Tag F (fun i => sig (P i)))
   :=
     {
       indexedProjEq
@@ -62,11 +62,11 @@ Class WellFormedIndexedProofAlgebra (* cf. [iWF_Ind] *)
 
 (** TODO: document why we need this *)
 Class WellFormedIndexedProofAlgebra2 (* cf. [WF_Ind2] *)
-      {Label I F G H}
+      {Tag I F G H}
       `{IndexedFunctor I F} `{IndexedFunctor I G} `{IndexedFunctor I H}
       `{SG : ! IndexedSubFunctor F G} `{SH : ! IndexedSubFunctor F H}
       {P : forall i, (IndexedFix G i * IndexedFix H i) -> Prop}
-      `(PA : ! IndexedProofAlgebra Label F (fun i => sig (P i)))
+      `(PA : ! IndexedProofAlgebra Tag F (fun i => sig (P i)))
   :=
     {
       proj1Eq

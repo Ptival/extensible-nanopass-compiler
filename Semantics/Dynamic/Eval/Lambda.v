@@ -25,11 +25,10 @@ Section Lambda.
   Context
 
     {T}
-    `{FunctorLaws T}
+    `{Functor T}
 
     {E}
     `{! forall B, Functor (E B)}
-    `{! forall B, FunctorLaws (E B)}
     `{(E nat) supports (Closure E)}
     `{(E nat) supports Stuck}
 

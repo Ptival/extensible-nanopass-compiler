@@ -22,7 +22,7 @@ Section Bool.
 
   Context
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Bool}
   .
 
@@ -34,8 +34,8 @@ Section Bool.
     : forall {T}, ProgramAlgebra ForEval Bool T (EvalResult V)
     := fun _ => {| programAlgebra := eval__Bool _ |}.
 
-  Global Instance WF_Eval__Bool
-    : WellFormedMendlerAlgebra (fun _ => Eval__Bool).
+  Global Instance WellFormedProgramAlgebra__Eval__Bool
+    : WellFormedProgramAlgebra ForEval Bool (EvalResult V).
   Proof.
     constructor.
     move => ???? [] //.

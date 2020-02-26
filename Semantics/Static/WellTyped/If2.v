@@ -30,16 +30,15 @@ Section If2.
   Context
 
     {T}
-    `{FunctorLaws T}
+    `{Functor T}
     `{! T supports BoolType}
-    `{! WellFormedSubFunctor BoolType T}
 
     {E}
-    `{FunctorLaws E}
+    `{Functor E}
     `{E supports If2}
 
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
 
   .
 

@@ -21,29 +21,28 @@ Inductive Unit (A: Set) : Set :=
 .
 Arguments MkUnit {A}.
 
-Global Instance Functor_Unit : Functor Unit :=
-  {|
-    fmap := fun A B f 'MkUnit => MkUnit;
-  |}.
-
-Global Instance FunctorLaws_Unit : FunctorLaws Unit.
+Global Instance Functor__Unit
+  : Functor Unit.
 Proof.
-  constructor.
+  refine
+    {|
+      fmap := fun A B f 'MkUnit => MkUnit;
+    |}.
   - move => ? [] //.
   - move => ????? [] //.
-Qed.
+Defined.
 
 Section Unit.
 
   Context
     {E}
-    `{FunctorLaws E}
-    `{! E supports Unit}
+    `{Functor E}
+    `{E supports Unit}
   .
 
   Definition unit
     : WellFormedValue E
-    := inject MkUnit.
+    := injectUP' MkUnit.
 
   Definition unitF
     : Fix E
@@ -51,9 +50,9 @@ Section Unit.
 
   Definition InductionAlgebra__Unit
              (P : forall (e : Fix E), FoldUP' e -> Prop)
-             (H_unit : UniversalPropertyP P unitF)
+             (IH__unit : UniversalPropertyP P unitF)
     : Algebra Unit (sig (UniversalPropertyP P))
-    := fun '(MkUnit) => exist _ _ (H_unit).
+    := fun '(MkUnit) => exist _ _ (IH__unit).
 
 End Unit.
 
@@ -61,18 +60,20 @@ Section Unit.
 
   Context
     {E}
-    `{FunctorLaws E}
-    `{! E supports Unit}
+    `{Functor E}
+    `{E supports Unit}
 
     {M}
-    `{FunctorLaws M}
-    `{! M supports Unit}
+    `{Functor M}
+    `{M supports Unit}
   .
 
   Definition Induction2Algebra__Unit
-             (P : forall (e : Fix E * Fix M), FoldUP' (fst e) /\ FoldUP' (snd e) -> Prop)
-             (H_unit : UniversalPropertyP2 P (unitF, unitF))
+             (P :
+                forall (e : Fix E * Fix M),
+                  FoldUP' (fst e) /\ FoldUP' (snd e) -> Prop)
+             (IH__unit : UniversalPropertyP2 P (unitF, unitF))
     : Algebra Unit (sig (UniversalPropertyP2 P))
-    := fun '(MkUnit) => exist _ _ (H_unit).
+    := fun '(MkUnit) => exist _ _ (IH__unit).
 
 End Unit.

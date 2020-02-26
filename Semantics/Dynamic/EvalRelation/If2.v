@@ -24,11 +24,11 @@ Section If2.
   Context
 
     {E}
-    `{FunctorLaws E}
+    `{Functor E}
     `{! E supports If2}
 
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Bool}
 
   .

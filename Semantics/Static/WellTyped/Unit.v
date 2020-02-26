@@ -33,19 +33,16 @@ Section Unit.
   Context
 
     {T}
-    `{FunctorLaws T}
+    `{Functor T}
     `{! T supports UnitType}
-    `{! WellFormedSubFunctor UnitType T}
 
     {E}
-    `{FunctorLaws E}
+    `{Functor E}
     `{! E supports Unit}
-    `{!WellFormedSubFunctor Unit E}
 
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Unit}
-    `{! WellFormedSubFunctor Unit V}
 
   .
 
@@ -59,7 +56,7 @@ Section Unit.
         WellTyped__Unit WT {| type := t; expr := e |}
   .
 
-  Global Instance IndexedFunctor_WellTyped__Unit
+  Global Instance IndexedFunctor__WellTyped__Unit
     : IndexedFunctor (TypedExpr T V) WellTyped__Unit.
   Proof.
     constructor.

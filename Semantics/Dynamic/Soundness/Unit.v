@@ -3,30 +3,29 @@ From Coq Require Import
      String
 .
 
-From ExtensibleCompiler.Semantics Require Import
-     Dynamic.Eval.Unit
-     Static.TypeOf.Unit
-     Static.WellTyped.Unit
-.
+From ExtensibleCompiler Require Import
 
-From ExtensibleCompiler.Syntax Require Import
-     Terms.Unit
-     Types.UnitType
-.
+     Semantics.Dynamic.Eval.Unit
+     Semantics.Static.TypeOf
+     Semantics.Static.TypeOf.Unit
+     Semantics.Static.WellTyped.Unit
 
-From ExtensibleCompiler.Theory Require Import
-     Algebra
-     Eval
-     SubFunctor
-     Functor
-     IndexedAlgebra
-     IndexedFunctor
-     IndexedSubFunctor
-     ProofAlgebra
-     ProgramAlgebra
-     Types
-     TypeSoundness
-     UniversalProperty
+     Syntax.Terms.Unit
+     Syntax.Types.UnitType
+
+     Theory.Algebra
+     Theory.Eval
+     Theory.SubFunctor
+     Theory.Functor
+     Theory.IndexedAlgebra
+     Theory.IndexedFunctor
+     Theory.IndexedSubFunctor
+     Theory.ProofAlgebra
+     Theory.ProgramAlgebra
+     Theory.Types
+     Theory.TypeSoundness
+     Theory.UniversalProperty
+
 .
 
 Local Open Scope SubFunctor.
@@ -35,15 +34,15 @@ Local Open Scope SubFunctor.
 
 (*   Context *)
 (*     {T} *)
-(*     `{FunctorLaws T} *)
+(*     `{Functor T} *)
 (*     {C} *)
-(*     `{FunctorLaws C} *)
+(*     `{Functor C} *)
 (*     {E} *)
-(*     `{FunctorLaws E} *)
+(*     `{Functor E} *)
 (*     `{! E supports C} *)
 (*     `{! WellFormedSubFunctor C E} *)
 (*     {V} *)
-(*     `{FunctorLaws V} *)
+(*     `{Functor V} *)
 (*   . *)
 
 (*   Theorem EvenMoreAbstractSoundness *)
@@ -107,19 +106,16 @@ Section Unit.
 
   Context
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Unit}
-    `{! WellFormedSubFunctor Unit V}
 
     {E}
-    `{FunctorLaws E}
+    `{Functor E}
     `{! E supports Unit}
-    `{!WellFormedSubFunctor Unit E}
 
     {T}
-    `{FunctorLaws T}
+    `{Functor T}
     `{! T supports UnitType}
-    `{! WellFormedSubFunctor UnitType T}
   .
 
   Global Instance Soundness__Unit
@@ -128,12 +124,15 @@ Section Unit.
          `(IndexedFunctor (TypedExpr T V) WT)
          `((WellTyped__Unit <= WT)%IndexedSubFunctor)
 
-         `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
-         `{! forall {R}, WellFormedProgramAlgebra Eval__Unit Eval__E (T := R)}
-         (recEval   : WellFormedValue E -> EvalResult   V)
+         `{! forall {R}, ProgramAlgebra ForEval E R (EvalResult V)}
+         `{! forall {R}, WellFormedCompoundProgramAlgebra
+                      ForEval E Unit R (EvalResult V)}
+         (recEval : WellFormedValue E -> EvalResult V)
 
-         `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
-         `{! forall {R}, WellFormedProgramAlgebra TypeOf__Unit TypeOf__E (T := R)}
+         `{! forall {R}, ProgramAlgebra
+                      ForTypeOf E R (TypeOfResult T)}
+         `{! forall {R}, WellFormedCompoundProgramAlgebra
+                      ForTypeOf E Unit R (TypeOfResult T)}
          (recTypeOf : WellFormedValue E -> TypeOfResult T)
 
     : ProofAlgebra
@@ -156,8 +155,7 @@ Section Unit.
       rewrite fmapFusion / Extras.compose /=.
       rewrite wellFormedSubFunctor => //=.
       rewrite / programAlgebra'.
-      rewrite wellFormedProgramAlgebra.
-      rewrite wellFormedProgramAlgebra.
+      rewrite !wellFormedCompoundProgramAlgebra.
       move => IH tau TY.
       apply (iInject (F := WellTyped__Unit)) => /=.
       econstructor => //.

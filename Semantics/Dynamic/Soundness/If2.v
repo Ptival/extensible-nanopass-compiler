@@ -9,10 +9,12 @@ From ExtensibleCompiler.Hacks Require Import
 
 From ExtensibleCompiler.Semantics Require Import
      Dynamic.Eval.If2
+     Static.TypeEquality
+     Static.TypeEqualityCorrectness
+     Static.TypeOf
      Static.TypeOf.If2
      Static.WellTyped.Bool
      Static.WellTyped.If2
-     Static.WellTyped.Stuck
 .
 
 From ExtensibleCompiler.Syntax Require Import
@@ -45,20 +47,17 @@ Section If2.
   Context
 
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Bool}
     `{! V supports Stuck}
-    `{! WellFormedSubFunctor Bool V}
-    `{! WellFormedSubFunctor Stuck V}
 
     {T}
-    `{FunctorLaws T}
+    `{Functor T}
     `{! T supports BoolType}
 
     {E}
-    `{FunctorLaws E}
+    `{Functor E}
     `{! E supports If2}
-    `{! WellFormedSubFunctor If2 E}
 
     {typeEqualityForT : forall R, ProgramAlgebra ForTypeEquality T R (TypeEqualityResult T)}
   .
@@ -68,22 +67,20 @@ Section If2.
         (WTV : (TypedExpr T V)-indexedPropFunctor)
         `(IndexedFunctor (TypedExpr T V) WTV)
         `((WellTypedValue__Bool <= WTV)%IndexedSubFunctor)
-        `((WellTypedValue__Stuck <= WTV)%IndexedSubFunctor)
 
-        `{Eval__E : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
-        `{! forall {R}, WellFormedProgramAlgebra Eval__If2 Eval__E (T := R)}
+        `{! forall {R}, ProgramAlgebra    ForEval E R (EvalResult V)}
 
         (Eval__R : Set)
-        {F} `{FunctorLaws F} `{F supports If2}
+        {F} `{Functor F} `{F supports If2}
         recEval
 
         (TypeOf__R : Set)
         recTypeOf
 
-        `{PA__TypeEqualityCorrectness :
+        `{PA__TEC :
             ! ProofAlgebra ForTypeEqualityCorrectness T
               (sig (UniversalPropertyP typeEqualityCorrectnessStatement))}
-        `{! WellFormedProofAlgebra PA__TypeEqualityCorrectness}
+        `{! WellFormedProofAlgebra PA__TEC }
 
         `{! IndexedProofAlgebra ForWellTypedValueProjection__Bool WTV
             (WellTypedValueProjectionStatement__Bool WTV)}
@@ -115,65 +112,62 @@ Section If2.
   Proof.
     rewrite /=.
     move => Gamma c t e c' t' e'.
-    case TO__c : (recTypeOf c) => [ tau__c | ] // H__c.
-    move : H__c (H__c _ eq_refl) => _ WT__c.
+    case TO__c : (recTypeOf c) => [ tau__c | ] // IH__c.
+    move : IH__c (IH__c _ eq_refl) => _ WT__c.
     case BT : (isBoolType (proj1_sig tau__c)) => //.
-    case TO__t : (recTypeOf t) => [ [ tau__t UP'__tau__t ] | ] // H__t.
-    move : H__t (H__t _ eq_refl) => _ WT__t.
-    case TO__e : (recTypeOf e) => [ tau__e | ] // H__e.
-    move : H__e (H__e _ eq_refl) => _ WT__e.
+    case TO__t : (recTypeOf t) => [ [ tau__t UP'__tau__t ] | ] // IH__t.
+    move : IH__t (IH__t _ eq_refl) => _ WT__t.
+    case TO__e : (recTypeOf e) => [ tau__e | ] // IH__e.
+    move : IH__e (IH__e _ eq_refl) => _ WT__e.
     move => tau.
     case TE : (typeEquality tau__t tau__e) => //.
     move => [] <-.
     move : BT.
     rewrite / isBoolType.
-    case p__c : (project (proj1_sig tau__c)) => [ [] | ] // _.
+    case p__c : (projectUP' (proj1_sig tau__c)) => [ [] | ] // _.
     {
-      have := (project_inject _ _ (proj2_sig tau__c) p__c) => {}p__c.
+      have := (project_successUP' _ _ (proj2_sig tau__c) p__c) => {}p__c.
       have := !! wellTypedValueProjection__Bool _ _ WT__c p__c.
       elim / @WellTypedValueInversionClear__Bool => _ _ b [] -> -> -> _.
-      rewrite / isBoolean / project / if2F' / if2 /=.
+      rewrite / isBoolean / projectUP' / if2F' / if2 /=.
       rewrite unwrapUP'_wrapF.
       rewrite wellFormedSubFunctor.
       rewrite wellFormedSubFunctor.
-      case PI : (prj (inj _)) => [ a | ].
+      rewrite project_inject /=.
+      move : b => [].
       {
-        move : a PI => [] [] PI.
-        {
-          apply WT__t.
-        }
-        {
-          have := !! typeEqualityCorrectness (exist _ _ _) _ TE => TEC.
-          have := !! wellTypedProj1Type _ _ WT__e _ UP'__tau__t TEC => //.
-        }
+        apply WT__t.
       }
       {
-        apply (iInject (F := WellTypedValue__Stuck)).
-        econstructor.
-        reflexivity.
+        have := !! typeEqualityCorrectness (exist _ _ _) _ TE => TEC.
+        have := !! wellTypedProj1Type _ _ WT__e _ UP'__tau__t TEC => //.
       }
     }
-  Qed.
+  Defined.
 
   Global Instance Soundness__If2
 
          (WTV : (TypedExpr T V)-indexedPropFunctor)
          `(IndexedFunctor (TypedExpr T V) WTV)
          `((WellTypedValue__Bool  <= WTV)%IndexedSubFunctor)
-         `((WellTypedValue__Stuck <= WTV)%IndexedSubFunctor)
 
-         `{Eval__E : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
-         `{WF__Eval__E : ! forall {R}, WellFormedProgramAlgebra Eval__If2 Eval__E (T := R)}
+         `{! forall {R}, ProgramAlgebra
+                      ForEval E R (EvalResult V)}
+         `{! forall {R}, WellFormedCompoundProgramAlgebra
+                      ForEval E If2 R (EvalResult V)}
+
          (recEval : WellFormedValue E -> EvalResult   V)
 
-         `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
-         `{! forall {R}, WellFormedProgramAlgebra TypeOf__If2 TypeOf__E (T := R)}
+         `{! forall {R}, ProgramAlgebra
+                      ForTypeOf E     R (TypeOfResult T)}
+         `{! forall {R}, WellFormedCompoundProgramAlgebra
+                      ForTypeOf E If2 R (TypeOfResult T)}
          (recTypeOf : WellFormedValue E -> TypeOfResult T)
 
-        `{PA__TypeEqualityCorrectness :
+        `{PA__TEC :
             ! ProofAlgebra ForTypeEqualityCorrectness T
               (sig (UniversalPropertyP typeEqualityCorrectnessStatement))}
-        `{! WellFormedProofAlgebra PA__TypeEqualityCorrectness}
+        `{! WellFormedProofAlgebra PA__TEC}
 
         `{! IndexedProofAlgebra ForWellTypedValueProjection__Bool WTV
             (WellTypedValueProjectionStatement__Bool WTV)}
@@ -200,12 +194,12 @@ Section If2.
     {
       move => Gamma.
       rewrite / if2F' / if2F / if2 / inject /=.
-      repeat rewrite unwrapUP'_wrapF /=.
-      repeat rewrite fmapFusion /=.
+      rewrite !unwrapUP'_wrapF /=.
+      rewrite !fmapFusion /=.
       rewrite / Extras.compose /=.
-      repeat rewrite wellFormedSubFunctor => //=.
+      rewrite !wellFormedSubFunctor => //=.
       rewrite / programAlgebra'.
-      repeat rewrite wellFormedProgramAlgebra.
+      rewrite ! wellFormedCompoundProgramAlgebra.
       move => IH tau.
       eapply Soundness__if2 => //.
 
@@ -243,6 +237,6 @@ Section If2.
       }
 
     }
-  Qed.
+  Defined.
 
 End If2.

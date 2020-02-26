@@ -163,18 +163,14 @@ where
 
 Arguments prod1 {F G A}.
 
-Global Instance Functor_Prod1
+Global Instance Functor__Prod1
        {F G} `{Functor F} `{Functor G}
-  : Functor (F * G)
-  | 0 :=
-  {|
-    fmap := fun A B f '(prod1 fa ga) => prod1 (fmap f fa) (fmap f ga);
-  |}.
-
-Global Instance FunctorLaws_Prod1 F G `{FunctorLaws F} `{FunctorLaws G}
-  : FunctorLaws (Prod1 F G).
+  : Functor (F * G).
 Proof.
-  constructor.
+  refine
+    {|
+      fmap := fun A B f '(prod1 fa ga) => prod1 (fmap f fa) (fmap f ga);
+    |}.
   {
     move => A [] f g /=.
     do 2 rewrite fmapId //.
@@ -183,7 +179,7 @@ Proof.
     move => A B C f g [] fa ga /=.
     do 2 rewrite fmapFusion //.
   }
-Qed.
+Defined.
 
 (*
 NOTE:
@@ -202,7 +198,7 @@ quantified in the output.
 
 Definition AbstractCorrectnessStatement
            {S T V}
-           `{FunctorLaws S} `{FunctorLaws T} `{FunctorLaws V}
+           `{Functor S} `{Functor T} `{Functor V}
            (EvalRelation__Source : (Fix S * Fix V)-indexedPropFunctor)
            (EvalRelation__Target : (Fix T * Fix V)-indexedPropFunctor)
            `{removeUnaryIfs__S : forall {R}, MixinAlgebra S R (WellFormedValue T)}
@@ -219,7 +215,7 @@ Definition AbstractCorrectnessStatement
 
 Definition Correctness__ProofAlgebra
            {S T V}
-           `{FunctorLaws S} `{FunctorLaws T} `{FunctorLaws V}
+           `{Functor S} `{Functor T} `{Functor V}
            (EvalRelation__Source : (Fix S * Fix V)-indexedPropFunctor)
            (EvalRelation__Target : (Fix T * Fix V)-indexedPropFunctor)
            `{RemoveUnaryIfs__S : forall {R}, ProgramAlgebra ForRemoveUnaryIfs S R (WellFormedValue T)}
@@ -237,17 +233,14 @@ Definition Correctness__ProofAlgebra
 
 Lemma Correctness
       {S T V}
-      `{FunctorLaws S} `{FunctorLaws T} `{FunctorLaws V}
+      `{Functor S} `{Functor T} `{Functor V}
       (EvalRelation__Source : (Fix S * Fix V)-indexedPropFunctor)
       (EvalRelation__Target : (Fix T * Fix V)-indexedPropFunctor)
       `{RemoveUnaryIfs__S : forall {R}, ProgramAlgebra ForRemoveUnaryIfs S R (WellFormedValue T)}
-      `{! WellFormedMendlerAlgebra (@RemoveUnaryIfs__S)}
-      (correctness__ProofAlgebra :
-         Correctness__ProofAlgebra EvalRelation__Source EvalRelation__Target)
-      (WF_eval_Soundness_alg_F :
-         forall recRemoveUnaryIfs,
-           WellFormedProofAlgebra (correctness__ProofAlgebra recRemoveUnaryIfs)
-      )
+      `{! forall {R}, WellFormedCompoundProgramAlgebra ForRemoveUnaryIfs S S R (WellFormedValue T)}
+      `{! WellFormedProgramAlgebra ForRemoveUnaryIfs S (WellFormedValue T)}
+      (PA : Correctness__ProofAlgebra EvalRelation__Source EvalRelation__Target)
+      `{! forall rec, WellFormedProofAlgebra (PA rec)}
   : forall (s : Fix S)
       (v : Fix V),
     FoldUP' s ->
@@ -257,21 +250,18 @@ Proof.
   move => s v UP'__s E__S.
   rewrite <- (wrapUP'_unwrapUP' s) => //.
   rewrite /= / removeUnaryIfs / mendlerFold / wrapF.
-  erewrite wellFormedMendlerAlgebra.
-  elim (
-      Induction
-        (PA := correctness__ProofAlgebra (fun s => removeUnaryIfs (proj1_sig s)))
-        _
-        _
-    ) => ? C.
-  apply : C => //.
+  rewrite wellFormedProgramAlgebra.
+  case (Induction
+          (PA := PA (fun s => removeUnaryIfs (proj1_sig s))) s _
+       ) => [? C].
+  apply C => //.
 Qed.
 
 (* Let's instantiate it *)
 
-Definition SourceExpr := Bool + If1 + Unit.
-Definition TargetExpr := Bool + If2 + Unit.
-Definition Value := Bool + Stuck + Unit.
+Definition SourceExpr := Bool + If1   + Unit.
+Definition TargetExpr := Bool + If2   + Unit.
+Definition Value      := Bool + Stuck + Unit.
 
 Definition EvalRelation__Source
   : (Fix SourceExpr * Fix Value)-indexedPropFunctor

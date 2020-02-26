@@ -7,10 +7,12 @@ Hacks/TypeClassResolutionForHave.v
 Passes/RemoveUnaryIfs.v
 
 Semantics/All/Bool.v
+Semantics/All/BoolType.v
 Semantics/All/If1.v
 Semantics/All/If2.v
 Semantics/All/Lambda.v
 Semantics/All/Unit.v
+Semantics/All/UnitType.v
 
 Semantics/Dynamic/All/Bool.v
 Semantics/Dynamic/All/If1.v
@@ -37,11 +39,21 @@ Semantics/Dynamic/Soundness/If2.v
 Semantics/Dynamic/Soundness/Unit.v
 
 Semantics/Static/All/Bool.v
+Semantics/Static/All/BoolType.v
 Semantics/Static/All/If1.v
 Semantics/Static/All/If2.v
 Semantics/Static/All/Lambda.v
 Semantics/Static/All/Unit.v
+Semantics/Static/All/UnitType.v
 
+Semantics/Static/TypeEquality.v
+Semantics/Static/TypeEquality/BoolType.v
+Semantics/Static/TypeEquality/UnitType.v
+
+Semantics/Static/TypeEqualityCorrectness.v
+Semantics/Static/TypeEqualityCorrectness/BoolType.v
+
+Semantics/Static/TypeOf.v
 Semantics/Static/TypeOf/Bool.v
 Semantics/Static/TypeOf/If1.v
 Semantics/Static/TypeOf/If2.v
@@ -52,7 +64,6 @@ Semantics/Static/WellTyped/Bool.v
 # Semantics/Static/WellTyped/If1.v
 Semantics/Static/WellTyped/If2.v
 # Semantics/Static/WellTyped/Lambda.v
-Semantics/Static/WellTyped/Stuck.v
 Semantics/Static/WellTyped/Unit.v
 
 Syntax/Terms/Bool.v
@@ -68,6 +79,7 @@ Syntax/Types/BoolType.v
 Syntax/Types/UnitType.v
 
 Test/Semantics/Dynamic.v
+Test/Semantics/Dynamic/Soundness/If2.v
 Test/Semantics/Static.v
 
 Theory/Algebra.v

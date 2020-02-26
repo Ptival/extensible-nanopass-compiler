@@ -31,7 +31,7 @@ placeholder, for when the condition does not evaluate to a boolean value.
    *)
   Context
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Bool}
     `{! V supports Unit}
     `{! V supports Stuck}
@@ -52,13 +52,8 @@ placeholder, for when the condition does not evaluate to a boolean value.
     : forall {T}, ProgramAlgebra ForEval If1 T (EvalResult V)
     := fun T => {| programAlgebra := eval__If1 _ |}.
 
-  (* Copy of [Eval__If1] for when you need to pass [T] explicitly *)
-  Definition Eval__If1'
-    : forall T, ProgramAlgebra ForEval If1 T (EvalResult V)
-    := fun _ => Eval__If1.
-
-  Global Instance WF_Eval__If1
-    : WellFormedMendlerAlgebra Eval__If1'.
+  Global Instance WellFormedProgramAlgebra__Eval__If1
+    : WellFormedProgramAlgebra ForEval If1 (EvalResult V).
   Proof.
     constructor.
     move => ???? [] //.

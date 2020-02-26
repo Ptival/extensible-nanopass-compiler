@@ -3,6 +3,7 @@ From Coq Require Import
 .
 
 From ExtensibleCompiler Require Import
+     Semantics.Static.TypeOf
      Syntax.Terms.If1
      Syntax.Types.BoolType
      Syntax.Types.UnitType
@@ -19,7 +20,7 @@ Section If1.
 
   Context
     {T}
-    `{FunctorLaws T}
+    `{Functor T}
     `{T supports BoolType}
     `{T supports UnitType}
   .
@@ -46,12 +47,8 @@ Section If1.
     : forall {R}, ProgramAlgebra ForTypeOf If1 R (TypeOfResult T)
     := fun _ => {| programAlgebra := typeOf__If1 _ |}.
 
-  Global Instance TypeOf__If1'
-    : forall R, ProgramAlgebra ForTypeOf If1 R (TypeOfResult T)
-    := fun _ => TypeOf__If1.
-
-  Global Instance WellFormedMendlerAlgebra_TypeOf__If1
-    : WellFormedMendlerAlgebra TypeOf__If1'.
+  Global Instance WellFormedProgramAlgebra_TypeOf__If1
+    : WellFormedProgramAlgebra ForTypeOf If1 (TypeOfResult T).
   Proof.
     constructor.
     move => T' T'' f rec [] //.

@@ -31,16 +31,15 @@ Section Bool.
   Context
 
     {T}
-    `{FunctorLaws T}
+    `{Functor T}
     `{! T supports BoolType}
 
     {E}
-    `{FunctorLaws E}
+    `{Functor E}
     `{! E supports Bool}
-    `{! WellFormedSubFunctor Bool E}
 
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Bool}
 
   .
@@ -104,6 +103,41 @@ Section Bool.
     apply : (WellTypedValue__boolean _ _ _ b) => //.
   Qed.
 
+  Global Instance WellTypedValueProj1Type__Bool
+         (WellTypedValue__V : (TypedExpr T V)-indexedPropFunctor)
+         `{IndexedFunctor (TypedExpr T V) WellTypedValue__V}
+         `{S : ! IndexedSubFunctor WellTypedValue__Bool WellTypedValue__V}
+    : IndexedProofAlgebra
+        ForWellTypedProj1Type
+        WellTypedValue__Bool
+        (PropertyStatement__WellTypedProj1Type WellTypedValue__V).
+  Proof.
+    constructor.
+    move => tv [] [] /= ? + ? b P__e X.
+    move : X => -> ??? /= ?.
+    apply (iInject (F := WellTypedValue__Bool)).
+    eapply WellTypedValue__boolean => //=.
+    apply P__e.
+  Qed.
+
+  (* Ltac wellTypedValueProject__Other := *)
+  (*   constructor; rewrite / IndexedAlgebra. *)
+  (*   unfold iAlgebra; intros i H; unfold WF_invertVB_P; *)
+  (*   inversion H; simpl; *)
+  (*   match goal with *)
+  (*   | eq_H0 : proj1_sig ?T = _ |- proj1_sig ?T = _ -> _ => *)
+  (*     intro eq_H; rewrite eq_H in eq_H0; *)
+  (*     discriminate_inject eq_H0 *)
+  (*   end. *)
+
+  (* Hint Extern 5 ( *)
+  (*        IndexedProofAlgebra *)
+  (*          ForWellTypedValueProjection__Bool *)
+  (*          _ *)
+  (*          (WellTypedValueProjectionStatement__Bool _) *)
+  (*      ) => wellTypedValueProjection__Other *)
+  (* : typeclass_instances. *)
+
   Definition wellTypedValueProjection__Bool
              (WellTypedValue__V : (TypedExpr T V)-indexedPropFunctor)
              `{IndexedFunctor (TypedExpr T V) WellTypedValue__V}
@@ -115,3 +149,12 @@ Section Bool.
     :=  ifold (indexedProofAlgebra' A).
 
 End Bool.
+
+(**
+The default behavior of [apply] in typeclass resolution is too dumb.  Using
+ssreflect's [apply :] helps.
+ *)
+Hint Extern 5
+     (IndexedProofAlgebra ForWellTypedProj1Type _ _)
+=> apply : WellTypedValueProj1Type__Bool
+  : typeclass_instances.

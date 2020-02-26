@@ -1,36 +1,41 @@
-From ExtensibleCompiler.Semantics.Static.All Require Import
-     Bool
-     If2
-     Unit
+From Coq Require Import
+     ssreflect
 .
 
-From ExtensibleCompiler.Syntax Require Import
-     Terms.Bool
-     Terms.If1
-     Terms.If2
-     Terms.Unit
-     Types.BoolType
-     Types.UnitType
-.
+From ExtensibleCompiler Require Import
 
-From ExtensibleCompiler.Theory Require Import
-     Algebra
-     Eval
-     Functor
-     ProgramAlgebra
-     SubFunctor
-     Sum1
-     Types
-     UniversalProperty
+     Semantics.Static.All.Bool
+     Semantics.Static.All.BoolType
+     Semantics.Static.All.If2
+     Semantics.Static.All.Unit
+     Semantics.Static.All.UnitType
+     Semantics.Static.TypeOf
+
+     Syntax.Terms.Bool
+     Syntax.Terms.If1
+     Syntax.Terms.If2
+     Syntax.Terms.Unit
+     Syntax.Types.BoolType
+     Syntax.Types.UnitType
+
+     Theory.Algebra
+     Theory.Eval
+     Theory.Functor
+     Theory.ProgramAlgebra
+     Theory.SubFunctor
+     Theory.Sum1
+     Theory.Types
+     Theory.UniversalProperty
+
 .
 
 Local Open Scope SubFunctor.
 
 (* Create an expression language that supports [Bool], [If2], and [Unit] *)
-Definition E := (Bool + If2 + Unit).
+Definition E := (Bool + If2 + Unit)%Sum1.
 
 (* Create a type language that supports [Bool] and [Unit] *)
-Definition T := (BoolType + UnitType).
+Definition T := (BoolType + UnitType)%Sum1.
 
 (* Create a concrete representation for the result of type-checking, so
    that it is easy to inspect manually *)
@@ -52,7 +57,7 @@ Global Instance computeResult
              (fun   'MkBoolType => WellTypedBool)
              || (fun 'MkUnitType => WellTypedUnit)
          ;
-       |}.
+       |}%Sum1.
 
 Definition typeCheck
            (e : WellFormedValue E)

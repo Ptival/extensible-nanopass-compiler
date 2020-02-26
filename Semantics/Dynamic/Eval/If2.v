@@ -24,7 +24,7 @@ Section If2.
 
   Context
     {V}
-    `{FunctorLaws V}
+    `{Functor V}
     `{! V supports Bool}
     `{! V supports Stuck}
   .
@@ -44,12 +44,8 @@ Section If2.
     : forall {T}, ProgramAlgebra ForEval If2 T (EvalResult V)
     := fun _ => {| programAlgebra := eval__If2 _ |}.
 
-  Definition Eval__If2'
-    : forall T, ProgramAlgebra ForEval If2 T (EvalResult V)
-    := fun _ => Eval__If2.
-
-  Global Instance WellFormedMendlerAlgebra_Eval__If2
-    : WellFormedMendlerAlgebra Eval__If2'.
+  Global Instance WellFormedProgramAlgebra__Eval__If2
+    : WellFormedProgramAlgebra ForEval If2 (EvalResult V).
   Proof.
     constructor.
     move => ???? [] //.

@@ -3,6 +3,8 @@ From Coq Require Import
 .
 
 From ExtensibleCompiler Require Import
+     Semantics.Static.TypeEquality
+     Semantics.Static.TypeOf
      Syntax.Terms.Lambda
      Syntax.Types.ArrowType
      Theory.Algebra
@@ -19,13 +21,13 @@ Section Lambda.
 
   Context
     {T}
-    `{FunctorLaws T}
+    `{Functor T}
     `{T supports ArrowType}
-    `{typeEqualityForT : forall {R}, ProgramAlgebra ForTypeEquality T R (TypeEqualityResult T)}
+    `{TypeEqualityForT : forall {R}, ProgramAlgebra ForTypeEquality T R (TypeEqualityResult T)}
   .
 
   Definition typeOf__Lambda
-    : forall {R}, MixinAlgebra (Lambda T (TypeOfResult T)) R (TypeOfResult T)
+    : forall R, MixinAlgebra (Lambda T (TypeOfResult T)) R (TypeOfResult T)
     := fun _ rec v =>
          match v with
          | App f a =>
@@ -49,15 +51,13 @@ Section Lambda.
          end.
 
   Global Instance TypeOf__Lambda
-    : forall {R}, ProgramAlgebra ForTypeOf (Lambda T (TypeOfResult T)) R (TypeOfResult T)
-    := fun _ => {| programAlgebra := typeOf__Lambda |}.
+    : forall {R}, ProgramAlgebra ForTypeOf
+                            (Lambda T (TypeOfResult T)) R (TypeOfResult T)
+    := fun _ => {| programAlgebra := typeOf__Lambda _ |}.
 
-  Definition TypeOf__Lambda'
-    : forall R, ProgramAlgebra ForTypeOf (Lambda T (TypeOfResult T)) R (TypeOfResult T)
-    := fun _ => TypeOf__Lambda.
-
-  Global Instance WellFormedMendlerAlgebra_TypeOf__Lambda
-    : WellFormedMendlerAlgebra TypeOf__Lambda'.
+  Global Instance WellFormedProgramAlgebra__TypeOf__Lambda
+    : WellFormedProgramAlgebra ForTypeOf
+                               (Lambda T (TypeOfResult T)) (TypeOfResult T).
   Proof.
     constructor.
     move => T' T'' f rec [] //.
