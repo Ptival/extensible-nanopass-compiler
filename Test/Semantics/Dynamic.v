@@ -196,66 +196,62 @@ Probably want to do induction on the source term, with the value universally
 quantified in the output.
  *)
 
-Definition AbstractCorrectnessStatement
-           {S T V}
-           `{Functor S} `{Functor T} `{Functor V}
-           (EvalRelation__Source : (Fix S * Fix V)-indexedPropFunctor)
-           (EvalRelation__Target : (Fix T * Fix V)-indexedPropFunctor)
-           `{removeUnaryIfs__S : forall {R}, MixinAlgebra S R (WellFormedValue T)}
-           (recRemoveUnaryIfs : WellFormedValue S -> WellFormedValue T)
-           (s : Fix S)
-           (UP'__s : FoldUP' s)
-  : Prop
-  := forall (v : Fix V),
-    IndexedFix EvalRelation__Source (s, v) ->
-    IndexedFix EvalRelation__Target
-               ( proj1_sig (removeUnaryIfs__S recRemoveUnaryIfs (unwrapUP' s)),
-                 v
-               ).
+Section Correctness.
 
-Definition Correctness__ProofAlgebra
-           {S T V}
-           `{Functor S} `{Functor T} `{Functor V}
-           (EvalRelation__Source : (Fix S * Fix V)-indexedPropFunctor)
-           (EvalRelation__Target : (Fix T * Fix V)-indexedPropFunctor)
-           `{RemoveUnaryIfs__S : forall {R}, ProgramAlgebra ForRemoveUnaryIfs S R (WellFormedValue T)}
-  := forall recRemoveUnaryIfs,
-    ProofAlgebra ForRemoveUnaryIfsCorrectness
-                 S
-                 (sig (UniversalPropertyP
-                         (AbstractCorrectnessStatement
-                            (removeUnaryIfs__S := fun _ => programAlgebra' RemoveUnaryIfs__S)
-                            EvalRelation__Source
-                            EvalRelation__Target
-                            recRemoveUnaryIfs
-                         )
-                      )).
+  Context
+    {S T V}
+    `{Functor S} `{Functor T} `{Functor V}
+    (EvalRelation__Source : (Fix S * Fix V)-indexedPropFunctor)
+    (EvalRelation__Target : (Fix T * Fix V)-indexedPropFunctor)
+  .
 
-Lemma Correctness
-      {S T V}
-      `{Functor S} `{Functor T} `{Functor V}
-      (EvalRelation__Source : (Fix S * Fix V)-indexedPropFunctor)
-      (EvalRelation__Target : (Fix T * Fix V)-indexedPropFunctor)
-      `{RemoveUnaryIfs__S : forall R, ProgramAlgebra ForRemoveUnaryIfs S R (WellFormedValue T)}
-      `{! forall {R}, WellFormedCompoundProgramAlgebra ForRemoveUnaryIfs S S R (WellFormedValue T)}
-      `{! WellFormedMendlerProgramAlgebra RemoveUnaryIfs__S}
-      (PA : Correctness__ProofAlgebra EvalRelation__Source EvalRelation__Target)
-      `{! forall rec, WellFormedProofAlgebra (PA rec)}
-  : forall (s : Fix S)
-      (v : Fix V),
-    FoldUP' s ->
-    IndexedFix EvalRelation__Source (s, v) ->
-    IndexedFix EvalRelation__Target (proj1_sig (removeUnaryIfs s), v).
-Proof.
-  move => s v UP'__s E__S.
-  rewrite <- (wrapUP'_unwrapUP' s) => //.
-  rewrite /= / removeUnaryIfs / mendlerFold / wrapF.
-  rewrite wellFormedMendlerProgramAlgebra.
-  case (Induction
-          (PA := PA (fun s => removeUnaryIfs (proj1_sig s))) s _
-       ) => [? C].
-  apply C => //.
-Qed.
+  Definition AbstractCorrectnessStatement
+             `{removeUnaryIfs__S : forall {R}, MixinAlgebra S R (WellFormedValue T)}
+             (recRemoveUnaryIfs : WellFormedValue S -> WellFormedValue T)
+             (s : Fix S)
+             (UP'__s : FoldUP' s)
+    : Prop
+    := forall (v : Fix V),
+      IndexedFix EvalRelation__Source (s, v) ->
+      IndexedFix EvalRelation__Target
+                 ( proj1_sig (removeUnaryIfs__S recRemoveUnaryIfs (unwrapUP' s)),
+                   v
+                 ).
+
+  Definition Correctness__ProofAlgebra
+             `{RemoveUnaryIfs__S : forall {R}, ProgramAlgebra ForRemoveUnaryIfs S R (WellFormedValue T)}
+    := forall recRemoveUnaryIfs,
+      ProofAlgebra ForRemoveUnaryIfsCorrectness
+                   S
+                   (sig (UniversalPropertyP
+                           (AbstractCorrectnessStatement
+                              (removeUnaryIfs__S := fun _ => programAlgebra)
+                              recRemoveUnaryIfs
+                           )
+                   )).
+
+  Lemma Correctness
+        `{RemoveUnaryIfs__S : forall R, ProgramAlgebra ForRemoveUnaryIfs S R (WellFormedValue T)}
+        `{! WellFormedMendlerProgramAlgebra RemoveUnaryIfs__S}
+        (PA : Correctness__ProofAlgebra)
+        `{! forall rec, WellFormedProofAlgebra (PA rec)}
+    : forall (s : Fix S)
+        (v : Fix V),
+      FoldUP' s ->
+      IndexedFix EvalRelation__Source (s, v) ->
+      IndexedFix EvalRelation__Target (proj1_sig (removeUnaryIfs s), v).
+  Proof.
+    move => s v UP'__s E__S.
+    rewrite <- (wrapUP'_unwrapUP' s) => //.
+    rewrite /= / removeUnaryIfs / mendlerFold / wrapF.
+    rewrite wellFormedMendlerProgramAlgebra.
+    case (Induction
+            (PA := PA (fun s => removeUnaryIfs (proj1_sig s))) s _
+         ) => [? C].
+    apply C => //.
+  Qed.
+
+End Correctness.
 
 (* Let's instantiate it *)
 

@@ -53,17 +53,13 @@ Section Bool.
          `(IndexedFunctor (TypedExpr T V) WTV)
          `((WellTypedValue__Bool <= WTV)%IndexedSubFunctor)
 
-         `{! forall {R}, ProgramAlgebra
-                      ForEval E      R (EvalResult V)}
-         `{! forall {R}, WellFormedCompoundProgramAlgebra
-                      ForEval E Bool R (EvalResult V)}
+         `{Eval__E : ! forall R, ProgramAlgebra ForEval E R (EvalResult V)}
+         `{! forall R, WellFormedCompoundProgramAlgebra (Eval__E R) Eval__Bool}
 
-         (recEval   : WellFormedValue E -> EvalResult   V)
+         (recEval   : WellFormedValue E -> EvalResult V)
 
-         `{! forall {R}, ProgramAlgebra
-                      ForTypeOf E      R (TypeOfResult T)}
-         `{! forall {R}, WellFormedCompoundProgramAlgebra
-                      ForTypeOf E Bool R (TypeOfResult T)}
+         `{TypeOf__E : ! forall R, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
+         `{! forall R, WellFormedCompoundProgramAlgebra (TypeOf__E R) TypeOf__Bool}
 
          (recTypeOf : WellFormedValue E -> TypeOfResult T)
 

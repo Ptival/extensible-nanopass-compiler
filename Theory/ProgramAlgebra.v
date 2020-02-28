@@ -121,11 +121,11 @@ NOTE: we need to specify [E := E] or the type class mechanism will pick
 [SubFunctor__Refl] and inject from [F] into [F].
  *)
 Class WellFormedCompoundProgramAlgebra (* cf. [WFFAlgebra] *)
-      Tag E F T A
+      {Tag E F T A}
       `{Functor E} `{Functor F}
       `{E supports F}
-      `{ProgramAlgebra Tag E T A}
-      `{ProgramAlgebra Tag F T A}
+      `(ProgramAlgebra Tag E T A)
+      `(ProgramAlgebra Tag F T A)
   :=
     {
       wellFormedCompoundProgramAlgebra :
@@ -139,8 +139,8 @@ Class WellFormedCompoundProgramAlgebra (* cf. [WFFAlgebra] *)
 Global Instance
        WellFormedCompoundProgramAlgebra__Refl
        {Tag F T A}
-       `{ProgramAlgebra Tag F T A}
-  : WellFormedCompoundProgramAlgebra Tag F F T A.
+       `{Alg__F : ProgramAlgebra Tag F T A}
+  : WellFormedCompoundProgramAlgebra Alg__F Alg__F.
 Proof.
   constructor => rec fa //.
 Qed.
@@ -150,11 +150,11 @@ Global Instance
        {Tag F G H T A}
        `{Functor F} `{Functor G} `{Functor H}
        `{G supports F}
-       `{! ProgramAlgebra Tag F T A}
-       `{! ProgramAlgebra Tag G T A}
-       `{! ProgramAlgebra Tag H T A}
-       `{! WellFormedCompoundProgramAlgebra Tag G F T A}
-  : WellFormedCompoundProgramAlgebra Tag (G + H) F T A.
+       `{Alg__F : ! ProgramAlgebra Tag F T A}
+       `{Alg__G : ! ProgramAlgebra Tag G T A}
+       `{Alg__H : ! ProgramAlgebra Tag H T A}
+       `{! WellFormedCompoundProgramAlgebra Alg__G Alg__F}
+  : WellFormedCompoundProgramAlgebra (ProgramAlgebra__Sum1 Tag G H) Alg__F.
 Proof.
   constructor => rec f.
   rewrite /= wellFormedCompoundProgramAlgebra //.
@@ -165,11 +165,11 @@ Global Instance
        {Tag F G H T A}
        `{Functor F} `{Functor G} `{Functor H}
        `{H supports F}
-       `{! ProgramAlgebra Tag F T A}
-       `{! ProgramAlgebra Tag G T A}
-       `{! ProgramAlgebra Tag H T A}
-       `{! WellFormedCompoundProgramAlgebra Tag H F T A}
-  : WellFormedCompoundProgramAlgebra Tag (G + H) F T A.
+       `{Alg__F : ! ProgramAlgebra Tag F T A}
+       `{Alg__G : ! ProgramAlgebra Tag G T A}
+       `{Alg__H : ! ProgramAlgebra Tag H T A}
+       `{! WellFormedCompoundProgramAlgebra Alg__H Alg__F}
+  : WellFormedCompoundProgramAlgebra (ProgramAlgebra__Sum1 Tag G H) Alg__F.
 Proof.
   constructor => rec f.
   rewrite /= wellFormedCompoundProgramAlgebra //.

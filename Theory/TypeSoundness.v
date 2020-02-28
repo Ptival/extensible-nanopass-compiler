@@ -116,16 +116,16 @@ Definition Soundness__ProofAlgebra
            {T E V}
            `{Functor T} `{Functor E} `{Functor V}
            (WT : (TypedExpr T V)-indexedPropFunctor)
-           `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
-           `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
+           `{Eval__E   : forall R, ProgramAlgebra ForEval   E R (EvalResult   V)}
+           `{TypeOf__E : forall R, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
   := forall recEval recTypeOf,
     ProofAlgebra ForSoundness
                  E
                  (sig
                     (UniversalPropertyP2
                        (AbstractSoundnessStatement
-                          (eval__E   := fun _ => programAlgebra' Eval__E)
-                          (typeOf__F := fun _ => programAlgebra' TypeOf__E)
+                          (eval__E   := fun _ => programAlgebra)
+                          (typeOf__F := fun _ => programAlgebra)
                           WT
                           recEval recTypeOf
                  ))).
@@ -206,15 +206,15 @@ Definition AbstractSoundnessStatement'
            {T E V}
            `{Functor T} `{Functor E} `{Functor V}
            (WT : (TypedExpr T V)-indexedPropFunctor)
-           `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
-           `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
+           `{Eval__E   : forall R, ProgramAlgebra ForEval   E R (EvalResult   V)}
+           `{TypeOf__E : forall R, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
            (recEval   : WellFormedValue E -> EvalResult   V)
            (recTypeOf : WellFormedValue E -> TypeOfResult T)
   :=
     (AbstractSoundnessStatement
        WT
-       (eval__E   := fun _ => programAlgebra' Eval__E)
-       (typeOf__F := fun _ => programAlgebra' TypeOf__E)
+       (eval__E   := fun _ => programAlgebra)
+       (typeOf__F := fun _ => programAlgebra)
        recEval recTypeOf
     ).
 
@@ -225,8 +225,8 @@ Definition SoundnessStatement
            {T E V}
            `{Functor T} `{Functor E} `{Functor V}
            (WT : (TypedExpr T V)-indexedPropFunctor)
-           `{Eval__E   : forall {R}, ProgramAlgebra ForEval   E R (EvalResult   V)}
-           `{TypeOf__E : forall {R}, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
+           `{Eval__E   : forall R, ProgramAlgebra ForEval   E R (EvalResult   V)}
+           `{TypeOf__E : forall R, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
            (recEval   : WellFormedValue E -> EvalResult   V)
            (recTypeOf : WellFormedValue E -> TypeOfResult T)
            (e : Fix E)

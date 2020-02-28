@@ -99,7 +99,7 @@ Class WellFormedProofAlgebra (* cf. [WF_Ind] *)
       {Tag E F} {P : Fix E -> Prop}
       `{Functor E} `{Functor F}
       `{E supports F}
-      (PA : ProofAlgebra Tag F (sig P))
+      `(PA : ! ProofAlgebra Tag F (sig P))
   :=
     {
       projEq
@@ -116,7 +116,8 @@ Class WellFormedProofAlgebra (* cf. [WF_Ind] *)
 Class WellFormedProofAlgebra2 (* cf. [WF_Ind2] *)
       {Tag F G H}
       `{SG : SubFunctor F G} `{SH : SubFunctor F H}
-      {P : (Fix G * Fix H) -> Prop} `(PA : ! ProofAlgebra Tag F (sig P))
+      {P : (Fix G * Fix H) -> Prop}
+      `(PA : ! ProofAlgebra Tag F (sig P))
   :=
     {
       proj1Eq

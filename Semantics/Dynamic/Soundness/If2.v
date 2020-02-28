@@ -151,17 +151,12 @@ Section If2.
          `(IndexedFunctor (TypedExpr T V) WTV)
          `((WellTypedValue__Bool  <= WTV)%IndexedSubFunctor)
 
-         `{! forall {R}, ProgramAlgebra
-                      ForEval E R (EvalResult V)}
-         `{! forall {R}, WellFormedCompoundProgramAlgebra
-                      ForEval E If2 R (EvalResult V)}
-
+         `{Eval__E : ! forall R, ProgramAlgebra ForEval E R (EvalResult V)}
+         `{! forall R, WellFormedCompoundProgramAlgebra (Eval__E R) (Eval__If2 R)}
          (recEval : WellFormedValue E -> EvalResult   V)
 
-         `{! forall {R}, ProgramAlgebra
-                      ForTypeOf E     R (TypeOfResult T)}
-         `{! forall {R}, WellFormedCompoundProgramAlgebra
-                      ForTypeOf E If2 R (TypeOfResult T)}
+         `{TypeOf__E : ! forall R, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
+         `{! forall R, WellFormedCompoundProgramAlgebra (TypeOf__E R) (TypeOf__If2 R)}
          (recTypeOf : WellFormedValue E -> TypeOfResult T)
 
         `{PA__TEC :

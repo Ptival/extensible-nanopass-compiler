@@ -124,15 +124,12 @@ Section Unit.
          `(IndexedFunctor (TypedExpr T V) WT)
          `((WellTyped__Unit <= WT)%IndexedSubFunctor)
 
-         `{! forall {R}, ProgramAlgebra ForEval E R (EvalResult V)}
-         `{! forall {R}, WellFormedCompoundProgramAlgebra
-                      ForEval E Unit R (EvalResult V)}
+         `{Eval__E : ! forall R, ProgramAlgebra ForEval E R (EvalResult V)}
+         `{! forall R, WellFormedCompoundProgramAlgebra (Eval__E R) (Eval__Unit R)}
          (recEval : WellFormedValue E -> EvalResult V)
 
-         `{! forall {R}, ProgramAlgebra
-                      ForTypeOf E R (TypeOfResult T)}
-         `{! forall {R}, WellFormedCompoundProgramAlgebra
-                      ForTypeOf E Unit R (TypeOfResult T)}
+         `{TypeOf__E : ! forall R, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
+         `{! forall R, WellFormedCompoundProgramAlgebra (TypeOf__E R) (TypeOf__Unit R)}
          (recTypeOf : WellFormedValue E -> TypeOfResult T)
 
     : ProofAlgebra

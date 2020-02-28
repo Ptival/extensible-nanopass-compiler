@@ -30,7 +30,7 @@ Section If2.
   .
 
   Definition eval__If2
-    : forall T, MixinAlgebra If2 T (EvalResult V)
+    : forall R, MixinAlgebra If2 R (EvalResult V)
     := fun _ rec '(MkIf2 condition thenBranch elseBranch) env =>
          match isBoolean (proj1_sig (rec condition env)) with
          | Some b =>
@@ -41,7 +41,7 @@ Section If2.
          end.
 
   Global Instance Eval__If2
-    : forall T, ProgramAlgebra ForEval If2 T (EvalResult V)
+    : forall R, ProgramAlgebra ForEval If2 R (EvalResult V)
     := fun _ => {| programAlgebra := eval__If2 _ |}.
 
   Global Instance WellFormedProgramAlgebra__Eval__If2

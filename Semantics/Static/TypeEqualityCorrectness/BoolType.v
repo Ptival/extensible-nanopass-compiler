@@ -32,11 +32,16 @@ Section BoolType.
     `{T supports BoolType}
   .
 
+  Context
+
+    `{TypeEquality__T :
+        ! forall R, ProgramAlgebra ForTypeEquality T R (TypeEqualityResult T)}
+
+    `{! forall R, WellFormedCompoundProgramAlgebra (TypeEquality__T R)
+                                              TypeEquality__BoolType}
+  .
+
   Global Instance TypeEqualityCorrectness__BoolType
-         `{! forall {R}, ProgramAlgebra
-                         ForTypeEquality T R (TypeEqualityResult T)}
-         `{! forall {R}, WellFormedCompoundProgramAlgebra
-                      ForTypeEquality T BoolType R (TypeEqualityResult T)}
     : ProofAlgebra
         ForTypeEqualityCorrectness
         BoolType
@@ -76,10 +81,6 @@ Section BoolType.
   Defined.
 
   Global Instance WellFormedProofAlgebra__TypeEqualityCorrectness__BoolType
-         `{! forall {R}, ProgramAlgebra
-                      ForTypeEquality T R (TypeEqualityResult T)}
-         `{! forall {R}, WellFormedCompoundProgramAlgebra
-                      ForTypeEquality T BoolType R (TypeEqualityResult T)}
     : WellFormedProofAlgebra TypeEqualityCorrectness__BoolType.
   Proof.
     constructor.

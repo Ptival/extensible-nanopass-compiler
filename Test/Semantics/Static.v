@@ -49,7 +49,7 @@ Variant ForComputeResult := .
 
 (* Algebra to turn the extensible results into concrete results *)
 Global Instance computeResult
-  : forall {R}, ProgramAlgebra ForComputeResult T R Result
+  : forall R, ProgramAlgebra ForComputeResult T R Result
   := fun _ =>
        {|
          programAlgebra :=
