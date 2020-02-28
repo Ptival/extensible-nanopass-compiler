@@ -57,11 +57,11 @@ Section If2.
          end.
 
   Global Instance TypeOf__If2
-    : forall {R}, ProgramAlgebra ForTypeOf If2 R (TypeOfResult T)
+    : forall R, ProgramAlgebra ForTypeOf If2 R (TypeOfResult T)
     := fun _ => {| programAlgebra := typeOf__If2 _ |}.
 
-  Global Instance WellFormedProgramAlgebra_TypeOf__If2
-    : WellFormedProgramAlgebra ForTypeOf If2 (TypeOfResult T).
+  Global Instance WellFormedMendlerProgramAlgebra__TypeOf__If2
+    : WellFormedMendlerProgramAlgebra TypeOf__If2.
   Proof.
     constructor.
     move => T' T'' f rec [] //.

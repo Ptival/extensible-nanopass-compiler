@@ -29,11 +29,11 @@ Section UnitType.
     := fun _ rec '(Unit) => Some unitType'.
 
   Global Instance TypeOf__Unit
-    : forall {R}, ProgramAlgebra ForTypeOf Unit R (TypeOfResult T)
+    : forall R, ProgramAlgebra ForTypeOf Unit R (TypeOfResult T)
     := fun _ => {| programAlgebra := typeOf__UnitType _ |}.
 
-  Global Instance WellFormedProgramAlgebra__TypeOf__Unit
-    : WellFormedProgramAlgebra ForTypeOf Unit (TypeOfResult T).
+  Global Instance WellFormedMendlerProgramAlgebra__TypeOf__Unit
+    : WellFormedMendlerProgramAlgebra TypeOf__Unit.
   Proof.
     constructor.
     move => T' T'' f rec [] //.

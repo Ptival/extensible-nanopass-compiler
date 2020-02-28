@@ -33,8 +33,10 @@ Class ProgramAlgebra (* cf. [FAlgebra] *)
       `{Functor F}
   :=
     {
+
       programAlgebra : (* cf. [f_algebra] *)
         MixinAlgebra F T A;
+
     }.
 
 (**
@@ -79,7 +81,7 @@ Global Instance ProgramAlgebra__Left
        Tag F G
        `{Functor F}
        `{Functor G}
-  : forall {R}, ProgramAlgebra Tag F R (WellFormedValue (F + G))
+  : forall R, ProgramAlgebra Tag F R (WellFormedValue (F + G))
   := fun _ =>
     {|
       programAlgebra :=
@@ -91,7 +93,7 @@ Global Instance ProgramAlgebra__Right
        Tag F G
        `{Functor F}
        `{Functor G}
-  : forall {R}, ProgramAlgebra Tag G R (WellFormedValue (F + G))
+  : forall R, ProgramAlgebra Tag G R (WellFormedValue (F + G))
   := fun _ =>
     {|
       programAlgebra :=
@@ -173,50 +175,55 @@ Proof.
   rewrite /= wellFormedCompoundProgramAlgebra //.
 Qed.
 
-Class WellFormedProgramAlgebra (* cf. [WF_Malgebra] *)
-      Tag F A
+(**
+NOTE: this definition can *not* be merged with [ProgramAlgebra] as it uses it at
+two types [T] and [T'] at once.
+ *)
+Class WellFormedMendlerProgramAlgebra (* cf. [WF_Malgebra] *)
+      {Tag F A}
       `{Functor F}
-      `{forall T, ProgramAlgebra Tag F T A}
+      `(forall R, ProgramAlgebra Tag F R A)
   :=
     {
-      wellFormedProgramAlgebra : (* cf. [wf_malgebra] *)
+      wellFormedMendlerProgramAlgebra : (* cf. [wf_malgebra] *)
         forall (T T' : Set) (f : T' -> T) (rec : T -> A) (ft : F T'),
           programAlgebra rec (fmap f ft)
           =
-          programAlgebra (fun ft' => rec (f ft')) ft
+          programAlgebra (fun t' => rec (f t')) ft
       ;
     }.
+Arguments wellFormedMendlerProgramAlgebra {Tag F A _} _ {_} _ _ _ _ _.
 
 Global Instance
-       WellFormedProgramAlgebra__Sum1 (* cf. [WF_Malgebra_Plus] *)
+       WellFormedMendlerProgramAlgebra__Sum1 (* cf. [WF_Malgebra_Plus] *)
        {Tag F G A}
        `{Functor F} `{Functor G}
-       `{! forall {R}, ProgramAlgebra Tag F R A}
-       `{! forall {R}, ProgramAlgebra Tag G R A}
-       `{! WellFormedProgramAlgebra Tag F A}
-       `{! WellFormedProgramAlgebra Tag G A}
-  : WellFormedProgramAlgebra Tag (F + G) A.
+       `{Alg__F : ! forall R, ProgramAlgebra Tag F R A}
+       `{Alg__G : ! forall R, ProgramAlgebra Tag G R A}
+       `{! WellFormedMendlerProgramAlgebra Alg__F}
+       `{! WellFormedMendlerProgramAlgebra Alg__G}
+  : WellFormedMendlerProgramAlgebra (fun R => ProgramAlgebra__Sum1 Tag F G).
 Proof.
   constructor => T T' f rec [].
-  - apply wellFormedProgramAlgebra.
-  - apply wellFormedProgramAlgebra.
+  - apply : wellFormedMendlerProgramAlgebra.
+  - apply : wellFormedMendlerProgramAlgebra.
 Qed.
 
 Global Instance
-       WellFormedProgramAlgebra__Left
+       WellFormedMendlerProgramAlgebra__Left
        {Tag F G}
        `{Functor F} `{Functor G}
-  : WellFormedProgramAlgebra Tag F (WellFormedValue (F + G)).
+  : WellFormedMendlerProgramAlgebra (ProgramAlgebra__Left Tag F G).
 Proof.
   constructor => T T' f rec ft /=.
   rewrite fmapFusion //.
 Qed.
 
 Global Instance
-       WellFormedProgramAlgebra__Right
+       WellFormedMendlerProgramAlgebra__Right
        {Tag F G}
        `{Functor F} `{Functor G}
-  : WellFormedProgramAlgebra Tag G (WellFormedValue (F + G)).
+  : WellFormedMendlerProgramAlgebra (ProgramAlgebra__Right Tag F G).
 Proof.
   constructor => T T' f rec gt /=.
   rewrite fmapFusion //.

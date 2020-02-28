@@ -134,10 +134,10 @@ Lemma Soundness
       {T E V}
       `{Functor T} `{Functor E} `{Functor V}
       (WT : (TypedExpr T V)-indexedPropFunctor)
-      `{forall {R}, ProgramAlgebra      ForEval   E R (EvalResult   V)}
-      `{! WellFormedProgramAlgebra ForEval   E   (EvalResult   V)}
-      `{forall {R}, ProgramAlgebra      ForTypeOf E R (TypeOfResult T)}
-      `{! WellFormedProgramAlgebra ForTypeOf E   (TypeOfResult T)}
+      `{Eval__E : forall R, ProgramAlgebra ForEval E R (EvalResult V)}
+      `{! WellFormedMendlerProgramAlgebra Eval__E}
+      `{TypeOf__E : forall R, ProgramAlgebra ForTypeOf E R (TypeOfResult T)}
+      `{! WellFormedMendlerProgramAlgebra TypeOf__E}
       (soundness__ProofAlgebra : Soundness__ProofAlgebra WT)
       (WF_eval_Soundness_alg_F :
          forall recEval recTypeOf,
@@ -150,7 +150,7 @@ Proof.
   move => e Gamma tau TO.
   rewrite <- (wrapUP'_unwrapUP' (proj1_sig e) (proj2_sig e)).
   rewrite /= / eval / mendlerFold / wrapF.
-  rewrite wellFormedProgramAlgebra / mendlerFold.
+  rewrite wellFormedMendlerProgramAlgebra / mendlerFold.
 
   pose proof (
       Induction2
@@ -165,25 +165,27 @@ Proof.
         _
         (proj2_sig e)
     ) => e' E'.
-  apply:  E'.
+  apply : E'.
   (* Missing: one premise *)
   (* Missing: one premise *)
-  move => Gamma' a IH tau1 TY1.
-  rewrite / eval / mendlerFold /= / wrapF.
-  rewrite wellFormedProgramAlgebra.
-  rewrite / mendlerFold.
-  apply : IH.
   {
-    rewrite <- (wrapUP'_unwrapUP' (proj1_sig (snd a)) (proj2_sig (snd a))) in TY1.
-    rewrite /= in TY1.
-    rewrite / typeOf / mendlerFold / wrapF in TY1.
-    erewrite wellFormedProgramAlgebra in TY1 => //.
+    move => Gamma' a IH tau1 TY1.
+    rewrite / eval / mendlerFold /= / wrapF.
+    rewrite wellFormedMendlerProgramAlgebra.
+    rewrite / mendlerFold.
+    apply : IH.
+    {
+      rewrite <- (wrapUP'_unwrapUP' (proj1_sig (snd a)) (proj2_sig (snd a))) in TY1.
+      rewrite /= in TY1.
+      rewrite / typeOf / mendlerFold / wrapF in TY1.
+      erewrite wellFormedMendlerProgramAlgebra in TY1 => //.
+    }
   }
   {
     rewrite <- (wrapF_unwrapF (proj1_sig e) (proj2_sig e)) in TO.
     rewrite / typeOf / mendlerFold / wrapF /= in TO.
     rewrite / programAlgebra'.
-    erewrite <- wellFormedProgramAlgebra.
+    erewrite <- wellFormedMendlerProgramAlgebra => //.
     rewrite /= / unwrapUP'.
     erewrite Fusion.
     {

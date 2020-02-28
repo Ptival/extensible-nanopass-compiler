@@ -3,15 +3,19 @@ From Coq Require Import
 .
 
 From ExtensibleCompiler Require Import
+
      Semantics.Static.TypeOf
+
      Syntax.Terms.If1
      Syntax.Types.BoolType
      Syntax.Types.UnitType
+
      Theory.Algebra
      Theory.Functor
      Theory.SubFunctor
      Theory.ProgramAlgebra
      Theory.Types
+
 .
 
 Local Open Scope SubFunctor.
@@ -44,11 +48,11 @@ Section If1.
          end.
 
   Global Instance TypeOf__If1
-    : forall {R}, ProgramAlgebra ForTypeOf If1 R (TypeOfResult T)
+    : forall R, ProgramAlgebra ForTypeOf If1 R (TypeOfResult T)
     := fun _ => {| programAlgebra := typeOf__If1 _ |}.
 
-  Global Instance WellFormedProgramAlgebra_TypeOf__If1
-    : WellFormedProgramAlgebra ForTypeOf If1 (TypeOfResult T).
+  Global Instance WellFormedProgramAlgebra__TypeOf__If1
+    : WellFormedMendlerProgramAlgebra TypeOf__If1.
   Proof.
     constructor.
     move => T' T'' f rec [] //.

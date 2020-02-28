@@ -31,11 +31,11 @@ Section Unit.
     := fun _ rec '(MkUnit) env => unit.
 
   Global Instance Eval__Unit
-    : forall {R}, ProgramAlgebra ForEval Unit R (EvalResult V)
+    : forall R, ProgramAlgebra ForEval Unit R (EvalResult V)
     := fun _ => {| programAlgebra := eval__Unit _ |}.
 
-  Global Instance WF_Eval__Bool
-    : WellFormedProgramAlgebra ForEval Unit (EvalResult V).
+  Global Instance WellFormedMendlerProgramAlgebra__Eval__Unit
+    : WellFormedMendlerProgramAlgebra Eval__Unit.
   Proof.
     constructor.
     move => ???? [] //.

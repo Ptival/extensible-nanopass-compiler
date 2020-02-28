@@ -236,9 +236,9 @@ Lemma Correctness
       `{Functor S} `{Functor T} `{Functor V}
       (EvalRelation__Source : (Fix S * Fix V)-indexedPropFunctor)
       (EvalRelation__Target : (Fix T * Fix V)-indexedPropFunctor)
-      `{RemoveUnaryIfs__S : forall {R}, ProgramAlgebra ForRemoveUnaryIfs S R (WellFormedValue T)}
+      `{RemoveUnaryIfs__S : forall R, ProgramAlgebra ForRemoveUnaryIfs S R (WellFormedValue T)}
       `{! forall {R}, WellFormedCompoundProgramAlgebra ForRemoveUnaryIfs S S R (WellFormedValue T)}
-      `{! WellFormedProgramAlgebra ForRemoveUnaryIfs S (WellFormedValue T)}
+      `{! WellFormedMendlerProgramAlgebra RemoveUnaryIfs__S}
       (PA : Correctness__ProofAlgebra EvalRelation__Source EvalRelation__Target)
       `{! forall rec, WellFormedProofAlgebra (PA rec)}
   : forall (s : Fix S)
@@ -250,7 +250,7 @@ Proof.
   move => s v UP'__s E__S.
   rewrite <- (wrapUP'_unwrapUP' s) => //.
   rewrite /= / removeUnaryIfs / mendlerFold / wrapF.
-  rewrite wellFormedProgramAlgebra.
+  rewrite wellFormedMendlerProgramAlgebra.
   case (Induction
           (PA := PA (fun s => removeUnaryIfs (proj1_sig s))) s _
        ) => [? C].

@@ -41,11 +41,11 @@ Section If2.
          end.
 
   Global Instance Eval__If2
-    : forall {T}, ProgramAlgebra ForEval If2 T (EvalResult V)
+    : forall T, ProgramAlgebra ForEval If2 T (EvalResult V)
     := fun _ => {| programAlgebra := eval__If2 _ |}.
 
   Global Instance WellFormedProgramAlgebra__Eval__If2
-    : WellFormedProgramAlgebra ForEval If2 (EvalResult V).
+    : WellFormedMendlerProgramAlgebra Eval__If2.
   Proof.
     constructor.
     move => ???? [] //.

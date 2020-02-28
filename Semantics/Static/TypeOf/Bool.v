@@ -40,12 +40,8 @@ Section Bool.
     : forall {R}, ProgramAlgebra ForTypeOf Bool R (TypeOfResult T)
     := fun _ => {| programAlgebra := typeOf__Bool _ |}.
 
-  Global Instance TypeOf__Bool'
-    : forall R, ProgramAlgebra ForTypeOf Bool R (TypeOfResult T)
-    := fun _ => TypeOf__Bool.
-
-  Global Instance WellFormedProgramAlgebra_TypeOf__Bool
-    : WellFormedProgramAlgebra ForTypeOf Bool (TypeOfResult T).
+  Global Instance WellFormedMendlerProgramAlgebra__TypeOf__Bool
+    : WellFormedMendlerProgramAlgebra (fun R => TypeOf__Bool).
   Proof.
     constructor.
     move => T' T'' f rec [] //.

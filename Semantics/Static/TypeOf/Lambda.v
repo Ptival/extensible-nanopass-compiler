@@ -23,7 +23,7 @@ Section Lambda.
     {T}
     `{Functor T}
     `{T supports ArrowType}
-    `{TypeEqualityForT : forall {R}, ProgramAlgebra ForTypeEquality T R (TypeEqualityResult T)}
+    `{TypeEqualityForT : forall R, ProgramAlgebra ForTypeEquality T R (TypeEqualityResult T)}
   .
 
   Definition typeOf__Lambda
@@ -51,13 +51,12 @@ Section Lambda.
          end.
 
   Global Instance TypeOf__Lambda
-    : forall {R}, ProgramAlgebra ForTypeOf
-                            (Lambda T (TypeOfResult T)) R (TypeOfResult T)
+    : forall R, ProgramAlgebra ForTypeOf
+                          (Lambda T (TypeOfResult T)) R (TypeOfResult T)
     := fun _ => {| programAlgebra := typeOf__Lambda _ |}.
 
-  Global Instance WellFormedProgramAlgebra__TypeOf__Lambda
-    : WellFormedProgramAlgebra ForTypeOf
-                               (Lambda T (TypeOfResult T)) (TypeOfResult T).
+  Global Instance WellFormedMendlerProgramAlgebra__TypeOf__Lambda
+    : WellFormedMendlerProgramAlgebra TypeOf__Lambda.
   Proof.
     constructor.
     move => T' T'' f rec [] //.

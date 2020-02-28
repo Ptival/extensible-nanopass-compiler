@@ -49,11 +49,11 @@ placeholder, for when the condition does not evaluate to a boolean value.
          end.
 
   Global Instance Eval__If1
-    : forall {T}, ProgramAlgebra ForEval If1 T (EvalResult V)
+    : forall T, ProgramAlgebra ForEval If1 T (EvalResult V)
     := fun T => {| programAlgebra := eval__If1 _ |}.
 
-  Global Instance WellFormedProgramAlgebra__Eval__If1
-    : WellFormedProgramAlgebra ForEval If1 (EvalResult V).
+  Global Instance WellFormedMendlerProgramAlgebra__Eval__If1
+    : WellFormedMendlerProgramAlgebra Eval__If1.
   Proof.
     constructor.
     move => ???? [] //.

@@ -34,8 +34,8 @@ Section Bool.
     : forall {T}, ProgramAlgebra ForEval Bool T (EvalResult V)
     := fun _ => {| programAlgebra := eval__Bool _ |}.
 
-  Global Instance WellFormedProgramAlgebra__Eval__Bool
-    : WellFormedProgramAlgebra ForEval Bool (EvalResult V).
+  Global Instance WellFormedMendlerProgramAlgebra__Eval__Bool
+    : WellFormedMendlerProgramAlgebra (fun R => Eval__Bool).
   Proof.
     constructor.
     move => ???? [] //.
