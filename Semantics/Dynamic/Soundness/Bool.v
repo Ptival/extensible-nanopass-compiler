@@ -80,7 +80,7 @@ Section Bool.
       move => Gamma.
       rewrite / booleanF / boolean / inject /=.
       rewrite unwrapUP'_wrapF /=.
-      rewrite fmapFusion / Extras.compose /=.
+      rewrite fmapFusion / compose /=.
       rewrite wellFormedSubFunctor => //=.
       rewrite / programAlgebra'.
       rewrite wellFormedCompoundProgramAlgebra.

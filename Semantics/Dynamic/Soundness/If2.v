@@ -191,7 +191,7 @@ Section If2.
       rewrite / if2F' / if2F / if2 / inject /=.
       rewrite !unwrapUP'_wrapF /=.
       rewrite !fmapFusion /=.
-      rewrite / Extras.compose /=.
+      rewrite / compose /=.
       rewrite !wellFormedSubFunctor => //=.
       rewrite / programAlgebra'.
       rewrite ! wellFormedCompoundProgramAlgebra.

@@ -170,7 +170,7 @@ Proof.
   rewrite (FoldUP F _ f) => //.
   rewrite HF.
   rewrite fmapFusion.
-  rewrite /Extras.compose //.
+  rewrite /compose //.
 Qed.
 
 Lemma Fusion

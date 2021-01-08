@@ -1,6 +1,5 @@
-From ExtLib Require Import
-     Programming.Extras
-.
+Definition id {A : Type} (a : A) : A := a.
+Definition compose {A B C : Type} (g : B -> C) (f : A -> B) (a : A) : C := g (f a).
 
 (*
 Sadly, we cannot use ext-lib's FunctorLaws because we're in [Set].  We import it

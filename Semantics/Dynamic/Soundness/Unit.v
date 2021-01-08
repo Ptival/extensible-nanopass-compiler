@@ -91,7 +91,7 @@ Local Open Scope SubFunctor.
 (*   Proof. *)
 (*     rewrite / inject /=. *)
 (*     rewrite unwrapUP'_wrapF /=. *)
-(*     rewrite fmapFusion / Extras.compose /=. *)
+(*     rewrite fmapFusion / compose /=. *)
 (*     rewrite wellFormedSubFunctor => //=. *)
 (*     rewrite / programAlgebra'. *)
 (*     rewrite wellFormedProgramAlgebra. *)
@@ -149,7 +149,7 @@ Section Unit.
       move => Gamma.
       rewrite / unitF / unit / inject /=.
       rewrite unwrapUP'_wrapF /=.
-      rewrite fmapFusion / Extras.compose /=.
+      rewrite fmapFusion / compose /=.
       rewrite wellFormedSubFunctor => //=.
       rewrite / programAlgebra'.
       rewrite !wellFormedCompoundProgramAlgebra.

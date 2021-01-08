@@ -1,9 +1,9 @@
-# Waiting for upstream merge for coqPackages_8_11.coq-ext-lib
-{ nixpkgs ? import ~/personal/nixpkgs {}
+{ sources ? import ./nix/sources.nix {}
+, nixpkgs ? import sources.nixpkgs {}
 }:
 with nixpkgs;
 let
-  coqPackages = coqPackages_8_11;
+  coqPackages = coqPackages_8_12;
 in
 mkShell {
   buildInputs = [

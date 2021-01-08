@@ -1,5 +1,5 @@
-From ExtLib Require Import
-     Programming.Extras
+From ExtensibleCompiler.Theory Require Import
+    Functor
 .
 
 Notation "I '-indexedProp'" := (I -> Prop) (at level 50, only parsing).

@@ -1,5 +1,6 @@
 From Coq Require Import
      FunctionalExtensionality
+     Setoid
      ssreflect
 .
 
@@ -117,7 +118,7 @@ Definition wrapUP' (* cf. [in_t_UP'] *)
   rewrite !fmapFusion.
   f_equal.
   f_equal.
-  rewrite /Extras.compose.
+  rewrite /compose.
   apply functional_extensionality.
   move => [e' E'] /=.
   apply foldUP' => //.
@@ -152,7 +153,7 @@ Proof.
   rewrite / unwrapF.
   apply (foldUP' _ _ (fun e => fmap (@proj1_sig _ _) (unwrapUP' e))).
   move => e'.
-  rewrite fmapFusion / Extras.compose.
+  rewrite fmapFusion / compose.
   rewrite unwrapUP'_wrapF.
   rewrite fmapFusion //.
 Qed.
